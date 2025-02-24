@@ -1,0 +1,8 @@
+.text-primary {
+  color: var(--app-color-primary);
+}
+
+.text-primary-bold {
+  color: var(--app-color-primary);
+  font-weight: bold;
+}
