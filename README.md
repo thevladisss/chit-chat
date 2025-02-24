@@ -1,4 +1,4 @@
-# FILE EXCHANGE APPLICATION
+# Local File Exchange 🌐⚡
 
 Application aims to facilitate file exchange between 
 computers on a local network, by providing interactive **GUI** 
