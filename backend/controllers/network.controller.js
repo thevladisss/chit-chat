@@ -25,4 +25,8 @@ const getNetworkNodeByIP = async (req, res) => {
   return res.json({ data }).status(200);
 };
 
-module.exports = { getAllNetworkNodes, getNetworkNodeByIP };
+const getAllOnlineUsers = async (req, res) => {
+  // return NetworkService.ge(req.sessionId);
+};
+
+module.exports = { getAllNetworkNodes, getNetworkNodeByIP, getAllOnlineUsers };

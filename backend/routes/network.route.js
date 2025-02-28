@@ -5,6 +5,7 @@ const NetworkController = require('../controllers/network.controller');
 /* GET home page. */
 
 router.get('/nodes', NetworkController.getAllNetworkNodes);
+router.get('/online', NetworkController.getAllOnlineUsers);
 
 router.post('/nodes/find/ip', NetworkController.getNetworkNodeByIP);
 

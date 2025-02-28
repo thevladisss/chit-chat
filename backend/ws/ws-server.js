@@ -1,6 +1,6 @@
 const WebSocket = require('ws');
-
 const WS_PORT = process.env.WS_PORT || 3111;
+const ConnectionService = require('../service/connection.service');
 
 /**
  *
@@ -13,7 +13,14 @@ const initWebSocketServer = () => {
     port: WS_PORT,
   });
 
-  wss.on('connection', (ws) => {
+  wss.on('connection', (ws, req) => {
+    req.ws = ws;
+
+    const ip = req.socket.remoteAddress;
+    ConnectionService.storeConnection({
+      ip,
+    });
+
     ws.on('message', (data) => {
       switch (data.event) {
         case 'REQUEST_FILE_UPLOAD':
