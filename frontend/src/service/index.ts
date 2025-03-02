@@ -3,6 +3,7 @@ import axios, { AxiosResponse } from 'axios';
 const BASE_PATH = (import.meta.env.VITE_API_URL as string) ?? '';
 
 const client = axios.create({
+  withCredentials: true,
   baseURL: BASE_PATH,
   transformResponse: [
     ...axios.defaults.transformResponse,

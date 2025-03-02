@@ -7,6 +7,8 @@
 const app = require('../app');
 const debug = require('debug')('file-exchange:server');
 const http = require('http');
+const WebSocket = require('ws');
+const wsHandlers = require('../ws/ws-handlers')
 
 /**
  * Get port from environment and store in Express.
@@ -93,4 +95,8 @@ function onListening() {
  * Websocket Server
  */
 
+const wss = new WebSocket.WebSocketServer({
+  server,
+});
 
+wss.on('connection', (ws, req) => wsHandlers.handleWsConnection(wss, ws, req));

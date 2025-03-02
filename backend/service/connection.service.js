@@ -12,36 +12,44 @@ const ConnectionRepository = require('../repositories/connection.repository');
 
 /**
  *
- * @param sessionId {string}
  * @return {Promise<{id: string, createdTimestamp: number, ws: *}[]>}
  */
-const getAllActiveConnections = async (sessionId) => {
-  const conections = await connectionRepository.getAllConnections();
+const getAllConnections = async () => {
+  const conections = await ConnectionRepository.getAllConnections();
 
-  return conections.filter((c) => c.sessionId !== sessionId);
+  return conections;
+};
+/**
+ * @param id {string}
+ * @return {Promise<{id: string, createdTimestamp: number, ws: *}[]>}
+ */
+const getAllConnectionsNoCurrent = async (id) => {
+  const conections = await ConnectionRepository.getAllConnections();
+
+  return conections.filter((c) => c.id !== id);
 };
 
 /**
  *
  * @param payload {{
  *   ws: any,
- *   ip: string
  *   sessionId: string
  * }}
  */
-const storeConnection = (payload) => {
-  const connection = ConnectionRepository.findConnectionByIP(payload.ip);
+const storeConnection = async (payload) => {
+  const connection = await ConnectionRepository.findConnectionByIP(payload.ip);
 
   if (connection) return connection;
 
   return ConnectionRepository.createConnection({
     createdTimestamp: Date.now(),
-    ip: payload.ip,
     ws: payload.ws,
     sessionId: payload.sessionId,
   });
 };
 
 module.exports = {
+  getAllConnectionsNoCurrent,
+  getAllConnections,
   storeConnection,
 };

@@ -1,64 +1,54 @@
 import './style.css';
 import { useEffect, useMemo, useState } from 'react';
-import {
-  getAllNetworkNodes,
-  getNetworkNodeByIP,
-} from '../../../service/network-service';
-import { ILocalNetworkNode } from '../../types/LocalNetworkNode';
-import LocalNetworkNodesList from '../../components/LocalNetworkNodesList';
+import SignInDialog from "../../components/SignInDialog";
+
+import {getRequest} from "../../service";
+import SignInForm from "../../components/LoginForm";
+
+
 
 export function Home() {
-  const [selectedNode, setSelectedNode] = useState<ILocalNetworkNode>();
 
-  const isNodeSelected = useMemo(() => {
-    return Boolean(selectedNode);
-  }, [selectedNode]);
-
-  const handleSelectNode = async (index: number) => {
-    const node = networkNodes[index];
-
-    if (node) {
-      getNetworkNodeByIP(node.ipAddress).then(({ data }) => {
-        setSelectedNode(data);
-      });
-    }
-  };
-
-  const [networkNodesLoading, setNetworkNodesLoading] = useState(false);
-  const [networkNodes, setNetworkNodes] = useState<ILocalNetworkNode[]>([]);
+  let ws;
 
   useEffect(() => {
-    setNetworkNodesLoading(true);
+  if (!ws) {
+    ws = new WebSocket(import.meta.env.VITE_WS_URL)
+  }
 
-    getAllNetworkNodes()
-      .then(({ data }) => {
-        setNetworkNodes(data);
-      })
-      .finally(() => {
-        setNetworkNodesLoading(false);
-      });
+  ws.onopen = () => {
+
+
+    ws.send(JSON.stringify({
+      event: "join_room",
+      data: {
+        connectionIds: ['1']
+      }
+    }))
+    getRequest('/api/chat/online').then((c) => {
+      console.log(c)
+    })
+  }
+
   }, []);
+
+  const [user, setUser] = useState<{
+    userId: string;
+    createdTimestamp: string
+  } | null>(null);
+
+  const handleUserAuthenticate = (user: { userId: string, createdTimestamp: string }) => {
+    setUser(user)
+  }
 
   return (
     <div class="home-view">
-      <div class="home-view-layout">
-        <div>
-          {isNodeSelected && (
-            <div className="selected-network-node-info">
-              Selected Node:
-              {JSON.stringify(selectedNode)}
-            </div>
-          )}
-        </div>
-        <div>
-          <LocalNetworkNodesList
-            headingContent={<h2>Network Nodes</h2>}
-            onSelectNode={handleSelectNode}
-            networkNodesList={networkNodes}
-            loading={networkNodesLoading}
-          ></LocalNetworkNodesList>
-        </div>
-      </div>
+      {
+        !user ?
+          <SignInForm onUserAuthenticate={handleUserAuthenticate}></SignInForm>
+          :
+        "Chat"
+      }
     </div>
   );
 }

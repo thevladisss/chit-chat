@@ -56,13 +56,11 @@ img:hover {
 	max-width: 100%;
 	display: flex;
 	justify-content: end;
-	gap: 24px;
+	gap: 60px;
 }
 
 .home-view-layout > div:first-of-type {
-	flex: 0 0 80%;
+	width: 100%;
 }
-.home-view-layout > div:last-of-type {
-	flex: 1;
-}
+
 
