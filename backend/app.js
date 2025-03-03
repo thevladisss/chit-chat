@@ -39,7 +39,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api/network', networkRouter);
 app.use('/api/upload', uploadRouter);
-app.use('/api/chat', chatRouter);
+app.use('/api/chats', chatRouter);
 app.use('/api/users', userRouter);
 
 const subnet = '192.168.1'; // Adjust based on your network

@@ -1,10 +1,12 @@
-const ConnectionService = require('../service/connection.service');
+const ChatService = require('../service/chat.service');
 const getOnlineUsers = async (req, res) => {
-  const connections = await ConnectionService.getAllConnections(req.session.id);
+  const user = req.session.user;
+
+  const chats = await ChatService.getUserChats(user);
 
   return res
     .json({
-      data: connections,
+      data: chats,
     })
     .status(200);
 };

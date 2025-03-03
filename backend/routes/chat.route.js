@@ -4,6 +4,6 @@ const ChatController = require('../controllers/chat.controller');
 
 /* GET home page. */
 
-router.get('/online', ChatController.getOnlineUsers);
+router.get('/', ChatController.getOnlineUsers);
 
 module.exports = router;
