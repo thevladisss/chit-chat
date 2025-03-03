@@ -1,5 +1,5 @@
 import "./SignInForm.css"
-import { JSX, useState, ChangeEvent} from 'preact/compat'
+import { JSX, useState, ChangeEvent} from 'react'
 import {postRequest} from "../service";
 
 type Props = {

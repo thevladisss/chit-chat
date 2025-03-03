@@ -1,4 +1,4 @@
-import  {JSX, useState} from 'preact/compat'
+import  {JSX, useState} from 'react'
 
 function Chat(props: any): JSX.Element {
 

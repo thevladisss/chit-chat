@@ -1,4 +1,4 @@
-import { JSX, Children, useMemo, HTMLProps } from 'preact/compat';
+import { JSX, Children, useMemo, HTMLProps } from 'react';
 import './SkeletonRectangle.css';
 
 type Props = HTMLProps<any> & {

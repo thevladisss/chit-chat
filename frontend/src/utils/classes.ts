@@ -1,4 +1,4 @@
-import {useMemo} from "preact/compat";
+import {useMemo} from "react";
 
 type Class = string | string[] | Record<string, boolean>
 export const buildClasses = (...classes: Class[]) => {
