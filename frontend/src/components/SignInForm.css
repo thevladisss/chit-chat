@@ -1,4 +1,23 @@
 .sign-in-form {
-    max-width: 500px;
     min-width: 300px;
+    border: 1px solid var(--app-bg-dark-1);
+    border-radius: 16px;
+    background-color: var(--app-bg-light-1);
+    padding: 24px;
+    height: 100%;
+}
+
+.sign-in-form form {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.sign-in-form fieldset {
+    border: none;
+}
+
+.sign-in-form-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: end;
 }

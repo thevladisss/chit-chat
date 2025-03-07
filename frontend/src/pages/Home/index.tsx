@@ -3,10 +3,10 @@ import { useEffect, useMemo, useState } from 'react';
 import SignInDialog from "../../components/SignInDialog";
 
 import {getRequest} from "../../service";
-import SignInForm from "../../components/LoginForm";
+import SignInForm from "../../components/SignInForm.tsx";
 import {getAllChats} from "../../service/chatSerevice";
-import {IChat} from "../../types/Chat";
-import {IUser} from "../../types/User";
+import {IChat} from "../../types/IChat.ts";
+import {IUser} from "../../types/IUser.ts";
 
 
 
@@ -81,7 +81,7 @@ export function Home() {
   }
 
   return (
-    <div class="home-view">
+    <div className="home-view">
       {
         !user ?
           <SignInForm onUserAuthenticate={handleUserAuthenticate}></SignInForm>

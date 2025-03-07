@@ -1,11 +1,12 @@
+import "./Chat.css"
 import  {JSX, useState} from 'react'
 
-function Chat(props: any): JSX.Element {
+function Chat({style}: any): JSX.Element {
 
   const [value, setValue] = useState('React Component')
 
   return (
-    <div>
+    <div className="chat" style={style}>
       {value}
     </div>
   )

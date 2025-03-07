@@ -11,15 +11,18 @@
  *   createdTimestamp: string
  * }>}
  */
-const db = new Map();
-const getUserChats = async (user) => {
-  const chats = [...db.values()];
+const chatModel = new Map();
+const getChatsByParticipants = async (user) => {
+  const chats = [...chatModel.values()];
 
-  return chats.filter((chat) => {
+  const result = chats.filter((chat) => {
     return chat.users.includes(user.userId);
   });
+
+  return Promise.resolve(result);
 };
 
 module.exports = {
-  getUserChats,
+  chatModel,
+  getChatsByParticipants,
 };

@@ -17,7 +17,7 @@ function SignInDialog({ open }: Props): JSX.Element {
     <dialog open={open}>
       <form style={{backgroundColor: "red"}} onSubmit={handleSubmit}>
         <fieldset>
-          <div class="form-control">
+          <div className="form-control">
             <label for="input-username"></label>
             <input type="text" name="username" id="input-username"/>
           </div>
