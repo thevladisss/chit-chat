@@ -1,3 +1,4 @@
 export type IChatListItem = {
-  id: string
-}
+  id: string;
+  lastMessageTimestamp: string;
+};

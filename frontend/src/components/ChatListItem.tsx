@@ -1,0 +1,50 @@
+import "./ChatListItem.css";
+import { type JSX, useState } from "react";
+import { IChatListItem } from "../types/IChatListItem.ts";
+import { buildClasses } from "../utils/classes.ts";
+
+type ChatListItemProps = {
+  id: string;
+  isSelected: boolean;
+  isDelivered: boolean;
+  isSeen: boolean;
+  chatName: string;
+  lastMessage: string;
+  lastMessageTimestamp: string;
+
+  onSelectChat: () => void;
+};
+function ChatListItem({
+  id,
+  isSelected,
+  chatName,
+  lastMessage,
+  lastMessageTimestamp,
+  isDelivered,
+  isSeen,
+
+  onSelectChat,
+}: ChatListItemProps): JSX.Element {
+  const classes = buildClasses("chat-list-item", {
+    "chat-list-item--active": isSelected,
+  });
+
+  return (
+    <li className={classes} tabIndex={0}>
+      <a role="button" onClick={() => onSelectChat()}>
+        <div className="flex justify-between">
+          <span className="chat-name">{chatName}</span>
+          <div className="flex">
+            <span className="last-message-timestamp">
+              {lastMessageTimestamp}
+            </span>
+            <span className={`status`}>*</span>
+          </div>
+        </div>
+        <span className="last-message">{lastMessage}</span>
+      </a>
+    </li>
+  );
+}
+
+export default ChatListItem;

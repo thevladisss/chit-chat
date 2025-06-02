@@ -1,13 +1,21 @@
 .chat-view {
-    max-width: 1000px;
-    display: flex;
-    margin: 60px auto 0;
-    border-radius: 12px;
-    height: 700px;
-    max-height: 80vh;
+  display: flex;
+  /*margin: 60px auto 0;*/
+  border-radius: 12px;
+  /*height: 700px;*/
+  max-height: 100vh;
+  height: 100vh;
 }
 
+.chat-view > .chat,
+.chat-view > .chat-list {
+  height: 100%;
+}
 
-.chat-view > div {
-    height: 100%;
+.chat-view > .chat {
+  flex: 1;
+}
+
+.chat-view > .chat-list {
+  flex: 0 0 30%;
 }

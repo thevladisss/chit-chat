@@ -5,6 +5,7 @@
     background-color: var(--app-bg-light-1);
     padding: 24px;
     height: 100%;
+    min-height: 200px;
 }
 
 .sign-in-form form {

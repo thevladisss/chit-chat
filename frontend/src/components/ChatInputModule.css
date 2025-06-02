@@ -1,0 +1,13 @@
+.chat-input-module {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.input-container {
+  flex: 1;
+}
+
+.actions {
+  flex: 0 0 auto;
+}

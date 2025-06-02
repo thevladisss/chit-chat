@@ -12,6 +12,28 @@ const getUserChats = async (user) => {
   };
 };
 
+/**
+ * @param currentUser
+ * @param userData {{userId: string}}
+ * @return {Promise<*|Awaited<*>>}
+ */
+const initializeChatForCurrentUser = async (currentUser, userData) => {
+  const participants = [currentUser.id, userData.userId];
+
+  const chat = await ChatRepository.createChat({
+    participants,
+  });
+
+  const data = {
+    ...chat,
+    messages: [],
+  };
+
+  return data;
+};
+
+const getChat = () => {};
 module.exports = {
+  initializeChatForCurrentUser,
   getUserChats,
 };

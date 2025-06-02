@@ -1,0 +1,18 @@
+.chat {
+  background-color: var(--app-color-bg-lighter);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 20px 4px;
+}
+
+.chat-messages-container {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+}
+
+.chat-input-container {
+  flex: 0 0 48px;
+}

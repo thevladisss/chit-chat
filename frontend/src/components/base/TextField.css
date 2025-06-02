@@ -1,17 +1,43 @@
 .text-field label {
-    display: block;
-    width: 100%;
-    padding-bottom: 4px;
+  display: block;
+  width: 100%;
+  padding-bottom: 4px;
 }
 
 .text-field input {
-    width: 100%;
-    height: 28px;
-    border-radius: 4px;
-    border: 1px solid var(--app-bg-dark-3);
-    background-color: var(--app-bg-light-5);
-    padding: 0 4px;
-    font-size: 16px;
+  width: 100%;
+  height: 32px;
+  border-radius: 12px;
+  border: 1px solid var(--app-bg-dark-3);
+  background-color: var(--app-bg-light-5);
+  padding: 0 8px;
+  font-size: 16px;
 }
 
+.text-field input:focus {
+  outline-color: var(--app-color-focus);
+}
 
+.text-field input::placeholder {
+  color: var(--app-color-bg-white-shade);
+}
+
+.text-field--large input {
+  height: 40px;
+}
+.text-field--small input {
+  height: 28px;
+}
+
+.text-field input:required {
+  position: relative;
+}
+.text-field input:required:after {
+  content: "*";
+  position: absolute;
+  z-index: 1;
+  right: 0;
+  top: 0;
+  font-size: 20px;
+  color: red;
+}

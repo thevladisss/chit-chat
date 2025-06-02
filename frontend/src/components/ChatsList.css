@@ -1,28 +1,9 @@
 .chat-list {
-    background-color: var(--app-color-bg-lighter);
-    height: 100%;
+  height: 100%;
 }
 
-
-.chat-list-item {
-    background-color: var(--app-color-bg-lighter);
-}
-
-.chat-list-item > a {
-    display: block;
-    padding: 16px 12px;
-    transition: all 0.2s ease-in;
-}
-
-.chat-list-item:hover {
-    cursor: pointer;
-}
-
-.chat-list-item:hover a  {
-    background-color: var(--app-bg-light-2);
-    display: block;
-}
-
-.chat-list-item--active {
-    background-color: var(--app-bg-light-2);
+.chat-list ul {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }

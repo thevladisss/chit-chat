@@ -1,28 +1,20 @@
+@font-face {
+  font-family: "Sora";
+  src: local("Sora"), url("./assets/fonts/Sora-VariableFont_wght.ttf");
+}
+
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color: #222;
-  background-color: #ffffff;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
-
   --app-color-bg: #1a1a1a;
-  --app-bg-light-1: #262626;  /* 10% lighter */
-  --app-bg-light-2: #333333;  /* 20% lighter */
-  --app-bg-light-3: #404040;  /* 30% lighter */
-  --app-bg-light-4: #4d4d4d;  /* 40% lighter */
-  --app-bg-light-5: #5a5a5a;  /* 50% lighter */
-  --app-bg-dark-1: #161616;  /* 10% darker */
-  --app-bg-dark-2: #121212;  /* 20% darker */
-  --app-bg-dark-3: #0e0e0e;  /* 30% darker */
-  --app-bg-dark-4: #0a0a0a;  /* 40% darker */
-  --app-bg-dark-5: #050505;  /* 50% darker */
+  --app-bg-light-1: #262626; /* 10% lighter */
+  --app-bg-light-2: #333333; /* 20% lighter */
+  --app-bg-light-3: #404040; /* 30% lighter */
+  --app-bg-light-4: #4d4d4d; /* 40% lighter */
+  --app-bg-light-5: #5a5a5a; /* 50% lighter */
+  --app-bg-dark-1: #161616; /* 10% darker */
+  --app-bg-dark-2: #121212; /* 20% darker */
+  --app-bg-dark-3: #0e0e0e; /* 30% darker */
+  --app-bg-dark-4: #0a0a0a; /* 40% darker */
+  --app-bg-dark-5: #050505; /* 50% darker */
 
   --app-color-bg-darker: #141414;
   --app-color-bg-lighter: #2a2a2a;
@@ -31,22 +23,39 @@
   --app-color-bg-white-shade: #d9d9d9;
 
   --app-color-primary: #5d2bb4;
-  --app-primary-light-1: #7545c0;  /* 10% lighter */
-  --app-primary-light-2: #8e65cc;  /* 20% lighter */
-  --app-primary-light-3: #a884d9;  /* 30% lighter */
-  --app-primary-light-4: #c2a3e5;  /* 40% lighter */
-  --app-primary-light-5: #ddc2f2;  /* 50% lighter */
-  --app-primary-dark-1: #51269f;  /* 10% darker */
-  --app-primary-dark-2: #461f8a;  /* 20% darker */
-  --app-primary-dark-3: #3b1975;  /* 30% darker */
-  --app-primary-dark-4: #30135f;  /* 40% darker */
-  --app-primary-dark-5: #250d4a;  /* 50% darker */
+  --app-primary-light-1: #7545c0; /* 10% lighter */
+  --app-primary-light-2: #8e65cc; /* 20% lighter */
+  --app-primary-light-3: #a884d9; /* 30% lighter */
+  --app-primary-light-4: #c2a3e5; /* 40% lighter */
+  --app-primary-light-5: #ddc2f2; /* 50% lighter */
+  --app-primary-dark-1: #51269f; /* 10% darker */
+  --app-primary-dark-2: #461f8a; /* 20% darker */
+  --app-primary-dark-3: #3b1975; /* 30% darker */
+  --app-primary-dark-4: #30135f; /* 40% darker */
+  --app-primary-dark-5: #250d4a; /* 50% darker */
 
   --app-color-text-primary: #673ab8;
+
+  --app-color-focus: #0071e3;
+
+  --app-color-border: white;
+}
+
+* {
+  font-family: "Sora", "Inter", sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
 }
 
 #app {
@@ -77,10 +86,6 @@ header a.active {
 
 header a:hover {
   background-color: #0008;
-}
-
-main {
-  margin: 20px 32px 0;
 }
 
 ul {
