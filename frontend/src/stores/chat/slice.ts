@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import * as actions from "./actions.ts";
 import { RootState } from "../index.ts";
 import { IChat } from "../../types/IChat.ts";
+import { IProspectiveChat } from "../../types/IProspectiveChat.ts";
 
 export const slice = createSlice({
   name: "chats",
@@ -11,8 +12,31 @@ export const slice = createSlice({
     selectedChat: null,
   },
   reducers: {
+    createLocalChat(
+      state,
+      action: PayloadAction<IProspectiveChat>,
+    ) {
+      return {
+        ...state,
+        selectedChat: {
+          userId: action.payload.userId,
+          username: action.payload.username,
+          chatId: null,
+          messages: [],
+        },
+      };
+    },
     setExistingChats: (state, action: PayloadAction<IChat[]>) => {
-      state.existingChats = action.payload;
+      return {
+        ...state,
+        existingChats: action.payload,
+      };
+    },
+    setProspectiveChats: (state, action: PayloadAction<IProspectiveChat[]>) => {
+      return {
+        ...state,
+        prospectiveChats: action.payload,
+      };
     },
   },
   extraReducers: (builder) => {
@@ -54,6 +78,7 @@ export const slice = createSlice({
   },
 });
 
-export const { setChats } = slice.actions;
+export const { setExistingChats, setProspectiveChats, createLocalChat } =
+  slice.actions;
 
 export default slice.reducer;

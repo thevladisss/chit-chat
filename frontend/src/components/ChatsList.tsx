@@ -3,13 +3,14 @@ import { useState, JSX, HTMLProps, useMemo } from "react";
 import { buildClasses } from "../utils/classes.ts";
 import { IChatListItem } from "../types/IChatListItem.ts";
 import ChatListItem from "./ChatListItem.tsx";
+import { IProspectiveChat } from "../types/IProspectiveChat.ts";
 
 type Props = HTMLProps<HTMLDivElement> & {
   chats: IChatListItem[];
-  prospectiveChats: any[];
+  prospectiveChats: IProspectiveChat[];
   selectedChatId: string | null;
   onSelectExistingChat: (chat: IChatListItem) => void;
-  onInitializeChat: (userId: string) => void;
+  onInitializeChat: (chat: IProspectiveChat) => void;
 };
 function ChatsList({
   className,
@@ -27,8 +28,8 @@ function ChatsList({
     );
   };
 
-  const handleInitializeChat = (username: string) => {
-    onInitializeChat(username);
+  const handleInitializeChat = (chat: IProspectiveChat) => {
+    onInitializeChat(chat);
   };
 
   const sortedCurrentChats = useMemo(() => {
@@ -69,15 +70,15 @@ function ChatsList({
           {sortedProspectiveChats.map((user) => {
             return (
               <ChatListItem
-                id={user.id}
+                id={user.userId}
                 lastMessage={"How are you?"}
                 lastMessageTimestamp={"10:05 PM"}
                 chatName={user.username}
-                key={user.id}
+                key={user.userId}
                 isDelivered={false}
                 isSeen={false}
                 isSelected={false}
-                onSelectChat={() => handleInitializeChat(user.id)}
+                onSelectChat={() => handleInitializeChat(user)}
               ></ChatListItem>
             );
           })}

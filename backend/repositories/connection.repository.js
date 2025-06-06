@@ -11,7 +11,7 @@ const ws = require('ws');
  * }}
  * @return {
  * Promise<{
- *   id: string;
+ *   connectionId: string;
  *   sessionId: string;
  *   createdTimestamp: number;
  *   ws: any;
@@ -20,14 +20,14 @@ const ws = require('ws');
  * }
  */
 const createConnection = (payload) => {
-  const id = v4().toString();
+  const connectionId = v4().toString();
 
   const object = {
-    id,
+    connectionId,
     ...payload,
   };
 
-  db.set(id, object);
+  db.set(connectionId, object);
 
   return Promise.resolve(object);
 };
@@ -36,7 +36,7 @@ const createConnection = (payload) => {
  *
  * @return {
  * Promise<{
- *   id: string
+ *   connectionId: string
  *   createdTimestamp: number,
  *   ws: any
  *   sessionId: string,
@@ -56,7 +56,15 @@ const findConnectionByIP = async (ip) => {
   return Promise.resolve();
 };
 
+const deleteConnection = (connectionId) => {
+
+  db.delete(connectionId)
+
+  return Promise.resolve()
+}
+
 module.exports = {
+  deleteConnection,
   getAllConnections,
   createConnection,
   findConnectionByIP,

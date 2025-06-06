@@ -5,27 +5,29 @@ import ChatMessage from "./ChatMessage.tsx";
 import { useChatStore } from "../hooks/useChatStore.ts";
 
 function ChatComposer({ style }: any): JSX.Element {
-  const { selectedChatMessages } = useChatStore();
+  const { selectedChat, selectedChatMessages } = useChatStore();
 
   return (
     <div className="chat" style={style}>
-      {selectedChatMessages.length > 0 ? (
+      {selectedChat ? (
         <>
           <div className="chat-messages-container">
-            {selectedChatMessages.map((message) => {
-              return (
-                <ChatMessage
-                  key={message.id}
-                  messageId={message.id}
-                  chatId={message.chatId}
-                  messageText={message.text}
-                  isPersonal={message.isPersonal}
-                  isSeen={message.isSeen}
-                  isDelivered={message.isDelivered}
-                  sentTimestamp={message.sentAt}
-                />
-              );
-            })}
+            {selectedChatMessages.length > 0
+              ? selectedChatMessages.map((message) => {
+                  return (
+                    <ChatMessage
+                      key={message.messageId}
+                      messageId={message.messageId}
+                      chatId={message.chatId}
+                      messageText={message.text}
+                      isPersonal={message.isPersonal}
+                      isSeen={message.isSeen}
+                      isDelivered={message.isDelivered}
+                      sentTimestamp={message.sentAt}
+                    />
+                  );
+                })
+              : `Start messaging with ${selectedChat.username} `}
           </div>
           <div className="chat-input-container">
             <ChatInput></ChatInput>

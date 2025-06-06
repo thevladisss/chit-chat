@@ -1,6 +1,6 @@
 export type IChatMessage = {
   sentAt: string;
-  id: string;
+  messageId: string;
   chatId: string;
   text: string;
   sentBy: string;

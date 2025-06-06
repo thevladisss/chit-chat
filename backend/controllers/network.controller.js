@@ -14,8 +14,6 @@ const getAllNetworkNodes = async (req, res) => {
 
   data = await Promise.all(promises);
 
-  console.log(req.headers.cookie);
-
   return res.json({ data }).status(200);
 };
 

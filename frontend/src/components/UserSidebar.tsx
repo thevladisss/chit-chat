@@ -4,18 +4,24 @@ import BaseButton from "./base/BaseButton.tsx";
 import TextField from "./base/TextField.tsx";
 import ChatsList from "./ChatsList.tsx";
 import { useChatStore } from "../hooks/useChatStore.ts";
+import { IProspectiveChat } from "../types/IProspectiveChat.ts";
 
 function UserSidebar(props: any): JSX.Element {
-  const { startNewChat, selectExistingChat, existingChats, prospectiveChats } =
-    useChatStore();
+  const {
+    openNewChat,
+    startNewChat,
+    selectExistingChat,
+    existingChats,
+    prospectiveChats,
+  } = useChatStore();
   const { user } = useUser();
 
   const handleSearchChats = (event: BaseSyntheticEvent<InputEvent>) => {
     console.log("event", event);
   };
 
-  const handleInitializeChat = (userId: string) => {
-    startNewChat(userId);
+  const handleInitializeChat = (chat: IProspectiveChat) => {
+    openNewChat(chat);
   };
 
   return (

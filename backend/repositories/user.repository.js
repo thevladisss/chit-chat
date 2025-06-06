@@ -3,7 +3,7 @@ const { v4 } = require('uuid');
 /**
  *
  * @type {Map<string, {
- *   id: string,
+ *   userId: string,
  *   username: string,
  *   createdTimestamp: number
  * }>}
@@ -18,12 +18,12 @@ const createOrFindFirstUser = (username) => {
   if (user) return user;
 
   user = {
-    id: v4(),
+    userId: v4(),
     username,
     createdTimestamp: Date.now(),
   };
 
-  userModel.set(user.id, user);
+  userModel.set(user.userId, user);
 
   return Promise.resolve(user);
 };
@@ -39,11 +39,11 @@ const getUsersWithoutChatWithUser = async (user) => {
 
   const result = users
     .filter((u) => {
-      return u.id !== user.id;
+      return u.userId !== user.userId;
     })
     .filter((u) => {
       return !chats.some((chat) => {
-        return chat.users.includes(u.id) && chat.users.includes(user);
+        return chat.users.includes(u.userId) && chat.users.includes(user);
       });
     });
 

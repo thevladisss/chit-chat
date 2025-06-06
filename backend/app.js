@@ -15,8 +15,11 @@ const fs = require('node:fs');
 
 const app = express();
 
+const sessionStore = new session.MemoryStore();
+
 const sessionParser = session({
   resave: false,
+  store: sessionStore,
   saveUninitialized: true,
   cookie: {
     secure: false,
@@ -44,3 +47,4 @@ app.use('/api/users', userRouter);
 
 module.exports = app;
 module.exports.sessionParser = sessionParser;
+module.exports.sessionStore = sessionStore;

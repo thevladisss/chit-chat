@@ -8,9 +8,10 @@ import UserSidebar from "../components/UserSidebar.tsx";
 import { useStore } from "../hooks/useStore.ts";
 
 import { useChatStore } from "../hooks/useChatStore.ts";
+import { ServerSideEventsEnum } from "../enums/ServerSideEventsEnum.ts";
 
 function ChatView() {
-  const { getChats } = useChatStore();
+  const { getChats, setChats } = useChatStore();
   let ws;
 
   const { dispatch } = useStore();
@@ -23,12 +24,25 @@ function ChatView() {
     ws.onopen = () => {
       requestChats();
     };
+
+    ws.onmessage = (e) => {
+      const eventData = JSON.parse(e.data);
+
+      if (eventData.event === ServerSideEventsEnum.NewConnection) {
+        //TODO: Get data from WS response
+
+        const chats = eventData.data.chats,
+          prospectiveChats = eventData.data.prospectiveChats;
+
+        setChats({
+          chats,
+          prospectiveChats,
+        });
+      }
+    };
   }, []);
 
   const [activeChat, setActiveChat] = useState<string | null>(null);
-
-  const [chats, setChats] = useState<any[]>([]);
-  const [prospectiveChats, setProspectiveChats] = useState<any[]>([]);
 
   const [isLoadingChats, setLoadingChats] = useState(false);
 

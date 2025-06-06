@@ -1,5 +1,5 @@
 export type IUser = {
-  id: string;
+  chatId: string;
   username: string
   createdTimestamp: string
 }

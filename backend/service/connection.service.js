@@ -12,7 +12,7 @@ const ConnectionRepository = require('../repositories/connection.repository');
 
 /**
  *
- * @return {Promise<{id: string, createdTimestamp: number, ws: *}[]>}
+ * @return {Promise<{id: string, createdTimestamp: number, ws: *; sessionId:string}[]>}
  */
 const getAllConnections = async () => {
   const conections = await ConnectionRepository.getAllConnections();
@@ -48,7 +48,12 @@ const storeConnection = async (payload) => {
   });
 };
 
+const removeConnection = (id) => {
+  return ConnectionRepository.deleteConnection(id);
+};
+
 module.exports = {
+  removeConnection,
   getAllConnectionsNoCurrent,
   getAllConnections,
   storeConnection,

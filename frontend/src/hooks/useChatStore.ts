@@ -9,14 +9,34 @@ import { IRootState } from "../types/IRootState.ts";
 import { IChat } from "../types/IChat.ts";
 import { IProspectiveChat } from "../types/IProspectiveChat.ts";
 import { IChatMessage } from "../types/IChatMessage.ts";
+import {
+  createLocalChat,
+  setExistingChats,
+  setProspectiveChats,
+} from "../stores/chat/slice.ts";
 
 export const useChatStore = () => {
   const { dispatch } = useStore();
 
   const getChats = () => dispatch(getChatsAction());
-  const startNewChat = (userId: string) => dispatch(startNewChatAction(userId));
-  const selectExistingChat = (chatId: string) =>
+
+  const setChats = (chats: {
+    prospectiveChats: IProspectiveChat[];
+    chats: IChat[];
+  }) => {
+    dispatch(setExistingChats(chats.chats));
+    dispatch(setProspectiveChats(chats.prospectiveChats));
+  };
+
+  const openNewChat = (chat: IProspectiveChat) => {
+    dispatch(createLocalChat(chat));
+  };
+  const startNewChat = (userId: string) => {
+    dispatch(startNewChatAction(userId));
+  };
+  const selectExistingChat = (chatId: string) => {
     dispatch(selectChatAction(chatId));
+  };
 
   const existingChats = useSelector<IRootState, IChat[]>((state) => {
     return state.chats.existingChats;
@@ -41,6 +61,8 @@ export const useChatStore = () => {
     getChats,
     startNewChat,
     selectExistingChat,
+    setChats,
+    openNewChat,
 
     existingChats,
     prospectiveChats,

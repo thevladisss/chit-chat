@@ -1,1 +1,4 @@
-export type IProspectiveChat = {};
+export type IProspectiveChat = {
+  userId: string;
+  username: string;
+};

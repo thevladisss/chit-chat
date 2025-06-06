@@ -111,4 +111,9 @@ server.on('upgrade', (request, socket, head) => {
   });
 });
 
-wss.on('connection', (ws, req) => wsHandlers.handleWsConnection(wss, ws, req));
+wss.on('connection', (ws, req) => {
+  wsHandlers.handleWsConnection(wss, ws, req);
+});
+wss.on('close', (event) => {
+  wsHandlers.handleWsCloseConnection(wss, event);
+});

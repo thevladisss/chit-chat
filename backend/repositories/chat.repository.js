@@ -43,7 +43,7 @@ const createChat = (data) => {
 
   const chat = {
     chatId,
-    users: data.participants.map(({ id }) => id),
+    users: data.participants.map(({ userId }) => userId),
     createdTimestamp: Date.now(),
   };
 
