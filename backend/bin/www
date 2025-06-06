@@ -5,10 +5,11 @@
  */
 
 const app = require('../app');
+const sessionParser = require('../app').sessionParser;
 const debug = require('debug')('file-exchange:server');
 const http = require('http');
 const WebSocket = require('ws');
-const wsHandlers = require('../ws/ws-handlers')
+const wsHandlers = require('../ws/ws-handlers');
 
 /**
  * Get port from environment and store in Express.
@@ -95,8 +96,19 @@ function onListening() {
  * Websocket Server
  */
 
-const wss = new WebSocket.WebSocketServer({
-  server,
+const wss = new WebSocket.WebSocketServer({ noServer: true });
+
+server.on('upgrade', (request, socket, head) => {
+  sessionParser(request, {}, () => {
+    if (!request.session || !request.session.user) {
+      socket.destroy();
+      return;
+    }
+
+    wss.handleUpgrade(request, socket, head, (ws) => {
+      wss.emit('connection', ws, request);
+    });
+  });
 });
 
 wss.on('connection', (ws, req) => wsHandlers.handleWsConnection(wss, ws, req));

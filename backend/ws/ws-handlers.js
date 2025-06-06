@@ -4,7 +4,7 @@ const ConnectionService = require('../service/connection.service');
 const handleWsConnection = async (wss, ws, req) => {
   const connection = await ConnectionService.storeConnection({
     ws,
-    sessionId: '1',
+    sessionId: req.session.id,
   });
 
   const allConnections = await ConnectionService.getAllConnectionsNoCurrent(
@@ -23,9 +23,7 @@ const handleWsConnection = async (wss, ws, req) => {
   );
 
   allConnections.forEach((connection) => {
-
     if (connection.ws.readyState === WebSocket.OPEN && connection.ws !== ws) {
-
       connection.ws.send(
         JSON.stringify({
           event: ServerChatEventEnum.NEW_CONNECTION,

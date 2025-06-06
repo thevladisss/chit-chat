@@ -15,6 +15,15 @@ const fs = require('node:fs');
 
 const app = express();
 
+const sessionParser = session({
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    secure: false,
+  },
+  secret: process.env.SESSION_SECRET || 'secret',
+});
+
 app.use(
   cors({
     credentials: true,
@@ -25,16 +34,7 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(
-  session({
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-      secure: false,
-    },
-    secret: process.env.SESSION_SECRET || 'secret',
-  }),
-);
+app.use(sessionParser);
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api/network', networkRouter);
@@ -42,9 +42,5 @@ app.use('/api/upload', uploadRouter);
 app.use('/api/chats', chatRouter);
 app.use('/api/users', userRouter);
 
-const subnet = '192.168.1'; // Adjust based on your network
-const start = 1;
-const end = 254;
-const _session = ping.createSession();
-
 module.exports = app;
+module.exports.sessionParser = sessionParser;
