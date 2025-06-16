@@ -1,4 +1,5 @@
 const ChatService = require('../service/chat.service');
+
 const getOnlineUsers = async (req, res) => {
   const user = req.session.user;
 
@@ -49,7 +50,27 @@ const getFilteredChats = async (req, res) => {
   });
 };
 
+const sendMessage = async (req, res) => {
+  /**
+   * @var {{chatId?: string | null; userId?: string; message: string}} body
+   */
+  const body = req.body;
+
+  const user = req.session.user;
+
+  const message = await ChatService.sendMessageInNewOrExistingChat(user, {
+    userId: body.userId,
+    chatId: body.chatId,
+    message: body.message,
+  });
+
+  return res.json({
+    data: message,
+  });
+};
+
 module.exports = {
+  sendMessage,
   getFilteredChats,
   initializeChat,
   getChat,

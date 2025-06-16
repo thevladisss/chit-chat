@@ -29,3 +29,11 @@ export const getChatMessages = (chatId: string) => {
     messages: IChatMessage[];
   }>(`/api/chats/${chatId}`);
 };
+
+export const sendMessage = (payload: {
+  chatId?: string | null;
+  userId?: string | null;
+  message: string;
+}) => {
+  return postRequest("/api/chats/", payload);
+};

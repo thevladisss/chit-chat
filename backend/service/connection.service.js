@@ -34,17 +34,15 @@ const getAllConnectionsNoCurrent = async (id) => {
  * @param payload {{
  *   ws: any,
  *   sessionId: string
+ *   userId: string
  * }}
  */
 const storeConnection = async (payload) => {
-  const connection = await ConnectionRepository.findConnectionByIP(payload.ip);
-
-  if (connection) return connection;
-
   return ConnectionRepository.createConnection({
     createdTimestamp: Date.now(),
     ws: payload.ws,
     sessionId: payload.sessionId,
+    userId: payload.userId
   });
 };
 
@@ -52,9 +50,19 @@ const removeConnection = (id) => {
   return ConnectionRepository.deleteConnection(id);
 };
 
+const getAllConnectionsByUserIds = async (userIds) => {
+  return ConnectionRepository.findAllByUserIds(userIds);
+};
+
+const getConnectionByUserId = async (userId) => {
+  return ConnectionRepository.findByUserId(userId);
+};
+
 module.exports = {
+  getConnectionByUserId,
   removeConnection,
   getAllConnectionsNoCurrent,
   getAllConnections,
   storeConnection,
+  getAllConnectionsByUserIds,
 };

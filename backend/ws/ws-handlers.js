@@ -42,6 +42,7 @@ const handleWsConnection = async (wss, ws, req) => {
   const connection = await ConnectionService.storeConnection({
     ws,
     sessionId: req.session.id,
+    userId: req.session.user.userId
   });
 
   if (!req.session?.user.wsConnectionId) {
@@ -83,12 +84,14 @@ const handleWsConnection = async (wss, ws, req) => {
     }
   });
 
-  const handleSendChatMessage = (ws, data) => {};
+  const handleSendChatMessage = (ws, data) => {
+    console.log(data);
+  };
 
   ws.on('message', async (data) => {
     data = JSON.parse(data);
 
-    switch (data.event) {
+    switch (data.payload.event) {
       case ClientChatEventEnum.SEND_MESSAGE:
         handleSendChatMessage(ws, data);
         break;

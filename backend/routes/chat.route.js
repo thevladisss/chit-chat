@@ -8,5 +8,6 @@ router.use(AuthMiddleware);
 router.get('/', ChatController.getOnlineUsers);
 router.get('/:chatId', ChatController.getChat);
 router.post('/initialize', ChatController.initializeChat);
+router.post('/', ChatController.sendMessage);
 
 module.exports = router;

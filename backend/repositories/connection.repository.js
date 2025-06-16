@@ -13,6 +13,7 @@ const ws = require('ws');
  * Promise<{
  *   connectionId: string;
  *   sessionId: string;
+ *   userId: string;
  *   createdTimestamp: number;
  *   ws: any;
  *   ip: string
@@ -38,6 +39,7 @@ const createConnection = (payload) => {
  * Promise<{
  *   connectionId: string
  *   createdTimestamp: number,
+ *   userId: string
  *   ws: any
  *   sessionId: string,
  *   ip: string
@@ -48,24 +50,23 @@ const getAllConnections = () => {
   return Promise.resolve([...db.values()]);
 };
 
-const findConnectionByIP = async (ip) => {
-  const connection = (await getAllConnections()).find((c) => {
-    return c.ip === ip;
-  });
+const deleteConnection = (connectionId) => {
+  db.delete(connectionId);
 
   return Promise.resolve();
 };
 
-const deleteConnection = (connectionId) => {
-
-  db.delete(connectionId)
-
-  return Promise.resolve()
-}
+const findAllByUserIds = (userIds) => {
+  return [...db.values()].filter((con) => userIds.includes(con.userId));
+};
+const findByUserId = (userId) => {
+  return [...db.values()].find((con) => con.userId === userId);
+};
 
 module.exports = {
+  findByUserId,
+  findAllByUserIds,
   deleteConnection,
   getAllConnections,
   createConnection,
-  findConnectionByIP,
 };

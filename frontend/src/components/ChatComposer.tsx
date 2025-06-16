@@ -1,11 +1,27 @@
 import "./ChatComposer.css";
-import { JSX, useState } from "react";
+import { ChangeEvent, JSX, useState } from "react";
 import ChatInput from "./ChatInputModule.tsx";
 import ChatMessage from "./ChatMessage.tsx";
 import { useChatStore } from "../hooks/useChatStore.ts";
+import { sendChatMessage } from "../service/ws/chatServiceWs.ts";
+import { sendMessage } from "../service/chatSerevice.ts";
 
 function ChatComposer({ style }: any): JSX.Element {
   const { selectedChat, selectedChatMessages } = useChatStore();
+
+  const [message, setMessageInput] = useState("");
+  const handleInputMessage = (e: ChangeEvent<HTMLInputElement>) => {
+    setMessageInput(e.target.value);
+  };
+  const handleSubmitMessage = async (message: string) => {
+    const { data } = await sendMessage({
+      message,
+      userId: selectedChat.userId,
+      chatId: selectedChat.chatId,
+    });
+
+    console.log(data);
+  };
 
   return (
     <div className="chat" style={style}>
@@ -30,7 +46,11 @@ function ChatComposer({ style }: any): JSX.Element {
               : `Start messaging with ${selectedChat.username} `}
           </div>
           <div className="chat-input-container">
-            <ChatInput></ChatInput>
+            <ChatInput
+              messageInput={message}
+              onInputMessage={handleInputMessage}
+              onSubmitMessage={handleSubmitMessage}
+            ></ChatInput>
           </div>
         </>
       ) : (

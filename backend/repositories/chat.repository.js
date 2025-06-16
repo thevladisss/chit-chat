@@ -33,7 +33,7 @@ const getChatsByParticipants = async (user) => {
  *
  * @param data {
  *   {
- *     participants: User[],
+ *     participants: number[],
  *   }
  * }
  *
@@ -43,7 +43,8 @@ const createChat = (data) => {
 
   const chat = {
     chatId,
-    users: data.participants.map(({ userId }) => userId),
+    name: 'Default',
+    users: data.participants,
     createdTimestamp: Date.now(),
   };
 
