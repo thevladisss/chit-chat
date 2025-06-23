@@ -25,10 +25,9 @@ export const selectChatAction = createAsyncThunk<{
 
   return data;
 });
-export const startNewChatAction = createAsyncThunk<{
-  id: string;
-  messages: IChatMessage[];
-}>("chats/startChat", async (userId: string) => {
+
+
+export const startNewChatAction = createAsyncThunk<IChat>("chats/startChat", async (userId: string) => {
   const { data } = await initializeChat(userId);
 
   return data;

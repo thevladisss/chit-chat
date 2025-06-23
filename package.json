@@ -4,8 +4,9 @@
   "description": "Application to facilitate file exchange between devices on local network",
   "main": "main.js",
   "scripts": {
-    "start:server": "cd backend & npm run start",
-    "start:client": "cd frontend & npm run dev",
+    "start": "npm run start:server && npm run start:client",
+    "start:server": "cd backend && npm run start",
+    "start:client": "cd frontend && npm run dev",
     "app": "electron main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

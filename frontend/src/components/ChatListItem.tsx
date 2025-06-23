@@ -9,7 +9,7 @@ type ChatListItemProps = {
   isDelivered: boolean;
   isSeen: boolean;
   chatName: string;
-  lastMessage: string;
+  lastMessage: string | null;
   lastMessageTimestamp: string;
 
   onSelectChat: () => void;
@@ -41,7 +41,11 @@ function ChatListItem({
             <span className={`status`}>*</span>
           </div>
         </div>
-        <span className="last-message">{lastMessage}</span>
+        {lastMessage ? (
+          <span className="last-message">{lastMessage}</span>
+        ) : (
+          <span className="no-messages-placeholder">No messages in this chat yet...</span>
+        )}
       </a>
     </li>
   );

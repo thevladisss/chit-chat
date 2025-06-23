@@ -1,5 +1,5 @@
 const { v4 } = require('uuid');
-const { messageModel } = require('../models/message.model');
+const Message = require('../models/message.model');
 /**
  *
  * @type {Map<string, {
@@ -11,22 +11,44 @@ const { messageModel } = require('../models/message.model');
  * }>}
  */
 
-const createMessage = ({ chatId, message }) => {
+const createMessage = ({ chatId, text }) => {
   const messageId = v4();
 
   const messageEntity = {
     chatId,
     messageId,
-    message,
+    text,
     sentAt: Date.now(),
     isSeen: false,
   };
 
-  messageModel.set(messageId, messageEntity);
+  Message.set(messageId, messageEntity);
 
   return messageEntity;
 };
-const getMessagesByChatId = (chatId) => {};
+/**
+ * Find messages by chat ID
+ * @param {string} chatId - The ID of the chat to find messages for
+ * @return {Promise<Array<{messageId: string, chatId: string, message: string, sentAt: number, isSeen: boolean}>>} - Array of messages for the chat
+ */
+const findAllByChatId = (chatId) => {
+  const messages = [...Message.values()].filter(message => message.chatId === chatId);
+  return Promise.resolve(messages);
+};
 const getMessagesByChatAndUserId = (chatId, userId) => {};
 
-module.exports = { createMessage };
+/**
+ * Find a message by its ID
+ * @param {string} messageId - The ID of the message to find
+ * @return {Promise<{messageId: string, chatId: string, message: string, sentAt: number, isSeen: boolean}|undefined>} - The found message or undefined
+ */
+const findById = (messageId) => {
+  const message = Message.get(messageId);
+  return Promise.resolve(message);
+};
+
+module.exports = {
+  findAllByChatId,
+  createMessage,
+  findById
+};

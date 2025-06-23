@@ -6,9 +6,11 @@ function ChatMessage({
   isSeen,
   isDelivered,
   sentTimestamp,
-  messageText,
+  text,
 }: {
-  messageText: string;
+  messageId: string;
+  chatId: string;
+  text: string;
   isPersonal: boolean;
   isSeen: boolean;
   isDelivered: boolean;
@@ -19,7 +21,7 @@ function ChatMessage({
       className={`chat-message ${isPersonal ? "chat-message--personal" : ""}`}
     >
       <div className="flex justify-between gap-4">
-        <span>{messageText}</span>
+        <span>{text}</span>
         <div>
           <span className="sent-timestamp">{sentTimestamp}</span>
           <span>{isSeen ? <span>*</span> : ""}</span>

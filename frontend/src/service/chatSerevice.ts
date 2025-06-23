@@ -31,8 +31,7 @@ export const getChatMessages = (chatId: string) => {
 };
 
 export const sendMessage = (payload: {
-  chatId?: string | null;
-  userId?: string | null;
+  chatId: string,
   message: string;
 }) => {
   return postRequest("/api/chats/", payload);

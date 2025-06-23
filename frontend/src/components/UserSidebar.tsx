@@ -6,11 +6,14 @@ import ChatsList from "./ChatsList.tsx";
 import { useChatStore } from "../hooks/useChatStore.ts";
 import { IProspectiveChat } from "../types/IProspectiveChat.ts";
 
-function UserSidebar(props: any): JSX.Element {
+function UserSidebar(props: {
+  handleInitializeChat: any;
+  handleSelectChat: any;
+}): JSX.Element {
   const {
-    openNewChat,
-    startNewChat,
-    selectExistingChat,
+    selectChat,
+    selectedChat,
+    initializeChat,
     existingChats,
     prospectiveChats,
   } = useChatStore();
@@ -20,8 +23,12 @@ function UserSidebar(props: any): JSX.Element {
     console.log("event", event);
   };
 
-  const handleInitializeChat = (chat: IProspectiveChat) => {
-    openNewChat(chat);
+  const handleSelectChat = (chatId: string) => {
+    selectChat(chatId);
+  };
+
+  const handleInitializeChat = (userId: string) => {
+    initializeChat(userId);
   };
 
   return (
@@ -65,12 +72,12 @@ function UserSidebar(props: any): JSX.Element {
             marginTop: "16px",
           }}
         >
-          {/*<ul className="chats-list"></ul>*/}
           <ChatsList
             chats={existingChats}
             prospectiveChats={prospectiveChats}
-            selectedChatId={"1"}
+            selectedChatId={selectedChat ? selectedChat.id : null}
             onInitializeChat={handleInitializeChat}
+            onSelectExistingChat={handleSelectChat}
           />
         </div>
       </div>

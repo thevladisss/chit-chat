@@ -33,6 +33,10 @@
   font-size: 12px;
 }
 
+.no-messages-placeholder {
+  font-size: 10px;
+}
+
 .last-message-timestamp {
   font-size: 12px;
   max-width: 60px;

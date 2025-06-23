@@ -1,6 +1,6 @@
 import "./ChatView.css";
-import { use, useEffect, useMemo, useState } from "react";
-import { initializeChat } from "../service/chatSerevice";
+import { ChangeEvent, use, useEffect, useMemo, useState } from "react";
+import { initializeChat, sendMessage } from "../service/chatSerevice";
 
 import ChatComposer from "../components/ChatComposer.tsx";
 
@@ -11,7 +11,7 @@ import { useChatStore } from "../hooks/useChatStore.ts";
 import { ServerSideEventsEnum } from "../enums/ServerSideEventsEnum.ts";
 
 function ChatView() {
-  const { getChats, setChats } = useChatStore();
+  const { getChats, selectedChat, setChats } = useChatStore();
   let ws;
 
   const { dispatch } = useStore();
@@ -25,58 +25,79 @@ function ChatView() {
       requestChats();
     };
 
-    ws.onmessage = (e) => {
-      const eventData = JSON.parse(e.data);
+    type WsCustomEvent<R = any> = { event: string; data: R };
 
-      if (eventData.event === ServerSideEventsEnum.NewConnection) {
-        //TODO: Get data from WS response
+    const handleConnectionEvent = (e: WsCustomEvent) => {
+      setChats(e.data.chats);
+    };
 
-        const chats = eventData.data.chats,
-          prospectiveChats = eventData.data.prospectiveChats;
+    const handleMessageEvent = (e: WsCustomEvent) => {
+      setChats(e.data.chats);
+    };
 
-        setChats({
-          chats,
-          prospectiveChats,
-        });
+    ws.onmessage = (e: MessageEvent) => {
+      const payload = JSON.parse(e.data) as WsCustomEvent;
+
+      switch (payload.event) {
+        case ServerSideEventsEnum.Connection:
+          handleConnectionEvent(payload);
+          break;
+        case ServerSideEventsEnum.Message:
+          handleMessageEvent(payload);
+          break;
       }
+      //
+      // if (eventData.event === ServerSideEventsEnum.NewConnection) {
+      //   //TODO: Get data from WS response
+      //
+      //   const chats = eventData.data.chats,
+      //     prospectiveChats = eventData.data.prospectiveChats;
+      //
+      //   // setChats({
+      //   //   chats,
+      //   //   prospectiveChats,
+      //   // });
+      // }
     };
   }, []);
 
-  const [activeChat, setActiveChat] = useState<string | null>(null);
-
-  const [isLoadingChats, setLoadingChats] = useState(false);
-
+  // const [activeChat, setActiveChat] = useState<string | null>(null);
+  //
+  // const [isLoadingChats, setLoadingChats] = useState(false);
+  //
   const requestChats = async () => {
     getChats();
   };
 
-  const handleSelectExistingChat = (chat: any) => {};
+  const [message, setMessageInput] = useState("");
 
-  const [pendingInitializeChat, setInitializeChatPendingStatus] =
-    useState(false);
-  const handleInitializeChat = async (username: string) => {
-    try {
-      setInitializeChatPendingStatus(true);
-
-      await initializeChat(username);
-    } catch (e) {
-      // TODO: Handle error
-    } finally {
-      setInitializeChatPendingStatus(false);
-    }
+  const handleInputMessage = (e: ChangeEvent<HTMLInputElement>) => {
+    setMessageInput(e.target.value);
   };
+  const handleSubmitMessage = async (message: string) => {
+    const { data } = await sendMessage({
+      message,
+      chatId: selectedChat.chatId,
+    });
+
+    setChats(data.chats)
+  };
+
+  const handleInitializeChat = () => {};
+  const handleSelectChat = () => {};
 
   return (
     <main className="chat-view">
-      <ChatComposer />
-      {/*<ChatsList*/}
-      {/*  prospectiveChats={prospectiveChats}*/}
-      {/*  chats={chats}*/}
-      {/*  selectedChatId={null}*/}
-      {/*  onSelectExistingChat={handleSelectExistingChat}*/}
-      {/*  onInitializeChat={handleInitializeChat}*/}
-      {/*/>*/}
-      <UserSidebar></UserSidebar>
+      <ChatComposer
+        message={message}
+        handleInputMessage={handleInputMessage}
+        handleSubmitMessage={handleSubmitMessage}
+        pendingSendMessage={false}
+      />
+      <UserSidebar
+        handleInitializeChat={handleInitializeChat}
+        handleSelectChat={handleSelectChat}
+      ></UserSidebar>
     </main>
   );
 }

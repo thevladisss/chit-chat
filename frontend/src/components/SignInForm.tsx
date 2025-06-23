@@ -34,15 +34,7 @@ function SignInForm({ onUserAuthenticate }: Props): JSX.Element {
           <legend style={{ width: "100%", marginBottom: "8px" }}>
             <h1 style={{ textAlign: "center", fontSize: "56px" }}>Welcome</h1>
           </legend>
-          <div>
-            <img
-              height={380}
-              style={{ width: "100%" }}
-              src="/logo.png"
-              alt="Logo"
-            />
-          </div>
-          <h2 style={{ textAlign: "center", fontSize: "24px", margin: 0 }}>
+          <h2 style={{ textAlign: "center", fontSize: "24px", margin: 0, marginTop: "8px", marginBottom: "8px" }}>
             Please enter your username
           </h2>
           <TextField

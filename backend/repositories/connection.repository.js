@@ -63,10 +63,21 @@ const findByUserId = (userId) => {
   return [...db.values()].find((con) => con.userId === userId);
 };
 
+/**
+ * Find a connection by its ID
+ * @param {string} connectionId - The ID of the connection to find
+ * @return {Promise<{connectionId: string, sessionId: string, userId: string, createdTimestamp: number, ws: any, ip: string}|undefined>} - The found connection or undefined
+ */
+const findById = (connectionId) => {
+  const connection = db.get(connectionId);
+  return Promise.resolve(connection);
+};
+
 module.exports = {
   findByUserId,
   findAllByUserIds,
   deleteConnection,
   getAllConnections,
   createConnection,
+  findById,
 };

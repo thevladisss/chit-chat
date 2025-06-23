@@ -11,6 +11,7 @@ import { IProspectiveChat } from "../types/IProspectiveChat.ts";
 import { IChatMessage } from "../types/IChatMessage.ts";
 import {
   createLocalChat,
+  setChatsAction,
   setExistingChats,
   setProspectiveChats,
 } from "../stores/chat/slice.ts";
@@ -18,18 +19,16 @@ import {
 export const useChatStore = () => {
   const { dispatch } = useStore();
 
+  /* Actions */
+
   const getChats = () => dispatch(getChatsAction());
 
-  const setChats = (chats: {
-    prospectiveChats: IProspectiveChat[];
-    chats: IChat[];
-  }) => {
-    dispatch(setExistingChats(chats.chats));
-    dispatch(setProspectiveChats(chats.prospectiveChats));
+  const setChats = (chats: any[]) => {
+    dispatch(setChatsAction(chats));
   };
 
-  const openNewChat = (chat: IProspectiveChat) => {
-    dispatch(createLocalChat(chat));
+  const initializeChat = (userId: string) => {
+    dispatch(startNewChatAction(userId));
   };
   const startNewChat = (userId: string) => {
     dispatch(startNewChatAction(userId));
@@ -38,31 +37,44 @@ export const useChatStore = () => {
     dispatch(selectChatAction(chatId));
   };
 
+  const selectChat = (chatId: string) => {
+    dispatch(selectChatAction(chatId));
+  };
+
+  /* Getters */
+
   const existingChats = useSelector<IRootState, IChat[]>((state) => {
-    return state.chats.existingChats;
+    return state.chats.chats.filter((chat) => {
+      return !!chat.chatId;
+    });
   });
-  const prospectiveChats = useSelector<IRootState, IProspectiveChat[]>(
-    (state) => {
-      return state.chats.prospectiveChats;
-    },
-  );
+
+  const prospectiveChats = useSelector<IRootState, IChat[]>((state) => {
+    return state.chats.chats.filter((chat) => {
+      return !chat.chatId;
+    });
+  });
 
   const selectedChat = useSelector<IRootState, any | null>((state) => {
-    return state.chats.selectedChat;
+    //TODO: Optimize
+    return state.chats.selectedChatId
+      ? state.chats.chats.find((chat) => {
+          return chat.chatId === state.chats.selectedChatId;
+        })
+      : null;
   });
 
-  const selectedChatMessages = useSelector<IRootState, IChatMessage[]>(
-    (state) => {
-      return state.chats.selectedChat ? state.chats.selectedChat.messages : [];
-    },
-  );
+  const selectedChatMessages = useSelector<IRootState, IChatMessage[]>(() => {
+    return selectedChat ? selectedChat.messages : [];
+  });
 
   return {
     getChats,
     startNewChat,
     selectExistingChat,
     setChats,
-    openNewChat,
+    initializeChat,
+    selectChat,
 
     existingChats,
     prospectiveChats,

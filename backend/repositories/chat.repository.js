@@ -1,4 +1,5 @@
 const { v4 } = require('uuid');
+const Chat = require('../models/chat.model');
 /**
 
  * @type {Map<string, {
@@ -7,7 +8,6 @@ const { v4 } = require('uuid');
  *   createdTimestamp: number
  * }>}
  */
-const chatModel = new Map();
 
 /**
  *
@@ -20,7 +20,7 @@ const chatModel = new Map();
  * @return {Promise<Awaited<{chatId: string, users: string[], createdTimestamp: string}[]>>}
  */
 const getChatsByParticipants = async (user) => {
-  const chats = [...chatModel.values()];
+  const chats = [...Chat.values()];
 
   const result = chats.filter((chat) => {
     return chat.users.includes(user.userId);
@@ -33,7 +33,7 @@ const getChatsByParticipants = async (user) => {
  *
  * @param data {
  *   {
- *     participants: number[],
+ *     participantsIds: number[],
  *   }
  * }
  *
@@ -43,19 +43,34 @@ const createChat = (data) => {
 
   const chat = {
     chatId,
-    name: 'Default',
-    users: data.participants,
+    users: data.participantsIds,
     createdTimestamp: Date.now(),
   };
 
-  chatModel.set(chatId, chat);
+  Chat.set(chatId, chat);
 
   return Promise.resolve(chat);
 };
 
-module.exports = {
-  chatModel,
+const getAllChats = () => {
+  return Promise.resolve([...Chat.values()]);
+}
 
+/**
+ * Find a chat by its ID
+ * @param {string} chatId - The ID of the chat to find
+ * @return {Promise<{chatId: string, users: string[], createdTimestamp: number}|undefined>} - The found chat or undefined
+ */
+const findById = (chatId) => {
+  const chat = Chat.get(chatId);
+  return Promise.resolve(chat);
+};
+
+module.exports = {
+  Chat,
+
+  getAllChats,
   createChat,
   getChatsByParticipants,
+  findById,
 };

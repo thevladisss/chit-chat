@@ -19,17 +19,18 @@ function ChatsList({
   prospectiveChats,
   selectedChatId,
   onInitializeChat,
+  onSelectExistingChat,
 }: Props): JSX.Element {
   const classes = buildClasses("chat-list", className ?? "");
   const getLiClasses = (chat: IChatListItem) => {
     return (
       "chat-list-item" +
-      (chat.id === selectedChatId ? " chat-list-item--active" : "")
+      (chat.chatId === selectedChatId ? " chat-list-item--active" : "")
     );
   };
 
   const handleInitializeChat = (chat: IProspectiveChat) => {
-    onInitializeChat(chat);
+    onInitializeChat(chat.userId);
   };
 
   const sortedCurrentChats = useMemo(() => {
@@ -55,12 +56,12 @@ function ChatsList({
           {sortedCurrentChats.map((chat) => {
             return (
               <ChatListItem
-                id={chat.id}
-                lastMessage={"How are you"}
+                id={chat.chatId}
+                lastMessage={chat.lastMessage ?? ""}
                 lastMessageTimestamp={""}
-                chatName={""}
-                key={chat.id}
-                onSelectChat={() => {}}
+                chatName={chat.name}
+                key={chat.chatId}
+                onSelectChat={() => onSelectExistingChat(chat.chatId)}
                 isDelivered={false}
                 isSeen={false}
                 isSelected={false}
@@ -71,7 +72,7 @@ function ChatsList({
             return (
               <ChatListItem
                 id={user.userId}
-                lastMessage={"How are you?"}
+                lastMessage={null}
                 lastMessageTimestamp={"10:05 PM"}
                 chatName={user.username}
                 key={user.userId}

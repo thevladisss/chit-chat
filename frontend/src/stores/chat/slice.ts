@@ -4,18 +4,26 @@ import { RootState } from "../index.ts";
 import { IChat } from "../../types/IChat.ts";
 import { IProspectiveChat } from "../../types/IProspectiveChat.ts";
 
+type ChatState = {
+  selectedChatId: string | null;
+  chats: any[];
+};
+
 export const slice = createSlice({
   name: "chats",
   initialState: {
-    existingChats: [],
-    prospectiveChats: [],
-    selectedChat: null,
+    selectedChatId: null,
+    chats: [],
   },
   reducers: {
-    createLocalChat(
-      state,
-      action: PayloadAction<IProspectiveChat>,
-    ) {
+    setChatsAction(state, action: PayloadAction<any[]>) {
+      return {
+        ...state,
+        chats: action.payload,
+      };
+    },
+
+    createLocalChat(state, action: PayloadAction<IProspectiveChat>) {
       return {
         ...state,
         selectedChat: {
@@ -45,40 +53,37 @@ export const slice = createSlice({
       (state: RootState, action) => {
         return {
           ...state,
-          existingChats: action.payload.chats,
-          prospectiveChats: action.payload.prospectiveChats,
+          chats: action.payload,
         };
       },
     );
+
+    builder.addCase(actions.startNewChatAction.fulfilled, (state, action) => {
+      return {
+        ...state,
+        chats: action.payload.chats,
+        selectedChatId: action.payload.chatId,
+      };
+    });
 
     builder.addCase(
       actions.selectChatAction.fulfilled,
       (state: RootState, action) => {
         return {
           ...state,
-          selectedChat: {
-            id: action.payload.id,
-            messages: action.payload.messages,
-          },
-        };
-      },
-    );
-    builder.addCase(
-      actions.startNewChatAction.fulfilled,
-      (state: RootState, action) => {
-        return {
-          ...state,
-          selectedChat: {
-            id: action.payload.chatId,
-            messages: action.payload.messages,
-          },
+          selectedChatId: action.payload.chatId,
         };
       },
     );
   },
 });
 
-export const { setExistingChats, setProspectiveChats, createLocalChat } =
-  slice.actions;
+export const {
+  setChatsAction,
+
+  setExistingChats,
+  setProspectiveChats,
+  createLocalChat,
+} = slice.actions;
 
 export default slice.reducer;
