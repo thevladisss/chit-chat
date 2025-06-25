@@ -33,18 +33,18 @@ const getAllUsers = () => {
   return Promise.resolve([...userModel.values()]);
 };
 
-const getUsersWithoutChatWithUser = async (user) => {
+const getUsersWithoutChatWithUser = async (userId) => {
   const users = [...userModel.values()];
 
-  const chats = await ChatRepository.getAllChats()
+  const chats = await ChatRepository.getAllChats();
 
   const result = users
     .filter((u) => {
-      return u.userId !== user.userId;
+      return u.userId !== userId;
     })
     .filter((u) => {
       return !chats.some((chat) => {
-        return chat.users.includes(u.userId) && chat.users.includes(user.userId);
+        return chat.users.includes(u.userId) && chat.users.includes(userId);
       });
     });
 
@@ -68,8 +68,8 @@ const findById = (userId) => {
  */
 const findAllById = (userIds) => {
   const users = userIds
-    .map(userId => userModel.get(userId))
-    .filter(user => user !== undefined);
+    .map((userId) => userModel.get(userId))
+    .filter((user) => user !== undefined);
 
   return Promise.resolve(users);
 };

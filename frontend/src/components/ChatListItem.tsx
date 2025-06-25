@@ -1,6 +1,5 @@
 import "./ChatListItem.css";
 import { type JSX, useState } from "react";
-import { IChatListItem } from "../types/IChatListItem.ts";
 import { buildClasses } from "../utils/classes.ts";
 
 type ChatListItemProps = {
@@ -8,6 +7,7 @@ type ChatListItemProps = {
   isSelected: boolean;
   isDelivered: boolean;
   isSeen: boolean;
+  isPersonal: boolean;
   chatName: string;
   lastMessage: string | null;
   lastMessageTimestamp: string;
@@ -44,7 +44,9 @@ function ChatListItem({
         {lastMessage ? (
           <span className="last-message">{lastMessage}</span>
         ) : (
-          <span className="no-messages-placeholder">No messages in this chat yet...</span>
+          <span className="no-messages-placeholder">
+            No messages in this chat yet...
+          </span>
         )}
       </a>
     </li>

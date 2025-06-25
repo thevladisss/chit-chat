@@ -51,3 +51,8 @@
   font-size: 20px;
   color: var(--app-primary-light-3);
 }
+
+
+.chat-list-item.personal {
+  background-color: var(--app-primary-light-1);
+}

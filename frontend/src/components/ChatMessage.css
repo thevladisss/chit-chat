@@ -1,15 +1,15 @@
 .chat-message {
-    display: inline-block;
-    padding: 8px 8px;
-    border-radius: 4px;
-    font-size: 13px;
-    background-color: var(--app-bg-dark-1);
+  display: inline-block;
+  padding: 8px 8px;
+  border-radius: 4px;
+  font-size: 13px;
+  background-color: var(--app-bg-dark-1);
 }
 
 .chat-message--personal {
-    background-color: var(--app-bg-light-2);
+  background-color: var(--app-primary-dark-1);
 }
 
 .sent-timestamp {
-    font-size: 10px;
+  font-size: 10px;
 }

@@ -1,15 +1,9 @@
-
-export type IChat = {
-    chatId: string | null;
-    participants: any[];
-    name: string;
-    messages: any[]
-}
+import { IChat } from "./IChat.ts";
 
 export type IRootState = {
   user: any;
   chats: {
-    chats: IChat[],
-    selectedChatId: string | null
+    chats: IChat[];
+    selectedChatId: string | null;
   };
 };

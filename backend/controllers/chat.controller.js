@@ -3,7 +3,7 @@ const ChatService = require('../service/chat.service');
 const getOnlineUsers = async (req, res) => {
   const user = req.session.user;
 
-  const data = await ChatService.getUserChats(user);
+  const data = await ChatService.getUserChats(user.userId);
 
   return res
     .json({
@@ -12,6 +12,7 @@ const getOnlineUsers = async (req, res) => {
     .status(200);
 };
 
+
 const initializeChat = async (req, res) => {
   const body = req.body;
 
@@ -19,7 +20,7 @@ const initializeChat = async (req, res) => {
 
   const chat = await ChatService.initializeChatForCurrentUser(user, body);
 
-  const chats = await ChatService.getUserChats(user);
+  const chats = await ChatService.getUserChats(user.userId);
 
   return res.json({
     data: {

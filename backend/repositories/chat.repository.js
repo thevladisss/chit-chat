@@ -31,6 +31,21 @@ const getChatsByParticipants = async (user) => {
 
 /**
  *
+ * @param usersIds {number[]}
+ * @return {Promise<Promise<void> | Promise<Awaited<any[]>>>}
+ */
+const findAllChatsByUsersIds = async (usersIds) => {
+  const chats = [...Chat.values()];
+
+  const result = chats.filter((chat) => {
+    return usersIds.every((userId) => chat.users.includes(userId));
+  });
+
+  return Promise.resolve(result);
+};
+
+/**
+ *
  * @param data {
  *   {
  *     participantsIds: number[],
@@ -54,7 +69,7 @@ const createChat = (data) => {
 
 const getAllChats = () => {
   return Promise.resolve([...Chat.values()]);
-}
+};
 
 /**
  * Find a chat by its ID
@@ -66,9 +81,24 @@ const findById = (chatId) => {
   return Promise.resolve(chat);
 };
 
+/**
+ * Finds chats with all users
+ * @param usersIds
+ * @return {any}
+ */
+const findByUsersIds = (usersIds) => {
+  return Promise.resolve(
+    [...Chat.values()].find((chat) => {
+      return usersIds.every((userId) => chat.users.includes(userId));
+    }),
+  );
+};
+
 module.exports = {
   Chat,
 
+  findAllChatsByUsersIds,
+  findByUsersIds,
   getAllChats,
   createChat,
   getChatsByParticipants,

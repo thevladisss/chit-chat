@@ -18,7 +18,7 @@ const notifyOnNewConnection = (ws, allConnections) => {
     ) {
       sessionStore.get(connection.sessionId, async (error, session) => {
         if (!error) {
-          const chats = await ChatService.getUserChats(session.user);
+          const chats = await ChatService.getUserChats(session.user.userId);
 
           connection.ws.send(
             JSON.stringify({

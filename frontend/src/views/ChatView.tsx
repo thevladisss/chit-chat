@@ -31,6 +31,10 @@ function ChatView() {
       setChats(e.data.chats);
     };
 
+    const handleChatCreatedEvent = (e: WsCustomEvent) => {
+      setChats(e.data);
+    };
+
     const handleMessageEvent = (e: WsCustomEvent) => {
       setChats(e.data.chats);
     };
@@ -44,6 +48,9 @@ function ChatView() {
           break;
         case ServerSideEventsEnum.Message:
           handleMessageEvent(payload);
+          break;
+        case ServerSideEventsEnum.ChatCreated:
+          handleChatCreatedEvent(payload);
           break;
       }
       //
@@ -80,7 +87,7 @@ function ChatView() {
       chatId: selectedChat.chatId,
     });
 
-    setChats(data.chats)
+    setChats(data.chats);
   };
 
   const handleInitializeChat = () => {};

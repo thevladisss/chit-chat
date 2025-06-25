@@ -1,5 +1,6 @@
 export enum ServerSideEventsEnum {
   Connection = "new_connection",
   Message = "new_message",
-  Disconnect = "disconnect"
+  Disconnect = "disconnect",
+  ChatCreated = "new_chat_created"
 }

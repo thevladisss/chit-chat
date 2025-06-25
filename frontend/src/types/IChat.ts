@@ -1,4 +1,9 @@
+import { IChatMessage } from "./IChatMessage.ts";
+
 export type IChat = {
-  id: string;
+  chatId: string;
   lastMessageTimestamp: string;
+  lastMessage: string;
+  messages: IChatMessage[];
+  participants: string[];
 };

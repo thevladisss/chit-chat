@@ -73,7 +73,7 @@ function UserSidebar(props: {
           }}
         >
           <ChatsList
-            chats={existingChats}
+            existingChats={existingChats}
             prospectiveChats={prospectiveChats}
             selectedChatId={selectedChat ? selectedChat.id : null}
             onInitializeChat={handleInitializeChat}

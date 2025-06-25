@@ -1,45 +1,45 @@
 import "./ChatsList.css";
-import { useState, JSX, HTMLProps, useMemo } from "react";
+import { JSX, HTMLProps, useMemo } from "react";
 import { buildClasses } from "../utils/classes.ts";
 import { IChatListItem } from "../types/IChatListItem.ts";
 import ChatListItem from "./ChatListItem.tsx";
-import { IProspectiveChat } from "../types/IProspectiveChat.ts";
+import { IChat } from "../types/IChat.ts";
 
 type Props = HTMLProps<HTMLDivElement> & {
-  chats: IChatListItem[];
-  prospectiveChats: IProspectiveChat[];
+  existingChats: IChat[];
+  prospectiveChats: any[];
   selectedChatId: string | null;
   onSelectExistingChat: (chat: IChatListItem) => void;
-  onInitializeChat: (chat: IProspectiveChat) => void;
+  onInitializeChat: (userId: string) => void;
 };
 function ChatsList({
   className,
   style,
-  chats,
+  existingChats,
   prospectiveChats,
   selectedChatId,
   onInitializeChat,
   onSelectExistingChat,
 }: Props): JSX.Element {
   const classes = buildClasses("chat-list", className ?? "");
-  const getLiClasses = (chat: IChatListItem) => {
-    return (
-      "chat-list-item" +
-      (chat.chatId === selectedChatId ? " chat-list-item--active" : "")
-    );
-  };
+  // const getLiClasses = (chat: IChatListItem) => {
+  //   return (
+  //     "chat-list-item" +
+  //     (chat.chatId === selectedChatId ? " chat-list-item--active" : "")
+  //   );
+  // };
 
-  const handleInitializeChat = (chat: IProspectiveChat) => {
-    onInitializeChat(chat.userId);
+  const handleInitializeChat = (userId: string) => {
+    onInitializeChat(userId);
   };
 
   const sortedCurrentChats = useMemo(() => {
-    return chats.toSorted((a, b) => {
+    return existingChats.toSorted((a, b) => {
       if (a.lastMessageTimestamp < b.lastMessageTimestamp) return -1;
       return 1;
     });
-  }, [chats]);
-  //
+  }, [existingChats]);
+
   const sortedProspectiveChats = useMemo(() => {
     return prospectiveChats.toSorted((a, b) => {
       if (a.lastMessageTimestamp < b.lastMessageTimestamp) return -1;
@@ -64,22 +64,24 @@ function ChatsList({
                 onSelectChat={() => onSelectExistingChat(chat.chatId)}
                 isDelivered={false}
                 isSeen={false}
-                isSelected={false}
+                isPersonal={chat.isPersonal}
+                isSelected={chat.chatId === selectedChatId}
               ></ChatListItem>
             );
           })}
-          {sortedProspectiveChats.map((user) => {
+          {sortedProspectiveChats.map((chat) => {
             return (
               <ChatListItem
-                id={user.userId}
+                id={chat.userId}
                 lastMessage={null}
                 lastMessageTimestamp={"10:05 PM"}
-                chatName={user.username}
-                key={user.userId}
+                chatName={chat.name}
+                key={chat.userId}
                 isDelivered={false}
                 isSeen={false}
                 isSelected={false}
-                onSelectChat={() => handleInitializeChat(user)}
+                isPersonal={chat.isPersonal}
+                onSelectChat={() => handleInitializeChat(chat.userId)}
               ></ChatListItem>
             );
           })}

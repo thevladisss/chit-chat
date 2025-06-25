@@ -11,13 +11,14 @@ const Message = require('../models/message.model');
  * }>}
  */
 
-const createMessage = ({ chatId, text }) => {
+const createMessage = ({ chatId, text, userId }) => {
   const messageId = v4();
 
   const messageEntity = {
     chatId,
     messageId,
     text,
+    userId: userId,
     sentAt: Date.now(),
     isSeen: false,
   };
@@ -32,7 +33,9 @@ const createMessage = ({ chatId, text }) => {
  * @return {Promise<Array<{messageId: string, chatId: string, message: string, sentAt: number, isSeen: boolean}>>} - Array of messages for the chat
  */
 const findAllByChatId = (chatId) => {
-  const messages = [...Message.values()].filter(message => message.chatId === chatId);
+  const messages = [...Message.values()].filter(
+    (message) => message.chatId === chatId,
+  );
   return Promise.resolve(messages);
 };
 const getMessagesByChatAndUserId = (chatId, userId) => {};
@@ -50,5 +53,5 @@ const findById = (messageId) => {
 module.exports = {
   findAllByChatId,
   createMessage,
-  findById
+  findById,
 };
