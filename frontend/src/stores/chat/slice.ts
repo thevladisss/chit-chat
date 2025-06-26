@@ -1,18 +1,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import * as actions from "./actions.ts";
 import { RootState } from "../index.ts";
-import { IChat } from "../../types/IChat.ts";
-import { IProspectiveChat } from "../../types/IProspectiveChat.ts";
-
-type ChatState = {
-  selectedChatId: string | null;
-  chats: any[];
-};
 
 export const slice = createSlice({
   name: "chats",
   initialState: {
     selectedChatId: null,
+    pendingLoadChats: false,
+    loadChatsError: null,
     chats: [],
   },
   reducers: {
@@ -20,30 +15,6 @@ export const slice = createSlice({
       return {
         ...state,
         chats: action.payload,
-      };
-    },
-
-    createLocalChat(state, action: PayloadAction<IProspectiveChat>) {
-      return {
-        ...state,
-        selectedChat: {
-          userId: action.payload.userId,
-          username: action.payload.username,
-          chatId: null,
-          messages: [],
-        },
-      };
-    },
-    setExistingChats: (state, action: PayloadAction<IChat[]>) => {
-      return {
-        ...state,
-        existingChats: action.payload,
-      };
-    },
-    setProspectiveChats: (state, action: PayloadAction<IProspectiveChat[]>) => {
-      return {
-        ...state,
-        prospectiveChats: action.payload,
       };
     },
   },
@@ -54,6 +25,47 @@ export const slice = createSlice({
         return {
           ...state,
           chats: action.payload,
+        };
+      },
+    );
+
+    builder.addCase(actions.getChatsAction.pending, (state) => {
+      return {
+        ...state,
+        pendingLoadChats: true,
+      };
+    });
+
+    builder.addCase(actions.getChatsAction.rejected, (state, action) => {
+      return {
+        ...state,
+        loadChatsError: action.payload,
+      };
+    });
+
+    builder.addCase(
+      actions.getFilteredChatsAction.fulfilled,
+      (state: RootState, action) => {
+        return {
+          ...state,
+          chats: action.payload,
+        };
+      },
+    );
+
+    builder.addCase(actions.getFilteredChatsAction.pending, (state) => {
+      return {
+        ...state,
+        pendingLoadChats: true,
+      };
+    });
+
+    builder.addCase(
+      actions.getFilteredChatsAction.rejected,
+      (state, action) => {
+        return {
+          ...state,
+          loadChatsError: action.payload,
         };
       },
     );

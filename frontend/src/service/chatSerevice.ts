@@ -1,14 +1,15 @@
 import { getRequest, postRequest } from "./index";
 import { IChat } from "../types/IChat.ts";
-import { IUser } from "../types/IUser.ts";
-import { IProspectiveChat } from "../types/IProspectiveChat.ts";
 import { IChatMessage } from "../types/IChatMessage.ts";
 
 export const getAllChats = () => {
-  return getRequest<{
-    chats: IChat[];
-    prospectiveChats: IProspectiveChat[];
-  }>("/api/chats/");
+  return getRequest<IChat[]>("/api/chats/");
+};
+
+export const searchChats = (search: string) => {
+  return getRequest<IChat[]>("/api/chats/search", {
+    search,
+  });
 };
 
 export const initializeChat = (userId: string) => {
@@ -30,9 +31,6 @@ export const getChatMessages = (chatId: string) => {
   }>(`/api/chats/${chatId}`);
 };
 
-export const sendMessage = (payload: {
-  chatId: string,
-  message: string;
-}) => {
+export const sendMessage = (payload: { chatId: string; message: string }) => {
   return postRequest("/api/chats/", payload);
 };

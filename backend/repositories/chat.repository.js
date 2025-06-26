@@ -1,5 +1,7 @@
 const { v4 } = require('uuid');
 const Chat = require('../models/chat.model');
+const User = require('../models/user.model');
+const MessageRepository = require('./message.repository');
 /**
 
  * @type {Map<string, {
@@ -94,9 +96,40 @@ const findByUsersIds = (usersIds) => {
   );
 };
 
+/**
+ * Finds all chats containing search value in either username of one of participants,
+ * message text, or chat name
+ * @param search
+ * @return {Promise<any[]>}
+ */
+const findByUserNameOrChatNameOrMessage = async (search) => {
+  let chats = [...Chat.values()];
+
+  for (const chat of chats) {
+    const users = [
+      ...User.values().filter((user) => {
+        return chat.users.includes(user.userId);
+      }),
+    ];
+    const messages = await MessageRepository.findAllByChatId(chat.chatId);
+
+    chat.users = users;
+    chat.messages = messages;
+  }
+
+  //TODO: Add filter by chat name
+  return chats.filter((chat) => {
+    return (
+      chat.users.some(({ username }) => username === search) ||
+      chat.messages.some(({ text }) => text.includes(search))
+    );
+  });
+};
+
 module.exports = {
   Chat,
 
+  findByUserNameOrChatNameOrMessage,
   findAllChatsByUsersIds,
   findByUsersIds,
   getAllChats,

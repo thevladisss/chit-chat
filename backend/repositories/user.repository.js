@@ -1,4 +1,4 @@
-const { Chat } = require('./chat.repository');
+const User = require('../models/user.model');
 const ChatRepository = require('./chat.repository');
 const { v4 } = require('uuid');
 /**
@@ -9,10 +9,9 @@ const { v4 } = require('uuid');
  *   createdTimestamp: number
  * }>}
  */
-const userModel = new Map();
 
 const createOrFindFirstUser = (username) => {
-  const users = [...userModel.values()];
+  const users = [...User.values()];
 
   let user = users.find((u) => u.username === username);
 
@@ -24,17 +23,17 @@ const createOrFindFirstUser = (username) => {
     createdTimestamp: Date.now(),
   };
 
-  userModel.set(user.userId, user);
+  User.set(user.userId, user);
 
   return Promise.resolve(user);
 };
 
 const getAllUsers = () => {
-  return Promise.resolve([...userModel.values()]);
+  return Promise.resolve([...User.values()]);
 };
 
 const getUsersWithoutChatWithUser = async (userId) => {
-  const users = [...userModel.values()];
+  const users = [...User.values()];
 
   const chats = await ChatRepository.getAllChats();
 
@@ -57,7 +56,7 @@ const getUsersWithoutChatWithUser = async (userId) => {
  * @return {Promise<{userId: string, username: string, createdTimestamp: number}|undefined>} - The found user or undefined
  */
 const findById = (userId) => {
-  const user = userModel.get(userId);
+  const user = User.get(userId);
   return Promise.resolve(user);
 };
 
@@ -68,14 +67,14 @@ const findById = (userId) => {
  */
 const findAllById = (userIds) => {
   const users = userIds
-    .map((userId) => userModel.get(userId))
+    .map((userId) => User.get(userId))
     .filter((user) => user !== undefined);
 
   return Promise.resolve(users);
 };
 
 module.exports = {
-  userModel,
+  User,
   getAllUsers,
   createOrFindFirstUser,
   getUsersWithoutChatWithUser,

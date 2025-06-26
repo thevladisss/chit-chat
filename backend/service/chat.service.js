@@ -179,7 +179,12 @@ const sendChatMessage = async (sender, data) => {
   return result;
 };
 
+const getFilteredChats = async (search) => {
+  return ChatRepository.findByUserNameOrChatNameOrMessage(search);
+};
+
 module.exports = {
+  getFilteredChats,
   createChat,
   sendChatMessage,
   initializeChatForCurrentUser,

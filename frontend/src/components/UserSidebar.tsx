@@ -1,26 +1,29 @@
-import { JSX, BaseSyntheticEvent, useState } from "react";
+import { JSX, BaseSyntheticEvent } from "react";
 import { useUser } from "../hooks/useUser.tsx";
-import BaseButton from "./base/BaseButton.tsx";
 import TextField from "./base/TextField.tsx";
 import ChatsList from "./ChatsList.tsx";
 import { useChatStore } from "../hooks/useChatStore.ts";
-import { IProspectiveChat } from "../types/IProspectiveChat.ts";
+import SidebarUserInformation from "./SidebarUserInformation.tsx";
 
 function UserSidebar(props: {
   handleInitializeChat: any;
   handleSelectChat: any;
 }): JSX.Element {
   const {
+    getFilteredChats,
     selectChat,
     selectedChat,
     initializeChat,
     existingChats,
     prospectiveChats,
+    loadingChats,
   } = useChatStore();
   const { user } = useUser();
 
   const handleSearchChats = (event: BaseSyntheticEvent<InputEvent>) => {
-    console.log("event", event);
+    const value = event.target.value;
+
+    getFilteredChats(value);
   };
 
   const handleSelectChat = (chatId: string) => {
@@ -41,14 +44,7 @@ function UserSidebar(props: {
         backgroundColor: " var(--app-bg-light-1)",
       }}
     >
-      <div
-        className="flex justify-between align-center"
-        style={{ padding: "8px" }}
-      >
-        <h2>
-          👉 Hello, <strong>{user.username}</strong>
-        </h2>
-      </div>
+      <SidebarUserInformation username={user ? user.username : ""} />
       <div
         style={{
           display: "flex",
@@ -62,6 +58,7 @@ function UserSidebar(props: {
           type="search"
           size="large"
           placeholder="Search chat"
+          loading={loadingChats}
         />
         <div
           className="chats-container"

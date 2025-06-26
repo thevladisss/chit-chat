@@ -1,20 +1,15 @@
 import { useStore } from "./useStore.ts";
 import {
   getChatsAction,
+  getFilteredChatsAction,
   selectChatAction,
   startNewChatAction,
 } from "../stores/chat/actions.ts";
 import { useSelector } from "react-redux";
 import { IRootState } from "../types/IRootState.ts";
 import { IChat } from "../types/IChat.ts";
-import { IProspectiveChat } from "../types/IProspectiveChat.ts";
 import { IChatMessage } from "../types/IChatMessage.ts";
-import {
-  createLocalChat,
-  setChatsAction,
-  setExistingChats,
-  setProspectiveChats,
-} from "../stores/chat/slice.ts";
+import { setChatsAction } from "../stores/chat/slice.ts";
 
 export const useChatStore = () => {
   const { dispatch } = useStore();
@@ -22,6 +17,9 @@ export const useChatStore = () => {
   /* Actions */
 
   const getChats = () => dispatch(getChatsAction());
+
+  const getFilteredChats = (search: string) =>
+    dispatch(getFilteredChatsAction(search));
 
   const setChats = (chats: any[]) => {
     dispatch(setChatsAction(chats));
@@ -42,6 +40,10 @@ export const useChatStore = () => {
   };
 
   /* Getters */
+
+  const loadingChats = useSelector<IRootState, IChat[]>((state) => {
+    return state.chats.pendingLoadChats;
+  });
 
   const existingChats = useSelector<IRootState, IChat[]>((state) => {
     return state.chats.chats.filter((chat) => {
@@ -70,12 +72,14 @@ export const useChatStore = () => {
 
   return {
     getChats,
+    getFilteredChats,
     startNewChat,
     selectExistingChat,
     setChats,
     initializeChat,
     selectChat,
 
+    loadingChats,
     existingChats,
     prospectiveChats,
     selectedChat,

@@ -1,6 +1,6 @@
 const ChatService = require('../service/chat.service');
 
-const getOnlineUsers = async (req, res) => {
+const getAllChats = async (req, res) => {
   const user = req.session.user;
 
   const data = await ChatService.getUserChats(user.userId);
@@ -11,7 +11,6 @@ const getOnlineUsers = async (req, res) => {
     })
     .status(200);
 };
-
 
 const initializeChat = async (req, res) => {
   const body = req.body;
@@ -42,12 +41,18 @@ const getChat = async (req, res) => {
 };
 
 const getFilteredChats = async (req, res) => {
-  /**
-   * @var {{value: string}} body
-   */
-  const body = req.body;
+  const user = req.session.user;
 
-  const chats = await ChatService.getFilteredChats(body.value);
+  /**
+   * @var {string} search
+   */
+  const search = req.query.search;
+
+  let chats;
+
+  if (!search) {
+    chats = await ChatService.getUserChats(user.userId);
+  } else chats = await ChatService.getFilteredChats(search);
 
   return res.json({
     data: chats,
@@ -68,7 +73,6 @@ const sendMessage = async (req, res) => {
     message: body.message,
   });
 
-
   return res.json({
     data: result,
   });
@@ -79,5 +83,5 @@ module.exports = {
   getFilteredChats,
   initializeChat,
   getChat,
-  getOnlineUsers,
+  getAllChats,
 };
