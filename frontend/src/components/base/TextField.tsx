@@ -20,6 +20,7 @@ type Props = HTMLProps<HTMLDivElement> & {
   immediateFocus?: boolean;
   loading?: boolean;
   size?: "small" | "default" | "large";
+  square?: boolean;
   onInput?: (
     e: BaseSyntheticEvent<InputEvent, HTMLInputElement, HTMLInputElement>,
   ) => void;
@@ -33,6 +34,7 @@ function TextField({
   name,
   id,
   value,
+  square,
   size = "default",
   loading,
 
@@ -49,6 +51,7 @@ function TextField({
     "text-field--small": size && size === "small",
     "text-field--large": size && size === "large",
     "text-field--loading": loading,
+    "text-field--square": square,
   });
 
   const setFocus = () => {
