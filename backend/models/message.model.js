@@ -45,17 +45,20 @@ const messageMap = {
   },
 };
 
-module.exports = messageMap;
-module.exports.MessageModel = MessageModel;
-
 messageSchema.set('toJSON', {
   virtuals: true,
   versionKey: false,
   transform: function (doc, ret) {
-    ret.id = ret._id.toString();
+    const { _id } = ret;
+
+    ret.id = _id.toString();
     ret.messageId = ret._id.toString();
   },
 });
+
+
+module.exports = messageMap;
+module.exports.MessageModel = MessageModel;
 
 module.exports = {
   MessageModel,

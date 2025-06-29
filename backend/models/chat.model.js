@@ -33,7 +33,9 @@ chatSchema.set('toJSON', {
   virtuals: true,
   versionKey: false,
   transform: function (doc, ret) {
-    ret.id = ret._id.toString();
+    const { _id } = ret;
+
+    ret.id = _id.toString();
     ret.chatId = ret._id.toString();
   },
 });

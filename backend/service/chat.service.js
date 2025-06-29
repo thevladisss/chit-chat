@@ -37,7 +37,7 @@ const getUserChats = async (userId) => {
     };
 
     if (item instanceof ChatModel) {
-      shared.name = item.users.find((user) => user.userId !== userId).username;
+      shared.name = item.users.find((user) => user.id !== userId).username;
       shared.lastMessage =
         item.messages && item.messages.length > 0
           ? item.messages[0].text

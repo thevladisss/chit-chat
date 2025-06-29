@@ -1,4 +1,4 @@
-const { sessionStore } = require('../app');
+const { sessionStore } = require('../session');
 const ClientChatEventEnum = require('../enums/ClientChatEventEnum');
 const ServerChatEventEnum = require('../enums/ServerChatEventEnum');
 const ConnectionService = require('../service/connection.service');
@@ -56,45 +56,7 @@ const notifyOnLeaveConnection = (allConnections) => {
   });
 };
 
-const handleWsMessage = async (data) => {
-  data = JSON.parse(data);
-
-  switch (data.payload.event) {
-    case ClientChatEventEnum.SEND_MESSAGE:
-      // handleSendChatMessage(ws, data);
-      break;
-  }
-};
-
-const handleWsConnection = async (wss, ws, req) => {
-  ws.onclose = async () => {
-    if (req.session.user.wsConnectionId) {
-      const allConnections = await ConnectionService.getAllConnectionsNoCurrent(
-        connection.connectionId,
-      );
-
-      //TODO: Remove chat with user
-
-      await ConnectionService.removeConnection(req.session.user.wsConnectionId);
-
-      notifyOnNewConnection(ws, allConnections);
-    }
-  };
-
-  const connection = await ConnectionService.storeConnection({
-    ws,
-    sessionId: req.session.id,
-    userId: req.session.user.id,
-  });
-
-  if (!req.session?.user.wsConnectionId) {
-    req.session.user.wsConnectionId = connection.id;
-  }
-
-  const allConnections = await ConnectionService.getAllConnectionsNoCurrent(
-    connection.connectionId,
-  );
-
+const notifyOnConnectionEstablished = (ws, connection, allConnections) => {
   ws.send(
     JSON.stringify({
       event: ServerChatEventEnum.CONNECTION_ESTABLISHED,
@@ -105,10 +67,39 @@ const handleWsConnection = async (wss, ws, req) => {
       },
     }),
   );
+};
+
+const handleWsMessage = async (data) => {
+  data = JSON.parse(data);
+
+  switch (data.payload.event) {
+    case ClientChatEventEnum.SEND_MESSAGE:
+      break;
+  }
+};
+
+const handleWsConnection = async (wss, ws, req) => {
+  const connection = await ConnectionService.storeConnection({
+    ws,
+    sessionId: req.session.id,
+    userId: req.session.user.id,
+  });
+
+  if (!req.session?.user.wsConnectionId) {
+    req.session.wsConnectionId = connection.id;
+  }
+
+  const allConnections = await ConnectionService.getAllConnectionsNoCurrent(
+    connection.connectionId,
+  );
+
+  notifyOnConnectionEstablished(ws, connection, allConnections);
 
   notifyOnNewConnection(ws, allConnections);
 
-  ws.on('message', handleWsMessage);
+  ws.on('message', () => {
+    handleWsMessage();
+  });
   ws.on('close', () => {
     handleWsCloseConnection(connection);
   });
@@ -119,9 +110,15 @@ const handleWsCloseConnection = async (connection) => {
     connection.connectionId,
   );
 
-  const allConnections = await ConnectionService.getAllConnections();
+  sessionStore.destroy(connection.sessionId, async (error) => {
+    if (error) {
+      console.error('Error destroying session:', error);
+    }
 
-  notifyOnLeaveConnection(allConnections);
+    const allConnections = await ConnectionService.getAllConnections();
+
+    notifyOnLeaveConnection(allConnections);
+  });
 };
 
 module.exports = {

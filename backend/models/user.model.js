@@ -20,10 +20,13 @@ userSchema.set('toJSON', {
   virtuals: true,
   versionKey: false,
   transform: function (doc, ret) {
-    ret.id = ret._id.toString();
+    const { _id } = ret;
+
+    ret.id = _id.toString();
     ret.userId = ret._id.toString();
   },
 });
+
 
 module.exports = {
   UserModel,

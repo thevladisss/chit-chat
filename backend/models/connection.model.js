@@ -25,8 +25,11 @@ connectionSchema.set('toJSON', {
   virtuals: true,
   versionKey: false,
   transform: function (doc, ret) {
-    ret.id = ret._id.toString();
-    ret.connectionId = ret._id.toString();
+    const { _id } = ret;
+
+    ret.id = _id.toString();
+    ret.connectionId = _id.toString();
+    ret.userId = ret.userId.toString();
   },
 });
 

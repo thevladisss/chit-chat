@@ -18,11 +18,11 @@ const initializeChat = async (req, res) => {
   const user = req.session.user;
 
   const chat = await ChatService.initializeChatForCurrentUser(
-    user.userId,
+    user.id,
     secondUserId,
   );
 
-  const chats = await ChatService.getUserChats(user.userId);
+  const chats = await ChatService.getUserChats(user.id);
 
   return res.json({
     data: {
@@ -54,7 +54,7 @@ const getFilteredChats = async (req, res) => {
   let chats;
 
   if (!search) {
-    chats = await ChatService.getUserChats(user.userId);
+    chats = await ChatService.getUserChats(user.id);
   } else chats = await ChatService.getFilteredChats(search);
 
   return res.json({
