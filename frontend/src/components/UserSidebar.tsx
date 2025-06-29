@@ -50,13 +50,13 @@ function UserSidebar(props: {
           display: "flex",
           flexDirection: "column",
           flex: "1",
-          padding: "4px 8px",
         }}
       >
         <TextField
           onInput={handleSearchChats}
           type="search"
           size="large"
+          square
           placeholder="Search chat"
           loading={loadingChats}
         />

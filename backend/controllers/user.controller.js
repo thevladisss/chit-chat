@@ -5,10 +5,10 @@ const createUser = async (req, res) => {
   const user = await UserService.signUpUser(username);
 
   if (user) {
-    req.session.user = user;
+    req.session.user = user.toJSON();
   }
 
-  return res.json({ data: user }).status(200);
+  return res.json({ data: user.toJSON() }).status(200);
 };
 
 module.exports = {

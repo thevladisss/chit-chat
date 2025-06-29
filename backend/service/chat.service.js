@@ -5,46 +5,46 @@ const UserService = require('./user.service');
 const ConnectionService = require('./connection.service');
 const MessageService = require('../service/message.service');
 const ServerChatEventEnum = require('../enums/ServerChatEventEnum');
+const { ChatModel } = require('../models/chat.model');
+const { UserModel } = require('../models/user.model');
 
+/**
+ *
+ * @param userId {string}
+ * @return {Promise<{
+ *   chatId: string | null;
+ *   userId: string | null;
+ *   messages: any[];
+ *   name: string;
+ *   lastMessage: string;
+ *   lastMessageTimestamp: string;
+ *   username: string | null;
+ * }[]>}
+ */
 const getUserChats = async (userId) => {
   const chats = await ChatRepository.findAllChatsByUsersIds([userId]);
 
-  const prospectiveChatUsers =
-    await UserRepository.getUsersWithoutChatWithUser(userId);
+  const prospectiveChatters =
+    await UserRepository.findUsersNotHavingChatWithUser(userId);
 
   const results = [];
 
-  for (const item of [...chats, ...prospectiveChatUsers]) {
-    let chatName = '';
-
-    if (item.chatId) {
-      const participantIdsNoCurrent = item.users.filter(
-        (participantId) => participantId !== userId,
-      );
-
-      const chatParticipantsNoCurrent = await UserRepository.findAllById(
-        participantIdsNoCurrent,
-      );
-
-      chatName = chatParticipantsNoCurrent
-        .map((user) => user.username)
-        .join(', ');
-    } else {
-      chatName = item.username;
-    }
-
-    const messages = await MessageService.getChatMessagesForUser(
-      userId,
-      item.chatId,
-    );
-
+  for (const item of [...chats, ...prospectiveChatters]) {
     const shared = {
       chatId: null,
-      messages,
-      lastMessage: messages.length > 0 ? messages.at(-1).text : null,
-      name: chatName,
-      ...item,
+      lastMessage: null,
+      ...item.toJSON(),
     };
+
+    if (item instanceof ChatModel) {
+      shared.name = item.users.find((user) => user.userId !== userId).username;
+      shared.lastMessage =
+        item.messages && item.messages.length > 0
+          ? item.messages[0].text
+          : null;
+    } else {
+      shared.name = item.username;
+    }
 
     results.push(shared);
   }
@@ -53,43 +53,38 @@ const getUserChats = async (userId) => {
 };
 
 /**
- * @param firstUser {{userId: string}}
- * @param secondUser {{userId: string}}
- * @return {Promise<*|Awaited<*>>}
+ *
+ * @param initiatorUserId {string}
+ * @param secondUserId {string}
+ * @return {Promise<*>}
  */
-const initializeChatForCurrentUser = async (firstUser, secondUser) => {
-  const usersIds = [firstUser.userId, secondUser.userId];
+const initializeChatForCurrentUser = async (initiatorUserId, secondUserId) => {
+  const usersIds = [initiatorUserId, secondUserId];
 
   let chat = await ChatRepository.findByUsersIds(usersIds);
 
   if (!chat) {
     chat = await ChatRepository.createChat({
-      participantsIds: usersIds,
+      usersIds,
     });
   }
 
   const connections = await ConnectionService.getAllConnectionsByUserIds([
-    secondUser.userId,
+    secondUserId,
   ]);
 
-  const chats = await getUserChats(secondUser.userId);
-
   for (const con of connections) {
-    const conChats = await getUserChats(con.userId);
+    const chats = await getUserChats(con.userId);
 
     con.ws.send(
       JSON.stringify({
         event: ServerChatEventEnum.CHAT_CREATED,
-        data: conChats,
+        data: chats,
       }),
     );
   }
 
-  return {
-    ...chat,
-    name: 'Test',
-    messages: [],
-  };
+  return chat.toJSON();
 };
 
 /**
@@ -101,8 +96,7 @@ const initializeChatForCurrentUser = async (firstUser, secondUser) => {
  */
 const createChat = async (data) => {
   const chat = await ChatRepository.createChat({
-    participantsIds: data.usersIds,
-    name: '',
+    usersIds: data.usersIds,
   });
 
   return chat;
@@ -129,7 +123,7 @@ const getChat = async (chatId) => {
 
   // Return the chat with additional information
   return {
-    ...chat,
+    ...chat.toJSON(),
     messages,
     lastMessage: messages.length > 0 ? messages.at(-1).text : null,
     lastMessageTimestamp:
@@ -138,6 +132,15 @@ const getChat = async (chatId) => {
   };
 };
 
+/**
+ * Send a chat message from a user to a chat
+ * @param {Object} sender - The user sending the message
+ * @param {string} sender.userId - The ID of the user sending the message
+ * @param {Object} data - The message data
+ * @param {string} data.chatId - The ID of the chat to send the message to
+ * @param {string} data.message - The message text
+ * @return {Promise<{chatId: string, chat: Object, chats: Array}>} - The updated chat information
+ */
 const sendChatMessage = async (sender, data) => {
   await MessageRepository.createMessage({
     chatId: data.chatId,
@@ -155,7 +158,7 @@ const sendChatMessage = async (sender, data) => {
 
   const result = {
     chatId: chat.chatId,
-    chat,
+    chat: chat.toJSON(),
     chats,
   };
 
@@ -179,6 +182,19 @@ const sendChatMessage = async (sender, data) => {
   return result;
 };
 
+/**
+ *
+ * @param search {string}
+ * @return {Promise<{
+ *   chatId: string | null;
+ *   userId: string | null;
+ *   messages: any[];
+ *   name: string;
+ *   lastMessage: string;
+ *   lastMessageTimestamp: string;
+ *   username: string | null;
+ * }[]>}
+ */
 const getFilteredChats = async (search) => {
   return ChatRepository.findByUserNameOrChatNameOrMessage(search);
 };

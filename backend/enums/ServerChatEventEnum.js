@@ -1,6 +1,7 @@
 const ServerChatEventEnum = {
   CONNECTION_ESTABLISHED: "connection_established",
   NEW_CONNECTION: "new_connection",
+  LEAVE_CONNECTION: "leave_connection",
   ROOM_JOIN_SUCCESS: "room_join_success",
   MESSAGE: "new_message",
   CHAT_CREATED: "new_chat_created"

@@ -18,6 +18,7 @@ function ChatInputModule({
     <form onSubmit={handleSubmit} className="chat-input-module">
       <div className="input-container">
         <TextField
+          square
           onInput={onInputMessage}
           placeholder="Text here..."
         ></TextField>

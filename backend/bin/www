@@ -16,7 +16,6 @@ const wsHandlers = require('../ws/ws-handlers');
  */
 
 const port = normalizePort(process.env.PORT || '3000');
-const ws_port = process.env.WS_PORT || '3111';
 
 app.set('port', port);
 
@@ -29,10 +28,6 @@ const server = http.createServer(app);
 /**
  * Listen on provided port, on all network interfaces.
  */
-
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
 
 /**
  * Normalize a port into a number, string, or false.
@@ -98,22 +93,31 @@ function onListening() {
 
 const wss = new WebSocket.WebSocketServer({ noServer: true });
 
-server.on('upgrade', (request, socket, head) => {
-  sessionParser(request, {}, () => {
-    if (!request.session || !request.session.user) {
-      socket.destroy();
-      return;
-    }
+const bootApplication = async () => {
+  server.listen(port);
 
-    wss.handleUpgrade(request, socket, head, (ws) => {
-      wss.emit('connection', ws, request);
+  server.on('error', onError);
+  server.on('listening', onListening);
+
+  server.on('upgrade', (request, socket, head) => {
+    sessionParser(request, {}, () => {
+      if (!request.session || !request.session.user) {
+        socket.destroy();
+        return;
+      }
+
+      wss.handleUpgrade(request, socket, head, (ws) => {
+        wss.emit('connection', ws, request);
+      });
     });
   });
-});
 
-wss.on('connection', (ws, req) => {
-  wsHandlers.handleWsConnection(wss, ws, req);
-});
-wss.on('close', (event) => {
-  wsHandlers.handleWsCloseConnection(wss, event);
-});
+  wss.on('connection', (ws, req) => {
+    wsHandlers.handleWsConnection(wss, ws, req);
+  });
+  wss.on('close', (event) => {
+    wsHandlers.handleWsCloseConnection(wss, event);
+  });
+};
+
+bootApplication()

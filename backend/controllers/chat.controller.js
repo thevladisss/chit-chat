@@ -3,7 +3,7 @@ const ChatService = require('../service/chat.service');
 const getAllChats = async (req, res) => {
   const user = req.session.user;
 
-  const data = await ChatService.getUserChats(user.userId);
+  const data = await ChatService.getUserChats(user.id);
 
   return res
     .json({
@@ -13,19 +13,22 @@ const getAllChats = async (req, res) => {
 };
 
 const initializeChat = async (req, res) => {
-  const body = req.body;
+  const secondUserId = req.body.userId;
 
   const user = req.session.user;
 
-  const chat = await ChatService.initializeChatForCurrentUser(user, body);
+  const chat = await ChatService.initializeChatForCurrentUser(
+    user.userId,
+    secondUserId,
+  );
 
   const chats = await ChatService.getUserChats(user.userId);
 
   return res.json({
     data: {
       chatId: chat.chatId,
-      chat,
-      chats,
+      chat: chat,
+      chats: chats,
     },
   });
 };

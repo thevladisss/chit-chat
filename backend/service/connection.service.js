@@ -1,5 +1,7 @@
 const ConnectionRepository = require('../repositories/connection.repository');
 
+const memoryDb = new Map();
+
 /**
  *
  * @return { {
@@ -17,16 +19,28 @@ const ConnectionRepository = require('../repositories/connection.repository');
 const getAllConnections = async () => {
   const conections = await ConnectionRepository.getAllConnections();
 
-  return conections;
+  return conections.map((con) => {
+    return {
+      ...con.toJSON(),
+      ws: memoryDb.get(con),
+    };
+  });
 };
 /**
  * @param id {string}
  * @return {Promise<{id: string, createdTimestamp: number, ws: *}[]>}
  */
 const getAllConnectionsNoCurrent = async (id) => {
-  const conections = await ConnectionRepository.getAllConnections();
+  const conections = await ConnectionRepository.getAllConnectionsWhereIdNotIn([
+    id,
+  ]);
 
-  return conections.filter((c) => c.id !== id);
+  return conections.map((con) => {
+    return {
+      ...con.toJSON(),
+      ws: memoryDb.get(con.id),
+    };
+  });
 };
 
 /**
@@ -38,29 +52,60 @@ const getAllConnectionsNoCurrent = async (id) => {
  * }}
  */
 const storeConnection = async (payload) => {
-  return ConnectionRepository.createConnection({
+  const connection = await ConnectionRepository.createConnection({
     createdTimestamp: Date.now(),
-    ws: payload.ws,
     sessionId: payload.sessionId,
-    userId: payload.userId
+    userId: payload.userId,
   });
+
+  memoryDb.set(connection.id, payload.ws);
+
+  return {
+    ...connection,
+    ws: payload.ws,
+  };
 };
 
 const removeConnection = (id) => {
+  memoryDb.delete(id);
+
   return ConnectionRepository.deleteConnection(id);
 };
 
+const removeConnectionByConnectionId = (connectionId) => {
+  memoryDb.delete(connectionId);
+
+  return ConnectionRepository.deleteByConnectionId(connectionId);
+};
+
 const getAllConnectionsByUserIds = async (userIds) => {
-  return ConnectionRepository.findAllByUserIds(userIds);
+  const connections = await ConnectionRepository.findAllByUserIds(userIds);
+
+  return connections.map((con) => {
+    return {
+      ...con.toJSON(),
+      ws: memoryDb.get(con.id),
+    };
+  });
 };
 
 const getConnectionByUserId = async (userId) => {
-  return ConnectionRepository.findByUserId(userId);
+  const connection = await ConnectionRepository.findByUserId(userId);
+
+  if (connection) {
+    return {
+      ...connection,
+      ws: memoryDb.get(connection.id),
+    };
+  }
+
+  return null;
 };
 
 module.exports = {
   getConnectionByUserId,
   removeConnection,
+  removeConnectionByConnectionId,
   getAllConnectionsNoCurrent,
   getAllConnections,
   storeConnection,

@@ -1,31 +1,23 @@
-const { v4 } = require('uuid');
-const Message = require('../models/message.model');
+const { MessageModel } = require('../models/message.model');
+
 /**
- *
- * @type {Map<string, {
- *   messageId: string,
- *   chatId: string,
- *   userId: string,
- *   text: string
- *   createdTimestamp: string
- * }>}
+ * Create a new message
+ * @param {Object} messageData - The message data
+ * @param {string} messageData.chatId - The ID of the chat the message belongs to
+ * @param {string} messageData.text - The message text
+ * @param {string} messageData.userId - The ID of the user who sent the message
+ * @return {Promise<{messageId: string, chatId: string, text: string, userId: string, sentAt: number, isSeen: boolean}>} - The created message
  */
-
 const createMessage = ({ chatId, text, userId }) => {
-  const messageId = v4();
-
-  const messageEntity = {
+  const message = new MessageModel({
     chatId,
-    messageId,
     text,
-    userId: userId,
+    userId,
     sentAt: Date.now(),
     isSeen: false,
-  };
+  });
 
-  Message.set(messageId, messageEntity);
-
-  return messageEntity;
+  return message.save();
 };
 /**
  * Find messages by chat ID
@@ -33,12 +25,8 @@ const createMessage = ({ chatId, text, userId }) => {
  * @return {Promise<Array<{messageId: string, chatId: string, message: string, sentAt: number, isSeen: boolean}>>} - Array of messages for the chat
  */
 const findAllByChatId = (chatId) => {
-  const messages = [...Message.values()].filter(
-    (message) => message.chatId === chatId,
-  );
-  return Promise.resolve(messages);
+  return MessageModel.find({ chatId }).exec();
 };
-const getMessagesByChatAndUserId = (chatId, userId) => {};
 
 /**
  * Find a message by its ID
@@ -46,8 +34,7 @@ const getMessagesByChatAndUserId = (chatId, userId) => {};
  * @return {Promise<{messageId: string, chatId: string, message: string, sentAt: number, isSeen: boolean}|undefined>} - The found message or undefined
  */
 const findById = (messageId) => {
-  const message = Message.get(messageId);
-  return Promise.resolve(message);
+  return MessageModel.find({ _id: messageId }).exec();
 };
 
 module.exports = {
