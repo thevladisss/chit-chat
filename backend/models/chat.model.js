@@ -19,6 +19,17 @@ const chatSchema = new Schema({
 const ChatModel = mongoose.model('Chat', chatSchema);
 
 /* Virtuals */
+
+chatSchema.virtual('lastMessage').get(function () {
+  return this.messages && this.messages.length
+    ? this.messages[this.messages.length - 1]
+    : null;
+});
+
+chatSchema.virtual('isGroupChat').get(function () {
+  return this.users && this.users.length > 2;
+});
+
 chatSchema.virtual('messages', {
   ref: 'Message',
   localField: '_id', // Chat._id

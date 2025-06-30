@@ -27,7 +27,6 @@ const initializeChat = async (req, res) => {
   return res.json({
     data: {
       chatId: chat.chatId,
-      chat: chat,
       chats: chats,
     },
   });

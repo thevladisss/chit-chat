@@ -15,7 +15,9 @@ const { ObjectId } = require('mongoose').Types;
  * @return {Promise<Awaited<{chatId: string, users: string[], createdTimestamp: string}[]>>}
  */
 const getChatsByParticipants = async (userId) => {
-  return ChatModel.find({ users: { $in: userId } }).populate('users').exec();
+  return ChatModel.find({ users: { $in: userId } })
+    .populate('users')
+    .exec();
 };
 
 /**
@@ -26,7 +28,10 @@ const getChatsByParticipants = async (userId) => {
 const findAllChatsByUsersIds = async (usersIds) => {
   const objectsIds = usersIds.map((userId) => new ObjectId(userId));
 
-  return ChatModel.find({ users: { $in: objectsIds } }).populate('users').exec();
+  return ChatModel.find({ users: { $in: objectsIds } })
+    .populate('users')
+    .populate('messages')
+    .exec();
 };
 
 /**
@@ -39,6 +44,8 @@ const findAllChatsIdsByUsersIds = async (usersIds) => {
 
   return ChatModel.find({ users: { $in: objectsIds } })
     .select({ _id: true })
+    .populate('users')
+    .populate('messages')
     .exec();
 };
 
@@ -61,7 +68,7 @@ const createChat = (data) => {
  * @return {Promise<Array<{chatId: string, users: string[], createdTimestamp: number}>>} - All chats
  */
 const getAllChats = () => {
-  return ChatModel.find({}).populate('users').exec();
+  return ChatModel.find({}).populate('users').populate('messages').exec();
 };
 
 /**
@@ -70,7 +77,10 @@ const getAllChats = () => {
  * @return {Promise<{chatId: string, users: string[], createdTimestamp: number}|undefined>} - The found chat or undefined
  */
 const findById = (chatId) => {
-  return ChatModel.findById(chatId).populate('users').exec();
+  return ChatModel.findById(chatId)
+    .populate('users')
+    .populate('messages')
+    .exec();
 };
 
 /**
@@ -84,7 +94,10 @@ const findByUsersIds = (usersIds) => {
   return ChatModel.findOne({
     users: { $all: objectsIds },
     $expr: { $eq: [{ $size: '$users' }, usersIds.length] },
-  }).populate('users').exec();
+  })
+    .populate('users')
+    .populate('messages')
+    .exec();
 };
 
 /**
@@ -98,21 +111,24 @@ const findIdsOfAllUsersHavingChatWithUser = async (userId) => {
   // Find all chats where the specified user is a participant and there are exactly 2 users
   const chats = await ChatModel.find({
     users: { $all: [userObjectId] },
-    $expr: { $eq: [{ $size: '$users' }, 2] }
-  }).exec();
+    $expr: { $eq: [{ $size: '$users' }, 2] },
+  })
+    .populate('users')
+    .populate('messages')
+    .exec();
 
   // Extract the IDs of the other users in these chats
   const otherUserIds = [];
 
   for (const chat of chats) {
-    const otherUserId = chat.users.find(id => !id.equals(userObjectId));
+    const otherUserId = chat.users.find((id) => !id.equals(userObjectId));
     if (otherUserId) {
       otherUserIds.push(otherUserId.toString());
     }
   }
 
   return otherUserIds;
-}
+};
 
 /**
  * Finds all chats containing search value in either username of one of participants,

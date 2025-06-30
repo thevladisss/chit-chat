@@ -32,16 +32,17 @@ const getUserChats = async (userId) => {
   for (const item of [...chats, ...prospectiveChatters]) {
     const shared = {
       chatId: null,
+      messages: [],
       lastMessage: null,
       ...item.toJSON(),
     };
 
     if (item instanceof ChatModel) {
-      shared.name = item.users.find((user) => user.id !== userId).username;
-      shared.lastMessage =
-        item.messages && item.messages.length > 0
-          ? item.messages[0].text
-          : null;
+      shared.messages = item.messages.map((item) => ({
+        ...item.toJSON(),
+        isPersonal: item.userId.toString() === userId,
+      }));
+      shared.name = item.users.find((user) => user.id !== userId)?.username;
     } else {
       shared.name = item.username;
     }
@@ -114,20 +115,16 @@ const getChat = async (chatId) => {
     return null;
   }
 
-  // Get all participants' usernames to create the chat name
-  const chatParticipants = await UserRepository.findAllById(chat.users);
-  const chatName = chatParticipants.map((user) => user.username).join(', ');
-
-  // Get messages for the chat
-  const messages = await MessageRepository.findAllByChatId(chatId);
+  const chatName = chat.users.map((user) => user.username).join(', ');
 
   // Return the chat with additional information
   return {
     ...chat.toJSON(),
-    messages,
-    lastMessage: messages.length > 0 ? messages.at(-1).text : null,
-    lastMessageTimestamp:
-      messages.length > 0 ? messages.at(-1).createdTimestamp : null,
+    lastMessage: chat.lastMessage ? chat.lastMessage.text : null,
+    lastMessageTimestamp: chat.lastMessage
+      ? chat.lastMessage.createdTimestamp
+      : null,
+
     name: chatName,
   };
 };
