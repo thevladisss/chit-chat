@@ -36,6 +36,7 @@ function UserSidebar(props: {
 
   return (
     <div
+      className="user-sidebar"
       style={{
         width: "380px",
         display: "flex",

@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import * as actions from "./actions.ts";
-import { RootState } from "../index.ts";
+import { IChatSliceState } from "../../types/IRootState.ts";
 
 export const slice = createSlice({
   name: "chats",
@@ -11,7 +11,7 @@ export const slice = createSlice({
     chats: [],
   },
   reducers: {
-    setChatsAction(state, action: PayloadAction<any[]>) {
+    setChatsAction(state: IChatSliceState, action: PayloadAction<any[]>) {
       return {
         ...state,
         chats: action.payload,
@@ -21,7 +21,7 @@ export const slice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(
       actions.getChatsAction.fulfilled,
-      (state: RootState, action) => {
+      (state: IChatSliceState, action) => {
         return {
           ...state,
           chats: action.payload,
@@ -45,7 +45,7 @@ export const slice = createSlice({
 
     builder.addCase(
       actions.getFilteredChatsAction.fulfilled,
-      (state: RootState, action) => {
+      (state: IChatSliceState, action: PayloadAction) => {
         return {
           ...state,
           chats: action.payload,
@@ -62,7 +62,7 @@ export const slice = createSlice({
 
     builder.addCase(
       actions.getFilteredChatsAction.rejected,
-      (state, action) => {
+      (state: IChatSliceState, action: PayloadAction) => {
         return {
           ...state,
           loadChatsError: action.payload,
@@ -70,17 +70,23 @@ export const slice = createSlice({
       },
     );
 
-    builder.addCase(actions.startNewChatAction.fulfilled, (state, action) => {
-      return {
-        ...state,
-        chats: action.payload.chats,
-        selectedChatId: action.payload.chatId,
-      };
-    });
+    builder.addCase(
+      actions.startNewChatAction.fulfilled,
+      (
+        state,
+        action: PayloadAction<{ chats: any[]; chat: any; chatId: string }>,
+      ) => {
+        return {
+          ...state,
+          chats: action.payload.chats,
+          selectedChatId: action.payload.chatId,
+        };
+      },
+    );
 
     builder.addCase(
       actions.selectChatAction.fulfilled,
-      (state: RootState, action) => {
+      (state: IChatSliceState, action: PayloadAction<{ chatId: string }>) => {
         return {
           ...state,
           selectedChatId: action.payload.chatId,
@@ -90,12 +96,6 @@ export const slice = createSlice({
   },
 });
 
-export const {
-  setChatsAction,
-
-  setExistingChats,
-  setProspectiveChats,
-  createLocalChat,
-} = slice.actions;
+export const { setChatsAction } = slice.actions;
 
 export default slice.reducer;

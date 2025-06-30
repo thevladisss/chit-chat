@@ -57,14 +57,17 @@ function ChatsList({
             return (
               <ChatListItem
                 id={chat.chatId}
-                lastMessage={chat.lastMessage ?? ""}
-                lastMessageTimestamp={""}
+                lastMessage={chat.lastMessage ? chat.lastMessage.text : ""}
+                lastMessageTimestamp={
+                  chat.lastMessageTimestamp
+                    ? new Date(chat.lastMessageTimestamp).toLocaleTimeString()
+                    : ""
+                }
                 chatName={chat.name}
                 key={chat.chatId}
                 onSelectChat={() => onSelectExistingChat(chat.chatId)}
                 isDelivered={false}
                 isSeen={false}
-                isPersonal={chat.isPersonal}
                 isSelected={chat.chatId === selectedChatId}
               ></ChatListItem>
             );
@@ -73,14 +76,9 @@ function ChatsList({
             return (
               <ChatListItem
                 id={chat.userId}
-                lastMessage={null}
-                lastMessageTimestamp={"10:05 PM"}
                 chatName={chat.name}
                 key={chat.userId}
-                isDelivered={false}
-                isSeen={false}
                 isSelected={false}
-                isPersonal={chat.isPersonal}
                 onSelectChat={() => handleInitializeChat(chat.userId)}
               ></ChatListItem>
             );

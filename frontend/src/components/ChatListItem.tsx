@@ -5,12 +5,11 @@ import { buildClasses } from "../utils/classes.ts";
 type ChatListItemProps = {
   id: string;
   isSelected: boolean;
-  isDelivered: boolean;
-  isSeen: boolean;
-  isPersonal: boolean;
+  isDelivered?: boolean;
+  isSeen?: boolean;
   chatName: string;
-  lastMessage: string | null;
-  lastMessageTimestamp: string;
+  lastMessage?: string | null;
+  lastMessageTimestamp?: string;
 
   onSelectChat: () => void;
 };

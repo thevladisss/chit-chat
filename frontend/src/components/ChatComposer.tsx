@@ -31,7 +31,7 @@ function ChatComposer({ style, message, handleInputMessage, handleSubmitMessage,
                       isPersonal={message.isPersonal}
                       isSeen={message.isSeen}
                       isDelivered={message.isDelivered}
-                      sentTimestamp={message.sentAt}
+                      sentTimestamp={new Date(message.sentAt).toLocaleTimeString()}
                     />
                   );
                 })
