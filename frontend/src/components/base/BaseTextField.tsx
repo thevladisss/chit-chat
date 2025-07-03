@@ -73,6 +73,7 @@ function BaseTextField({
         type="text"
         name={name}
         id={id}
+        value={value}
         placeholder={placeholder}
         required={required}
         aria-required={required}

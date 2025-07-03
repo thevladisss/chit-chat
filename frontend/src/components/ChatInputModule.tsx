@@ -22,12 +22,11 @@ function ChatInputModule({
           square
           onInput={onInputMessage}
           placeholder="Text here..."
+          value={messageInput}
         ></BaseTextField>
       </div>
       <div className="actions">
-        <BaseButton loading={loading} type="submit">
-          Send
-        </BaseButton>
+        <BaseButton type="submit">Send</BaseButton>
       </div>
     </form>
   );

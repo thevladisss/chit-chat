@@ -18,7 +18,7 @@ function BaseButton({
   });
 
   return (
-    <button type={type} style={style} className={classes}>
+    <button type={type} style={style} className={classes} disabled={loading}>
       {children}
     </button>
   );
