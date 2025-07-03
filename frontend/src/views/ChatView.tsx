@@ -1,11 +1,8 @@
 import "./ChatView.css";
-import { ChangeEvent, use, useEffect, useMemo, useState } from "react";
-import { initializeChat, sendMessage } from "../service/chatSerevice";
-
+import { ChangeEvent, useEffect, useState } from "react";
+import { sendMessage } from "../service/chatSerevice";
 import ChatComposer from "../components/ChatComposer.tsx";
-
 import UserSidebar from "../components/UserSidebar.tsx";
-import { useStore } from "../hooks/useStore.ts";
 
 import { useChatStore } from "../hooks/useChatStore.ts";
 import { ServerSideEventsEnum } from "../enums/ServerSideEventsEnum.ts";
@@ -13,8 +10,6 @@ import { ServerSideEventsEnum } from "../enums/ServerSideEventsEnum.ts";
 function ChatView() {
   const { getChats, selectedChat, setChats } = useChatStore();
   let ws;
-
-  const { dispatch } = useStore();
 
   useEffect(() => {
     if (!ws) {
@@ -53,41 +48,39 @@ function ChatView() {
           handleChatCreatedEvent(payload);
           break;
       }
-      //
-      // if (eventData.event === ServerSideEventsEnum.NewConnection) {
-      //   //TODO: Get data from WS response
-      //
-      //   const chats = eventData.data.chats,
-      //     prospectiveChats = eventData.data.prospectiveChats;
-      //
-      //   // setChats({
-      //   //   chats,
-      //   //   prospectiveChats,
-      //   // });
-      // }
     };
   }, []);
 
-  // const [activeChat, setActiveChat] = useState<string | null>(null);
-  //
-  // const [isLoadingChats, setLoadingChats] = useState(false);
-  //
+  const [isLoadingChats, setLoadingChats] = useState(false);
+
   const requestChats = async () => {
     getChats();
   };
 
   const [message, setMessageInput] = useState("");
 
+  const resetMessageInput = () => {
+    setMessageInput("");
+  };
+
   const handleInputMessage = (e: ChangeEvent<HTMLInputElement>) => {
     setMessageInput(e.target.value);
   };
-  const handleSubmitMessage = async (message: string) => {
-    const { data } = await sendMessage({
-      message,
-      chatId: selectedChat.chatId,
-    });
+  const handleSubmitMessage = async () => {
+    try {
+      setLoadingChats(true);
 
-    setChats(data.chats);
+      const { data } = await sendMessage({
+        message,
+        chatId: selectedChat.chatId,
+      });
+
+      resetMessageInput();
+      setChats(data.chats);
+    } catch (e) {
+    } finally {
+      setLoadingChats(false);
+    }
   };
 
   const handleInitializeChat = () => {};
@@ -100,6 +93,7 @@ function ChatView() {
         handleInputMessage={handleInputMessage}
         handleSubmitMessage={handleSubmitMessage}
         pendingSendMessage={false}
+        isPendingMessageSend={isLoadingChats}
       />
       <UserSidebar
         handleInitializeChat={handleInitializeChat}

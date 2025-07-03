@@ -1,22 +1,26 @@
 .base-button {
-    padding: 4px 16px;
-    font-size: 16px;
-    border-radius: 8px;
-    box-shadow: none;
-    border: none;
-    height: 32px;
+  padding: 4px 16px;
+  font-size: 16px;
+  border-radius: 8px;
+  box-shadow: none;
+  border: none;
+  height: 32px;
 
-    transition: all 0.05s ease-in;
+  transition: all 0.05s ease-in;
 }
 
 .base-button:hover {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .base-button:focus {
-    outline-color: var(--app-color-focus);
+  outline-color: var(--app-color-focus);
 }
 
 .base-button:active {
-    background-color: var(--app-bg-light-5);
+  background-color: var(--app-bg-light-5);
+}
+
+.base-button.loading {
+  pointer-events: none;
 }

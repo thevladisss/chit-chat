@@ -1,25 +1,27 @@
-import "./BaseButton.css"
-import {HTMLProps, JSX, useState, type PropsWithChildren} from 'react'
-import {buildClasses} from "../../utils/classes.ts";
+import "./BaseButton.css";
+import { HTMLProps, JSX, useState, type PropsWithChildren } from "react";
+import classNames from "classnames";
 
-type Props =  HTMLProps<HTMLButtonElement> & PropsWithChildren<{
-
-}>
+type Props = HTMLProps<HTMLButtonElement> &
+  PropsWithChildren<{
+    loading?: boolean;
+  }>;
 function BaseButton({
   style,
   className,
   type,
-  children
+  children,
+  loading,
 }: Props): JSX.Element {
-
-  const classes = buildClasses('base-button', className ?? "");
+  const classes = classNames("base-button", className, {
+    loading: loading,
+  });
 
   return (
     <button type={type} style={style} className={classes}>
       {children}
     </button>
-  )
+  );
 }
 
-
-export default BaseButton
+export default BaseButton;

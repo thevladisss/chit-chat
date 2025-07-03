@@ -1,12 +1,13 @@
 import "./ChatInputModule.css";
 import { ChangeEvent, FormEvent, type JSX, useState } from "react";
-import TextField from "./base/TextField.tsx";
+import BaseTextField from "./base/BaseTextField.tsx";
 import BaseButton from "./base/BaseButton.tsx";
 
 function ChatInputModule({
   onSubmitMessage,
   onInputMessage,
   messageInput,
+  loading,
 }: any): JSX.Element {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -17,14 +18,16 @@ function ChatInputModule({
   return (
     <form onSubmit={handleSubmit} className="chat-input-module">
       <div className="input-container">
-        <TextField
+        <BaseTextField
           square
           onInput={onInputMessage}
           placeholder="Text here..."
-        ></TextField>
+        ></BaseTextField>
       </div>
       <div className="actions">
-        <BaseButton type="submit">Send</BaseButton>
+        <BaseButton loading={loading} type="submit">
+          Send
+        </BaseButton>
       </div>
     </form>
   );

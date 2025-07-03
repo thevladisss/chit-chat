@@ -1,12 +1,10 @@
 import "./ChatListItem.css";
-import { type JSX, useState } from "react";
-import { buildClasses } from "../utils/classes.ts";
+import { type JSX } from "react";
+import classNames from "classnames";
 
 type ChatListItemProps = {
-  id: string;
-  isSelected: boolean;
-  isDelivered?: boolean;
-  isSeen?: boolean;
+  isSelected?: boolean;
+  hasUnseenMessage?: boolean;
   chatName: string;
   lastMessage?: string | null;
   lastMessageTimestamp?: string;
@@ -14,18 +12,16 @@ type ChatListItemProps = {
   onSelectChat: () => void;
 };
 function ChatListItem({
-  id,
   isSelected,
   chatName,
   lastMessage,
   lastMessageTimestamp,
-  isDelivered,
-  isSeen,
+  hasUnseenMessage,
 
   onSelectChat,
 }: ChatListItemProps): JSX.Element {
-  const classes = buildClasses("chat-list-item", {
-    "chat-list-item--active": isSelected,
+  const classes = classNames("chat-list-item", {
+    "selected": isSelected,
   });
 
   return (
@@ -37,7 +33,7 @@ function ChatListItem({
             <span className="last-message-timestamp">
               {lastMessageTimestamp}
             </span>
-            <span className={`status`}>*</span>
+            {hasUnseenMessage && <span className={`unread-indicator`}>*</span>}
           </div>
         </div>
         {lastMessage ? (

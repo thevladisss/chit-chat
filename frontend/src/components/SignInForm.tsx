@@ -1,7 +1,7 @@
 import "./SignInForm.css";
 import { type BaseSyntheticEvent, JSX, useState } from "react";
 import { postRequest } from "../service";
-import TextField from "./base/TextField.tsx";
+import BaseTextField from "./base/BaseTextField.tsx";
 import BaseButton from "./base/BaseButton.tsx";
 import { useDispatch } from "../hooks/useDispatch.ts";
 import { signInAction } from "../stores/user/actions.ts";
@@ -37,7 +37,7 @@ function SignInForm({ onUserAuthenticate }: Props): JSX.Element {
           <h2 style={{ textAlign: "center", fontSize: "24px", margin: 0, marginTop: "8px", marginBottom: "8px" }}>
             Please enter your username
           </h2>
-          <TextField
+          <BaseTextField
             immediateFocus
             size="large"
             placeholder="John Doe..."

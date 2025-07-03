@@ -1,44 +1,59 @@
 import "./ChatComposer.css";
-import { ChangeEvent, JSX, useState } from "react";
+import { ChangeEvent, HTMLProps, JSX, useState } from "react";
 import ChatInput from "./ChatInputModule.tsx";
 import ChatMessage from "./ChatMessage.tsx";
 import { useChatStore } from "../hooks/useChatStore.ts";
-import * as React from "react";
+import { IChatMessage } from "../types/IChatMessage.ts";
 
-function ChatComposer({ style, message, handleInputMessage, handleSubmitMessage, pendingSendMessage }: {
-  style: React.CSSProperties;
+type Props = HTMLProps<HTMLDivElement> & {
   message: string;
+  isPendingMessageSend: boolean;
   handleInputMessage: (e: ChangeEvent<HTMLInputElement>) => void;
   handleSubmitMessage: () => void;
-  pendingSendMessage: boolean
-}): JSX.Element {
+};
+
+function ChatComposer({
+  style,
+  message,
+  handleInputMessage,
+  handleSubmitMessage,
+  isPendingMessageSend,
+}: Props): JSX.Element {
   const { selectedChat, selectedChatMessages } = useChatStore();
 
+  const getMessageSentTimestamp = (message: IChatMessage) => {
+    return new Date(message.sentAt).toLocaleTimeString();
+  };
 
   return (
     <div className="chat" style={style}>
       {selectedChat ? (
         <>
           <div className="chat-messages-container">
-            {selectedChatMessages.length > 0
-              ? selectedChatMessages.map((message) => {
-                  return (
-                    <ChatMessage
-                      key={message.messageId}
-                      messageId={message.messageId}
-                      chatId={message.chatId}
-                      text={message.text}
-                      isPersonal={message.isPersonal}
-                      isSeen={message.isSeen}
-                      isDelivered={message.isDelivered}
-                      sentTimestamp={new Date(message.sentAt).toLocaleTimeString()}
-                    />
-                  );
-                })
-              : `Start messaging with ${selectedChat.name} `}
+            {selectedChatMessages.length > 0 ? (
+              selectedChatMessages.map((message) => {
+                return (
+                  <ChatMessage
+                    key={message.messageId}
+                    messageId={message.messageId}
+                    chatId={message.chatId}
+                    text={message.text}
+                    isPersonal={message.isPersonal}
+                    isSeen={message.isSeen}
+                    isDelivered={message.isDelivered}
+                    sentTimestamp={getMessageSentTimestamp(message)}
+                  />
+                );
+              })
+            ) : (
+              <h3 className="no-messages-placeholder">
+                {`Start messaging with ${selectedChat.name} `}
+              </h3>
+            )}
           </div>
           <div className="chat-input-container">
             <ChatInput
+              loading={isPendingMessageSend}
               messageInput={message}
               onInputMessage={handleInputMessage}
               onSubmitMessage={handleSubmitMessage}
@@ -46,7 +61,9 @@ function ChatComposer({ style, message, handleInputMessage, handleSubmitMessage,
           </div>
         </>
       ) : (
-        <p>Select chat to start messaging</p>
+        <h3 className="no-chat-selected-placeholder">
+          Select chat to start messaging
+        </h3>
       )}
     </div>
   );

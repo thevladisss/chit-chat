@@ -1,14 +1,16 @@
 import { JSX, BaseSyntheticEvent } from "react";
 import { useUser } from "../hooks/useUser.tsx";
-import TextField from "./base/TextField.tsx";
+import BaseTextField from "./base/BaseTextField.tsx";
 import ChatsList from "./ChatsList.tsx";
 import { useChatStore } from "../hooks/useChatStore.ts";
 import SidebarUserInformation from "./SidebarUserInformation.tsx";
 
-function UserSidebar(props: {
+type Props = {
   handleInitializeChat: any;
   handleSelectChat: any;
-}): JSX.Element {
+};
+
+function UserSidebar(props: Props): JSX.Element {
   const {
     getFilteredChats,
     selectChat,
@@ -53,7 +55,7 @@ function UserSidebar(props: {
           flex: "1",
         }}
       >
-        <TextField
+        <BaseTextField
           onInput={handleSearchChats}
           type="search"
           size="large"
@@ -61,15 +63,7 @@ function UserSidebar(props: {
           placeholder="Search chat"
           loading={loadingChats}
         />
-        <div
-          className="chats-container"
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            flex: "1",
-            marginTop: "16px",
-          }}
-        >
+        <div className="container">
           <ChatsList
             existingChats={existingChats}
             prospectiveChats={prospectiveChats}

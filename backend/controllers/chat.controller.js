@@ -62,16 +62,16 @@ const getFilteredChats = async (req, res) => {
 };
 
 const sendMessage = async (req, res) => {
-  /**
-   * @var {{chatId?: string | null; userId?: string; message: string}} body
-   */
+  /** @var  {{chatId: string}} req.params */
+  const { chatId } = req.params;
+
+  /** @var {{message: string}} req.body */
   const body = req.body;
 
   const user = req.session.user;
 
   const result = await ChatService.sendChatMessage(user, {
-    userId: body.userId,
-    chatId: body.chatId,
+    chatId: chatId,
     message: body.message,
   });
 

@@ -7,3 +7,13 @@
   flex-direction: column;
   gap: 12px;
 }
+
+.chat-list .no-history-placeholder {
+  display: flex;
+  padding: 4px 8px;
+  text-align: center;
+  background-color: var(--app-bg-light-2);
+  width: fit-content;
+  margin: 0 auto;
+  border-radius: 4px;
+}

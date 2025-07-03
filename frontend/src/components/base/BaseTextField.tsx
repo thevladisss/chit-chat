@@ -9,8 +9,8 @@ import {
   useRef,
   useEffect,
 } from "react";
-import "./TextField.css";
-import { buildClasses } from "../../utils/classes.ts";
+import "./BaseTextField.css";
+import classNames from "classnames";
 
 type Props = HTMLProps<HTMLDivElement> & {
   label: string;
@@ -26,7 +26,7 @@ type Props = HTMLProps<HTMLDivElement> & {
   ) => void;
   onChange?: (e: any) => void; //TODO: Fix typing
 };
-function TextField({
+function BaseTextField({
   className,
   style,
   label,
@@ -46,7 +46,7 @@ function TextField({
 }: Props): JSX.Element {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const classes = buildClasses("text-field", className ?? "", {
+  const classes = classNames("text-field", className, {
     "text-field--default": size && size === "default",
     "text-field--small": size && size === "small",
     "text-field--large": size && size === "large",
@@ -66,6 +66,7 @@ function TextField({
 
   return (
     <div className={classes} style={style}>
+      {loading && <span className="spinner" />}
       <label htmlFor={id}>{label}</label>
       <input
         ref={inputRef}
@@ -77,9 +78,10 @@ function TextField({
         aria-required={required}
         onInput={onInput}
         onChange={onChange}
+        disabled={loading}
       />
     </div>
   );
 }
 
-export default TextField;
+export default BaseTextField;

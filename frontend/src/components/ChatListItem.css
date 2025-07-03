@@ -15,7 +15,7 @@
   display: block;
 }
 
-.chat-list-item--active {
+.selected {
   background-color: var(--app-bg-light-3);
 }
 
@@ -52,6 +52,6 @@
 }
 
 
-.chat-list-item.personal {
-  background-color: var(--app-primary-light-1);
+.unread-indicator {
+  
 }

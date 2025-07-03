@@ -19,3 +19,16 @@
 .chat-view > .chat-list {
   flex: 0 0 30%;
 }
+
+@media screen and (max-width: 639px) {
+  .chat-view {
+    margin: 0;
+    display: flex;
+    flex-direction: column-reverse;
+    height: 100vh;
+    overflow: hidden;
+  }
+}
+
+
+

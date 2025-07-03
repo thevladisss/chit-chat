@@ -4,6 +4,10 @@
 }
 
 :root {
+  /* Breakpoints */
+
+  --screen-sm: 639px;
+
   --app-color-bg: #1a1a1a;
   --app-bg-light-1: #262626; /* 10% lighter */
   --app-bg-light-2: #333333; /* 20% lighter */

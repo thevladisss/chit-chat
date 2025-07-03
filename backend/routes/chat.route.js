@@ -9,6 +9,6 @@ router.get('/', ChatController.getAllChats);
 router.get('/search', ChatController.getFilteredChats);
 router.get('/:chatId', ChatController.getChat);
 router.post('/initialize', ChatController.initializeChat);
-router.post('/', ChatController.sendMessage);
+router.post('/:chatId/messages', ChatController.sendMessage);
 
 module.exports = router;
