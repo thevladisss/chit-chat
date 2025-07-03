@@ -9,16 +9,16 @@ import { IChat } from "../../types/IChat.ts";
 import { IProspectiveChat } from "../../types/IProspectiveChat.ts";
 import { IChatMessage } from "../../types/IChatMessage.ts";
 
-export const getChatsAction = createAsyncThunk<{
-  chats: IChat[];
-  prospectiveChats: IProspectiveChat[];
-}>("chats/getChats", async () => {
-  const { data } = await getAllChats();
+export const getChatsAction = createAsyncThunk<IChat[]>(
+  "chats/getChats",
+  async () => {
+    const { data } = await getAllChats();
 
-  return data;
-});
+    return data;
+  },
+);
 
-export const getFilteredChatsAction = createAsyncThunk<IChat[]>(
+export const getFilteredChatsAction = createAsyncThunk<IChat[], string>(
   "chats/getFilteredChats",
   async (search: string) => {
     const { data } = await searchChats(search);
@@ -27,16 +27,19 @@ export const getFilteredChatsAction = createAsyncThunk<IChat[]>(
   },
 );
 
-export const selectChatAction = createAsyncThunk<{
-  id: string;
-  messages: IChatMessage[];
-}>("chats/selectChat", async (chatId: string) => {
+export const selectChatAction = createAsyncThunk<
+  {
+    id: string;
+    messages: IChatMessage[];
+  },
+  string
+>("chats/selectChat", async (chatId: string) => {
   const { data } = await getChatMessages(chatId);
 
   return data;
 });
 
-export const startNewChatAction = createAsyncThunk<IChat>(
+export const startNewChatAction = createAsyncThunk<IChat, string>(
   "chats/startChat",
   async (userId: string) => {
     const { data } = await initializeChat(userId);

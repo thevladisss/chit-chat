@@ -11,7 +11,7 @@ export const slice = createSlice({
     chats: [],
   },
   reducers: {
-    setChatsAction(state: IChatSliceState, action: PayloadAction<any[]>) {
+    setChatsAction(state, action) {
       return {
         ...state,
         chats: action.payload,
@@ -19,15 +19,13 @@ export const slice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(
-      actions.getChatsAction.fulfilled,
-      (state: IChatSliceState, action) => {
-        return {
-          ...state,
-          chats: action.payload,
-        };
-      },
-    );
+    builder.addCase(actions.getChatsAction.fulfilled, (state, action) => {
+      return {
+        ...state,
+        chats: action.payload,
+        pendingLoadChats: false,
+      };
+    });
 
     builder.addCase(actions.getChatsAction.pending, (state) => {
       return {
@@ -45,7 +43,7 @@ export const slice = createSlice({
 
     builder.addCase(
       actions.getFilteredChatsAction.fulfilled,
-      (state: IChatSliceState, action: PayloadAction) => {
+      (state, action) => {
         return {
           ...state,
           chats: action.payload,
@@ -62,7 +60,7 @@ export const slice = createSlice({
 
     builder.addCase(
       actions.getFilteredChatsAction.rejected,
-      (state: IChatSliceState, action: PayloadAction) => {
+      (state, action) => {
         return {
           ...state,
           loadChatsError: action.payload,
