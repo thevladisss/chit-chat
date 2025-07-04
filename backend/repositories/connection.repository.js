@@ -58,7 +58,7 @@ const deleteConnection = async (connectionId) => {
  * @return {Promise<void>}
  */
 const deleteByConnectionId = async (connectionId) => {
-  await ConnectionModel.deleteOne({ connectionId });
+  await ConnectionModel.deleteOne({ _id: connectionId });
 };
 
 /**

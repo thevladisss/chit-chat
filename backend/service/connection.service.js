@@ -22,7 +22,7 @@ const getAllConnections = async () => {
   return conections.map((con) => {
     return {
       ...con.toJSON(),
-      ws: memoryDb.get(con),
+      ws: memoryDb.get(con.id),
     };
   });
 };
@@ -61,7 +61,7 @@ const storeConnection = async (payload) => {
   memoryDb.set(connection.id, payload.ws);
 
   return {
-    ...connection,
+    ...connection.toJSON(),
     ws: payload.ws,
   };
 };

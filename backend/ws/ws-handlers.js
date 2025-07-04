@@ -113,11 +113,11 @@ const handleWsCloseConnection = async (connection) => {
   sessionStore.destroy(connection.sessionId, async (error) => {
     if (error) {
       console.error('Error destroying session:', error);
+    } else {
+      const allConnections = await ConnectionService.getAllConnections();
+
+      notifyOnLeaveConnection(allConnections);
     }
-
-    const allConnections = await ConnectionService.getAllConnections();
-
-    notifyOnLeaveConnection(allConnections);
   });
 };
 
