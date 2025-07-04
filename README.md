@@ -46,7 +46,7 @@ Chit-Chat is a real-time chat application that allows users to communicate insta
 
 ### Prerequisites
 
-- Node.js (v14 or higher)
+- Node.js - v24.3.0
 - npm (v6 or higher)
 
 ### Installation
