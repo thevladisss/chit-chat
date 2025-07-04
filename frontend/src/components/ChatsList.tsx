@@ -8,6 +8,8 @@ type Props = HTMLProps<HTMLDivElement> & {
   existingChats: IChat[];
   prospectiveChats: any[];
   selectedChatId: string | null;
+  isSearchingChats?: boolean;
+
   onSelectExistingChat: (chaId: string) => void;
   onInitializeChat: (userId: string) => void;
 };
@@ -17,6 +19,8 @@ function ChatsList({
   existingChats,
   prospectiveChats,
   selectedChatId,
+  isSearchingChats,
+
   onInitializeChat,
   onSelectExistingChat,
 }: Props): JSX.Element {
@@ -79,6 +83,8 @@ function ChatsList({
             );
           })}
         </ul>
+      ) : isSearchingChats ? (
+        <div className="no-chats-found-placeholder">No chats found</div>
       ) : (
         <div className="no-history-placeholder">
           You do not have any chatting history

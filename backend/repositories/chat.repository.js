@@ -1,5 +1,8 @@
+const mongoose = require('mongoose');
 const { ChatModel } = require('../models/chat.model');
-const { ObjectId } = require('mongoose').Types;
+const { ObjectId } = mongoose.Types;
+const { UserModel } = require('../models/user.model');
+const { MessageModel } = require('../models/message.model');
 /**
 
  * @type {Map<string, {
@@ -133,35 +136,98 @@ const findIdsOfAllUsersHavingChatWithUser = async (userId) => {
 /**
  * Finds all chats containing search value in either username of one of participants,
  * message text, or chat name
- * @param search
- * @return {Promise<any[]>}
+ * @param {string} search - The search term to look for
+ * @return {Promise<{
+ *   chatId: string | null;
+ *   userId: string | null;
+ *   messages: any[];
+ *   name: string;
+ *   lastMessage: string;
+ *   lastMessageTimestamp: string;
+ *   username: string | null;
+ * }[]>} - Array of chats matching the search criteria
  */
 const findByUserNameOrChatNameOrMessage = async (search) => {
-  // let chats = [...Chat.values()];
-  //
-  // for (const chat of chats) {
-  //   const users = [
-  //     ...User.values().filter((user) => {
-  //       return chat.users.includes(user.userId);
-  //     }),
-  //   ];
-  //   const messages = await MessageRepository.findAllByChatId(chat.chatId);
-  //
-  //   chat.users = users;
-  //   chat.messages = messages;
-  // }
-  //
-  // //TODO: Add filter by chat name
-  // return chats.filter((chat) => {
-  //   return (
-  //     chat.users.some(({ username }) => username === search) ||
-  //     chat.messages.some(({ text }) => text.includes(search))
-  //   );
-  // });
+  if (!search || typeof search !== 'string') {
+    return [];
+  }
 
-  const chats = await ChatModel.find({}).exec();
+  // Create a case-insensitive regex for the search term
+  const searchRegex = new RegExp(search, 'i');
 
-  return chats;
+  // Find chats by name
+  const chatsByName = await ChatModel.find({
+    name: { $regex: searchRegex }
+  })
+    .populate('users')
+    .populate('messages')
+    .exec();
+
+  // Find users by username
+  const usersByName = await UserModel.find({
+    username: { $regex: searchRegex }
+  }).exec();
+
+  // Get user IDs
+  const userIds = usersByName.map(user => user._id);
+
+  // Find chats where these users are participants
+  const chatsByParticipant = await ChatModel.find({
+    users: { $in: userIds }
+  })
+    .populate('users')
+    .populate('messages')
+    .exec();
+
+  // Find messages containing the search term
+  const messagesByContent = await MessageModel.find({
+    text: { $regex: searchRegex }
+  }).exec();
+
+  // Get chat IDs from these messages
+  const chatIdsByMessage = [...new Set(messagesByContent.map(message => message.chatId))];
+
+  // Find chats by these IDs
+  const chatsByMessage = await ChatModel.find({
+    _id: { $in: chatIdsByMessage }
+  })
+    .populate('users')
+    .populate('messages')
+    .exec();
+
+  // Combine results and remove duplicates
+  const allChats = [...chatsByName, ...chatsByParticipant, ...chatsByMessage];
+
+  // Remove duplicates by creating a Map with chat ID as key
+  const uniqueChats = new Map();
+
+  for (const chat of allChats) {
+    if (!uniqueChats.has(chat._id.toString())) {
+      uniqueChats.set(chat._id.toString(), chat);
+    }
+  }
+
+  // Format the results to match the expected return type
+  const results = [];
+
+  for (const chat of uniqueChats.values()) {
+    const chatData = {
+      chatId: chat._id.toString(),
+      userId: null,
+      messages: chat.messages.map(message => ({
+        ...message.toJSON(),
+        isPersonal: false, // We don't have the current user ID here to determine if it's personal
+      })),
+      name: chat.name || (chat.users.length > 0 ? chat.users.map(user => user.username).join(', ') : ''),
+      lastMessage: chat.messages.length > 0 ? chat.messages[chat.messages.length - 1].text : null,
+      lastMessageTimestamp: chat.messages.length > 0 ? chat.messages[chat.messages.length - 1].sentAt : null,
+      username: null,
+    };
+
+    results.push(chatData);
+  }
+
+  return results;
 };
 
 module.exports = {

@@ -54,7 +54,9 @@ const getFilteredChats = async (req, res) => {
 
   if (!search) {
     chats = await ChatService.getUserChats(user.id);
-  } else chats = await ChatService.getFilteredChats(search);
+  } else {
+    chats = await ChatService.getFilteredChats(user.id, search);
+  }
 
   return res.json({
     data: chats,

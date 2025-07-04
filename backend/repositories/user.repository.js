@@ -110,6 +110,20 @@ const findUsersNotHavingChatWithUser = async (userId) => {
   return UserModel.find({ _id: { $nin: objectIds } }).exec();
 };
 
+const findUsersWhereUsernameContains = (search) => {
+  return UserModel.find({ username: { $regex: search, $options: 'i' } }).exec();
+};
+
+const findUsersWhereUsernameContainsExcludingUserId = (
+  search,
+  excludedUserId,
+) => {
+  return UserModel.find({ username: { $regex: search, $options: 'i' } })
+    .where('_id')
+    .ne(excludedUserId)
+    .exec();
+};
+
 module.exports = {
   getAllUsers,
   createOrFindFirstUser,
@@ -119,4 +133,6 @@ module.exports = {
   findAllById,
   findUsersHavingChatWithUser,
   findUsersNotHavingChatWithUser,
+  findUsersWhereUsernameContains,
+  findUsersWhereUsernameContainsExcludingUserId,
 };

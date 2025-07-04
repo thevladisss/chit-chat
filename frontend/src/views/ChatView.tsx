@@ -15,7 +15,14 @@ function ChatView() {
     await messageSound.play();
   };
 
-  const { getChats, selectedChat, setChats } = useChatStore();
+  const {
+    getChats,
+    selectedChat,
+    setChats,
+    initializeChat,
+    selectChat,
+    getFilteredChats,
+  } = useChatStore();
   let ws;
 
   useEffect(() => {
@@ -39,7 +46,6 @@ function ChatView() {
 
     const handleMessageEvent = (e: WsCustomEvent<IWSMessageEventData>) => {
       if (!e.data.isSenderSelf) {
-
         playMessageSound();
       }
 
@@ -63,8 +69,6 @@ function ChatView() {
     };
   }, []);
 
-  const [isLoadingChats, setLoadingChats] = useState(false);
-
   const requestChats = async () => {
     getChats();
   };
@@ -78,9 +82,15 @@ function ChatView() {
   const handleInputMessage = (e: ChangeEvent<HTMLInputElement>) => {
     setMessageInput(e.target.value);
   };
+
+  const [pendingSendMesage, setPendingSendMessage] = useState(false);
+
+  //TODO: Add optimistic update for chat messages
   const handleSubmitMessage = async () => {
+    if (!selectedChat?.chatId) return;
+
     try {
-      setLoadingChats(true);
+      setPendingSendMessage(true);
 
       const { data } = await sendMessage({
         message,
@@ -91,12 +101,20 @@ function ChatView() {
       setChats(data.chats);
     } catch (e) {
     } finally {
-      setLoadingChats(false);
+      setPendingSendMessage(false);
     }
   };
 
-  const handleInitializeChat = () => {};
-  const handleSelectChat = () => {};
+  const handleInitializeChat = (userId: string) => {
+    initializeChat(userId);
+  };
+  const handleSelectChat = (chatId: string) => {
+    selectChat(chatId);
+  };
+
+  const handleSearchFilteredChats = (search: string) => {
+    getFilteredChats(search);
+  };
 
   return (
     <main className="chat-view">
@@ -104,12 +122,13 @@ function ChatView() {
         message={message}
         handleInputMessage={handleInputMessage}
         handleSubmitMessage={handleSubmitMessage}
-        pendingSendMessage={false}
-        isPendingMessageSend={isLoadingChats}
+        isPendingMessageSend={pendingSendMesage}
       />
       <UserSidebar
-        handleInitializeChat={handleInitializeChat}
-        handleSelectChat={handleSelectChat}
+        onSearchFilteredChats={handleSearchFilteredChats}
+        onInitializeChat={handleInitializeChat}
+        onSelectExistingChat={handleSelectChat}
+        pendingSearchFilteredChats={false}
       ></UserSidebar>
     </main>
   );

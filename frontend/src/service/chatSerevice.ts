@@ -32,7 +32,9 @@ export const getChatMessages = (chatId: string) => {
 };
 
 export const sendMessage = (payload: { chatId: string; message: string }) => {
-  return postRequest(`/api/chats/${payload.chatId}/messages`, {
+  return postRequest<{
+    chats: IChat[];
+  }>(`/api/chats/${payload.chatId}/messages`, {
     message: payload.message,
   });
 };

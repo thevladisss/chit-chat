@@ -183,19 +183,43 @@ const sendChatMessage = async (sender, data) => {
 
 /**
  *
- * @param search {string}
- * @return {Promise<{
- *   chatId: string | null;
- *   userId: string | null;
- *   messages: any[];
- *   name: string;
- *   lastMessage: string;
- *   lastMessageTimestamp: string;
- *   username: string | null;
- * }[]>}
+ * @param userId {string}
+ * @param search
+ * @return {Promise<*[]>}
  */
-const getFilteredChats = async (search) => {
-  return ChatRepository.findByUserNameOrChatNameOrMessage(search);
+const getFilteredChats = async (userId, search) => {
+  const chats = await ChatRepository.findByUserNameOrChatNameOrMessage(search);
+
+  const prospectiveChatters =
+    await UserRepository.findUsersWhereUsernameContainsExcludingUserId(
+      search,
+      userId,
+    );
+
+  const results = [];
+
+  for (const item of [...chats, ...prospectiveChatters]) {
+    const shared = {
+      chatId: null,
+      messages: [],
+      lastMessage: null,
+      ...item.toJSON(),
+    };
+
+    if (item instanceof ChatModel) {
+      shared.messages = item.messages.map((item) => ({
+        ...item.toJSON(),
+        isPersonal: item.userId.toString() === userId,
+      }));
+      shared.name = item.users.find((user) => user.id !== userId)?.username;
+    } else {
+      shared.name = item.username;
+    }
+
+    results.push(shared);
+  }
+
+  return results;
 };
 
 module.exports = {
