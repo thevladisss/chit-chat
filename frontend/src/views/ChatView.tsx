@@ -6,8 +6,15 @@ import UserSidebar from "../components/UserSidebar.tsx";
 
 import { useChatStore } from "../hooks/useChatStore.ts";
 import { ServerSideEventsEnum } from "../enums/ServerSideEventsEnum.ts";
+import { IWSMessageEventData } from "../types/ws/IWSMessageEventData.ts";
+
+const messageSound = new Audio("/sounds/message.mp3");
 
 function ChatView() {
+  const playMessageSound = async () => {
+    await messageSound.play();
+  };
+
   const { getChats, selectedChat, setChats } = useChatStore();
   let ws;
 
@@ -30,7 +37,12 @@ function ChatView() {
       setChats(e.data);
     };
 
-    const handleMessageEvent = (e: WsCustomEvent) => {
+    const handleMessageEvent = (e: WsCustomEvent<IWSMessageEventData>) => {
+      if (!e.data.isSenderSelf) {
+
+        playMessageSound();
+      }
+
       setChats(e.data.chats);
     };
 

@@ -170,6 +170,8 @@ const sendChatMessage = async (sender, data) => {
       JSON.stringify({
         event: ServerChatEventEnum.MESSAGE,
         data: {
+          sender: sender.userId,
+          isSenderSelf: sender.userId === con.userId,
           chats: conChats,
         },
       }),
