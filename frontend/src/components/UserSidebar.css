@@ -1,0 +1,13 @@
+.user-sidebar {
+  width: 380px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: var(--app-bg-light-1);
+}
+
+.user-sidebar-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
