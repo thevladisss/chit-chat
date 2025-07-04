@@ -25,6 +25,12 @@ type Props = HTMLProps<HTMLDivElement> & {
     e: BaseSyntheticEvent<InputEvent, HTMLInputElement, HTMLInputElement>,
   ) => void;
   onChange?: (e: any) => void; //TODO: Fix typing
+  onFocus?: (
+    e: BaseSyntheticEvent<FocusEvent, HTMLInputElement, HTMLInputElement>,
+  ) => void;
+  onBlur?: (
+    e: BaseSyntheticEvent<FocusEvent, HTMLInputElement, HTMLInputElement>,
+  ) => void;
 };
 function BaseTextField({
   className,
@@ -37,10 +43,11 @@ function BaseTextField({
   square,
   size = "default",
   loading,
-
   required,
-
   immediateFocus,
+
+  onBlur,
+  onFocus,
   onInput,
   onChange,
 }: Props): JSX.Element {
@@ -77,9 +84,11 @@ function BaseTextField({
         placeholder={placeholder}
         required={required}
         aria-required={required}
+        disabled={loading}
         onInput={onInput}
         onChange={onChange}
-        disabled={loading}
+        onFocus={onFocus}
+        onBlur={onBlur}
       />
     </div>
   );
