@@ -1,10 +1,10 @@
 import React from "react";
+import "./SidebarUserInformation.css";
 
 function SidebarUserInformation({ username }: any): JSX.Element {
   return (
     <div
-      className="flex justify-between align-center"
-      style={{ padding: "8px" }}
+      className="flex justify-between align-center sidebar-user-info"
     >
       <h2>
         👉 Hello, <strong>{username}</strong>

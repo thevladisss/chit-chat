@@ -31,10 +31,10 @@ function SignInForm({ onUserAuthenticate }: Props): JSX.Element {
     <div className="sign-in-form">
       <form onSubmit={handleSubmit}>
         <fieldset>
-          <legend style={{ width: "100%", marginBottom: "8px" }}>
-            <h1 style={{ textAlign: "center", fontSize: "56px" }}>Welcome</h1>
+          <legend>
+            <h1>Welcome</h1>
           </legend>
-          <h2 style={{ textAlign: "center", fontSize: "24px", margin: 0, marginTop: "8px", marginBottom: "8px" }}>
+          <h2>
             Please enter your username
           </h2>
           <BaseTextField

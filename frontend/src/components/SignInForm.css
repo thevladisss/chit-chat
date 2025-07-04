@@ -22,3 +22,21 @@
     display: flex;
     justify-content: end;
 }
+
+.sign-in-form legend {
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+.sign-in-form h1 {
+    text-align: center;
+    font-size: 56px;
+}
+
+.sign-in-form h2 {
+    text-align: center;
+    font-size: 24px;
+    margin: 0;
+    margin-top: 8px;
+    margin-bottom: 8px;
+}

@@ -4,6 +4,7 @@ import BaseTextField from "./base/BaseTextField.tsx";
 import ChatsList from "./ChatsList.tsx";
 import { useChatStore } from "../hooks/useChatStore.ts";
 import SidebarUserInformation from "./SidebarUserInformation.tsx";
+import "./UserSidebar.css";
 
 type Props = {
   handleInitializeChat: any;
@@ -37,24 +38,9 @@ function UserSidebar(props: Props): JSX.Element {
   };
 
   return (
-    <div
-      className="user-sidebar"
-      style={{
-        width: "380px",
-        display: "flex",
-        flexDirection: "column",
-        overflow: "hidden",
-        backgroundColor: " var(--app-bg-light-1)",
-      }}
-    >
+    <div className="user-sidebar">
       <SidebarUserInformation username={user ? user.username : ""} />
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          flex: "1",
-        }}
-      >
+      <div className="user-sidebar-content">
         <BaseTextField
           onInput={handleSearchChats}
           type="search"
