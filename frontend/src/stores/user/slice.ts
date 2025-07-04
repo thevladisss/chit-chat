@@ -3,7 +3,7 @@ import { IUser } from "../types/IUser.ts";
 import * as actions from "./actions.ts";
 
 export const slice = createSlice({
-  name: "user",
+  name: "userState",
   initialState: null,
   reducers: {
     setUser: (_, action: PayloadAction<IUser>) => {

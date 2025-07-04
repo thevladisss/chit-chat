@@ -12,6 +12,6 @@ export type IChatSliceState = {
 export type IUserSliceState = IUser | null;
 
 export type IRootState = {
-  user: IUserSliceState;
-  chats: IChatSliceState;
+  userState: IUserSliceState;
+  chatState: IChatSliceState;
 };

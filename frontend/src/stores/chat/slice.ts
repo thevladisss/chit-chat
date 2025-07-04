@@ -3,7 +3,7 @@ import * as actions from "./actions.ts";
 import { IChatSliceState } from "../../types/IRootState.ts";
 
 export const slice = createSlice({
-  name: "chats",
+  name: "chatState",
   initialState: {
     selectedChatId: null,
     pendingLoadChats: false,

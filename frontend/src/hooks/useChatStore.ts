@@ -14,6 +14,9 @@ import {
   selectSelectedChatMessages,
 } from "../stores/user/selectors.ts";
 
+// TODO: Fix the type for dispatch calls below. Currently using 'any' which is not type-safe.
+// Should use proper AppDispatch type from the store.
+
 export const useChatStore = () => {
   const dispatch = useDispatch();
 

@@ -6,7 +6,6 @@ import {
   searchChats,
 } from "../../service/chatSerevice.ts";
 import { IChat } from "../../types/IChat.ts";
-import { IProspectiveChat } from "../../types/IProspectiveChat.ts";
 import { IChatMessage } from "../../types/IChatMessage.ts";
 
 export const getChatsAction = createAsyncThunk<IChat[]>(

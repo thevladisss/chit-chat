@@ -4,8 +4,8 @@ import chatsReducer from "./chat/slice.ts";
 
 const store = configureStore({
   reducer: {
-    user: userReducer,
-    chats: chatsReducer,
+    userState: userReducer,
+    chatState: chatsReducer,
   },
 });
 
