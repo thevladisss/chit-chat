@@ -3,12 +3,14 @@ import { ChangeEvent, useEffect, useState } from "react";
 import { sendMessage } from "../service/chatSerevice";
 import ChatComposer from "../components/ChatComposer.tsx";
 import UserSidebar from "../components/UserSidebar.tsx";
-
 import { useChatStore } from "../hooks/useChatStore.ts";
 import { ServerSideEventsEnum } from "../enums/ServerSideEventsEnum.ts";
 import { IWSMessageEventData } from "../types/ws/IWSMessageEventData.ts";
+import { debounce } from "lodash-es";
 
 const messageSound = new Audio("/sounds/message.mp3");
+
+const SEARCH_DEBOUNCE_DELAY = 300; // milliseconds
 
 function ChatView() {
   const playMessageSound = async () => {
@@ -23,7 +25,8 @@ function ChatView() {
     selectChat,
     getFilteredChats,
   } = useChatStore();
-  let ws;
+
+  let ws: WebSocket | null = null;
 
   useEffect(() => {
     if (!ws) {
@@ -83,7 +86,7 @@ function ChatView() {
     setMessageInput(e.target.value);
   };
 
-  const [pendingSendMesage, setPendingSendMessage] = useState(false);
+  const [pendingSendMessage, setPendingSendMessage] = useState(false);
 
   //TODO: Add optimistic update for chat messages
   const handleSubmitMessage = async () => {
@@ -112,9 +115,9 @@ function ChatView() {
     selectChat(chatId);
   };
 
-  const handleSearchFilteredChats = (search: string) => {
+  const handleSearchFilteredChats = debounce((search: string) => {
     getFilteredChats(search);
-  };
+  }, SEARCH_DEBOUNCE_DELAY);
 
   return (
     <main className="chat-view">
@@ -122,7 +125,7 @@ function ChatView() {
         message={message}
         handleInputMessage={handleInputMessage}
         handleSubmitMessage={handleSubmitMessage}
-        isPendingMessageSend={pendingSendMesage}
+        isPendingMessageSend={pendingSendMessage}
       />
       <UserSidebar
         onSearchFilteredChats={handleSearchFilteredChats}
