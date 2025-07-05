@@ -15,6 +15,7 @@ Chit-Chat is a real-time chat application that allows users to communicate insta
 - Redux (state management with @reduxjs/toolkit)
 - Axios (HTTP client)
 - WebSockets (for real-time communication)
+- Material Design Icons (@mdi/react & @mdi/js)
 - ESLint & Prettier (code quality)
 
 ### Backend

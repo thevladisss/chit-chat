@@ -4,5 +4,6 @@
 
 
 .user-controls {
-
+  display: inline-flex;
+  align-items: center;
 }

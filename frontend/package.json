@@ -9,6 +9,8 @@
 		"format": "npx prettier --write src/**/*.{tsx,jsx,ts,js}"
 	},
 	"dependencies": {
+		"@mdi/js": "^7.4.47",
+		"@mdi/react": "^1.6.1",
 		"@reduxjs/toolkit": "^2.6.0",
 		"axios": "^1.7.9",
 		"classnames": "^2.5.1",
