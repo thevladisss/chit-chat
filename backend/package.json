@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon ./bin/www",
-    "debug": "nodemon --inspect ./bin/www",
+    "start": "nodemon ./server.js",
+    "debug": "nodemon --inspect ./server.js",
     "format": "prettier --write **/*.{js,ts}",
     "test": "jest",
     "test:watch": "jest --watch"
