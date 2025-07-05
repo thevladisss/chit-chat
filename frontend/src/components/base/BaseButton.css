@@ -24,3 +24,11 @@
 .base-button.loading {
   pointer-events: none;
 }
+
+.base-button.icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4px;
+  height: auto;
+}
