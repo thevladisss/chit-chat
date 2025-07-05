@@ -1,14 +1,21 @@
 import "./ChatInputModule.css";
-import { ChangeEvent, FormEvent, type JSX, useState } from "react";
+import { ChangeEvent, FormEvent, type JSX } from "react";
 import BaseTextField from "./base/BaseTextField.tsx";
 import BaseButton from "./base/BaseButton.tsx";
+
+type Props = {
+  onSubmitMessage: (message: string) => void;
+  onInputMessage: (e: ChangeEvent<HTMLInputElement>) => void;
+  messageInput: string;
+  loading: boolean;
+};
 
 function ChatInputModule({
   onSubmitMessage,
   onInputMessage,
   messageInput,
   loading,
-}: any): JSX.Element {
+}: Props): JSX.Element {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 

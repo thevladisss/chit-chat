@@ -1,14 +1,13 @@
 import "./SignInForm.css";
 import { type BaseSyntheticEvent, JSX, useState } from "react";
-import { postRequest } from "../service";
 import BaseTextField from "./base/BaseTextField.tsx";
 import BaseButton from "./base/BaseButton.tsx";
-import { useDispatch } from "../hooks/useDispatch.ts";
-import { signInAction } from "../stores/user/actions.ts";
 import { useUserStore } from "../hooks/useUserStore.tsx";
+import { IUser } from "../types/IUser.ts";
 
 type Props = {
-  onUserAuthenticate: (user: any) => void;
+  // Note: This prop is passed but not currently used in the component
+  onUserAuthenticate: (user: IUser) => void;
 };
 function SignInForm({ onUserAuthenticate }: Props): JSX.Element {
   const { signUpUser } = useUserStore();

@@ -4,9 +4,15 @@ import ChatListItem from "./ChatListItem.tsx";
 import { IChat } from "../types/IChat.ts";
 import classNames from "classnames";
 
+type IProspectiveChat = {
+  userId: string;
+  name: string;
+  lastMessageTimestamp?: string;
+}
+
 type Props = HTMLProps<HTMLDivElement> & {
   existingChats: IChat[];
-  prospectiveChats: any[];
+  prospectiveChats: IProspectiveChat[];
   selectedChatId: string | null;
   isSearchingChats?: boolean;
 

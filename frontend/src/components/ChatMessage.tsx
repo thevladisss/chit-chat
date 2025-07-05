@@ -1,13 +1,7 @@
 import "./ChatMessage.css";
 import { type JSX } from "react";
 
-function ChatMessage({
-  isPersonal,
-  isSeen,
-  isDelivered,
-  sentTimestamp,
-  text,
-}: {
+type Props = {
   messageId: string;
   chatId: string;
   text: string;
@@ -15,7 +9,14 @@ function ChatMessage({
   isSeen: boolean;
   isDelivered: boolean;
   sentTimestamp: string;
-}): JSX.Element {
+}
+
+function ChatMessage({
+  isPersonal,
+  isSeen,
+  sentTimestamp,
+  text,
+}: Props): JSX.Element {
   return (
     <div
       className={`chat-message ${isPersonal ? "chat-message--personal" : ""}`}

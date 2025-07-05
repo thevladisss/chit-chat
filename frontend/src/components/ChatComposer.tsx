@@ -1,5 +1,5 @@
 import "./ChatComposer.css";
-import { ChangeEvent, HTMLProps, JSX, useState } from "react";
+import { ChangeEvent, HTMLProps, JSX } from "react";
 import ChatInput from "./ChatInputModule.tsx";
 import ChatMessage from "./ChatMessage.tsx";
 import { useChatStore } from "../hooks/useChatStore.ts";

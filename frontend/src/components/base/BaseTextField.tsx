@@ -1,10 +1,7 @@
 import {
-  useState,
   JSX,
   HTMLProps,
   type BaseSyntheticEvent,
-  type ChangeEventHandler,
-  SyntheticEvent,
   ChangeEvent,
   useRef,
   useEffect,
@@ -24,7 +21,9 @@ type Props = HTMLProps<HTMLDivElement> & {
   onInput?: (
     e: BaseSyntheticEvent<InputEvent, HTMLInputElement, HTMLInputElement>,
   ) => void;
-  onChange?: (e: any) => void; //TODO: Fix typing
+  onChange?: (
+    e: BaseSyntheticEvent<ChangeEvent, HTMLInputElement, HTMLInputElement>,
+  ) => void;
   onFocus?: (
     e: BaseSyntheticEvent<FocusEvent, HTMLInputElement, HTMLInputElement>,
   ) => void;

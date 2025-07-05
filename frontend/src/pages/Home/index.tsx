@@ -1,8 +1,5 @@
 import './style.css';
-import { useEffect, useMemo, useState } from 'react';
-import SignInDialog from "../../components/SignInDialog";
-
-import {getRequest} from "../../service";
+import { useEffect, useState } from 'react';
 import SignInForm from "../../components/SignInForm.tsx";
 import {getAllChats} from "../../service/chatSerevice";
 import {IChat} from "../../types/IChat.ts";

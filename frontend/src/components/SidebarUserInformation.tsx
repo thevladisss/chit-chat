@@ -1,7 +1,10 @@
-import React from "react";
 import "./SidebarUserInformation.css";
 
-function SidebarUserInformation({ username }: any): JSX.Element {
+type Props = {
+  username: string;
+}
+
+function SidebarUserInformation({ username }: Props): JSX.Element {
   return (
     <div
       className="flex justify-between align-center sidebar-user-info"
@@ -9,6 +12,9 @@ function SidebarUserInformation({ username }: any): JSX.Element {
       <h2>
         👉 Hello, <strong>{username}</strong>
       </h2>
+      <div className="user-controls">
+
+      </div>
     </div>
   );
 }
