@@ -10,7 +10,7 @@ import "./BaseTextField.css";
 import classNames from "classnames";
 
 type Props = HTMLProps<HTMLDivElement> & {
-  label: string;
+  label?: string;
   placeholder?: string;
   name: string;
   value: string;
@@ -53,11 +53,10 @@ function BaseTextField({
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const classes = classNames("text-field", className, {
-    "text-field--default": size && size === "default",
-    "text-field--small": size && size === "small",
-    "text-field--large": size && size === "large",
-    "text-field--loading": loading,
-    "text-field--square": square,
+    "small": size && size === "small",
+    "large": size && size === "large",
+    "loading": loading,
+    "square": square,
   });
 
   const setFocus = () => {
@@ -73,7 +72,7 @@ function BaseTextField({
   return (
     <div className={classes} style={style}>
       {loading && <span className="spinner" />}
-      <label htmlFor={id}>{label}</label>
+      {label && <label htmlFor={id}>{label}</label>}
       <input
         ref={inputRef}
         type="text"
