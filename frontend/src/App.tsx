@@ -7,10 +7,10 @@ import "../style/text-utils.css";
 import "../style/layout-utils.css";
 import ChatView from "./views/ChatView.tsx";
 import SignInView from "./views/SignInView.tsx";
-import { useUser } from "./hooks/useUser.tsx";
+import { useUserStore } from "./hooks/useUserStore.tsx";
 
 export function App() {
-  const { user } = useUser();
+  const { user } = useUserStore();
 
   return <div>{user ? <ChatView /> : <SignInView />}</div>;
 }

@@ -1,5 +1,5 @@
 import { JSX, BaseSyntheticEvent, useState } from "react";
-import { useUser } from "../hooks/useUser.tsx";
+import { useUserStore } from "../hooks/useUserStore.tsx";
 import BaseTextField from "./base/BaseTextField.tsx";
 import ChatsList from "./ChatsList.tsx";
 import { useChatStore } from "../hooks/useChatStore.ts";
@@ -19,7 +19,7 @@ function UserSidebar({
   onSearchFilteredChats,
   pendingSearchFilteredChats,
 }: Props): JSX.Element {
-  const { user } = useUser();
+  const { user } = useUserStore();
   const { existingChats, prospectiveChats, selectedChat } = useChatStore();
 
   const handleSearchChats = (event: BaseSyntheticEvent<InputEvent>) => {

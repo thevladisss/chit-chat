@@ -5,13 +5,13 @@ import BaseTextField from "./base/BaseTextField.tsx";
 import BaseButton from "./base/BaseButton.tsx";
 import { useDispatch } from "../hooks/useDispatch.ts";
 import { signInAction } from "../stores/user/actions.ts";
-import { useUser } from "../hooks/useUser.tsx";
+import { useUserStore } from "../hooks/useUserStore.tsx";
 
 type Props = {
   onUserAuthenticate: (user: any) => void;
 };
 function SignInForm({ onUserAuthenticate }: Props): JSX.Element {
-  const { signUpUser } = useUser();
+  const { signUpUser } = useUserStore();
   const [username, setUsername] = useState("");
 
   const handleInputUsername = (

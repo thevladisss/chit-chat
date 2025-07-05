@@ -4,7 +4,7 @@ import { signInAction } from "../stores/user/actions.ts";
 import { selectUser } from "../stores/chat/selectors.ts";
 import { IUser } from "../types/IUser.ts";
 
-export const useUser = () => {
+export const useUserStore = () => {
   const dispatch = useDispatch();
   const signUpUser = (username: string) => {
     dispatch<any>(signInAction(username));
