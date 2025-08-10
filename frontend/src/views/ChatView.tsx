@@ -30,7 +30,8 @@ function ChatView() {
 
   useEffect(() => {
     if (!ws) {
-      ws = new WebSocket(import.meta.env.VITE_WS_URL);
+      ws = new WebSocket(import.meta.env.VITE_WS_URL || "ws://localhost:3000");
+      (window as any).ws = ws;
     }
 
     ws.onopen = () => {

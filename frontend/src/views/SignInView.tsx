@@ -1,12 +1,17 @@
 import "./SignInView.css";
-import { type JSX, useState } from "react";
+import { type JSX } from "react";
 import SignInForm from "../components/SignInForm.tsx";
 import { IUser } from "../types/IUser.ts";
+import { useNavigate } from "react-router-dom";
+import { useUser } from "../hooks/useUser.tsx";
 
-function SignInView(props: any): JSX.Element {
-  const [user, setUser] = useState<IUser | null>(null);
+function SignInView(): JSX.Element {
+  const navigate = useNavigate();
+  const { signUpUser } = useUser();
+
   const handleUserAuthenticate = (user: IUser) => {
-    setUser(user);
+    signUpUser(user.username);
+    navigate("/chat");
   };
 
   return (
