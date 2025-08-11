@@ -1,9 +1,8 @@
 import "./SignInForm.css";
 import { type BaseSyntheticEvent, JSX, useState } from "react";
-import BaseTextField from "./base/BaseTextField.tsx";
+import TextField from "./base/TextField.tsx";
 import BaseButton from "./base/BaseButton.tsx";
-import { useUserStore } from "../hooks/useUserStore.tsx";
-import { IUser } from "../types/IUser.ts";
+import { useUser } from "../hooks/useUser.tsx";
 
 type Props = {
   // Note: This prop is passed but not currently used in the component
@@ -14,14 +13,14 @@ function SignInForm({ onUserAuthenticate }: Props): JSX.Element {
   const [username, setUsername] = useState("");
 
   const handleInputUsername = (
-    e: BaseSyntheticEvent<InputEvent, HTMLInputElement>,
+    e: BaseSyntheticEvent<InputEvent, HTMLInputElement>
   ) => {
     if (e.target?.value) {
       setUsername(e.target.value);
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     signUpUser(username);
   };
@@ -31,14 +30,14 @@ function SignInForm({ onUserAuthenticate }: Props): JSX.Element {
       <form onSubmit={handleSubmit}>
         <fieldset>
           <legend>
-            <h1>Welcome</h1>
+            <h1>
+              <span>Chit-Chat:</span> Your instant chatting application
+            </h1>
           </legend>
-          <h2>
-            Please enter your username
-          </h2>
-          <BaseTextField
-            immediateFocus
-            size="large"
+          <h2>Come up with the unique username and proceed with chatting</h2>
+          <TextField
+            name="username"
+            immediateFocus={true}
             placeholder="John Doe..."
             onInput={handleInputUsername}
             value={username}
