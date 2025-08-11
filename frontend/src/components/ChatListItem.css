@@ -3,7 +3,7 @@
   padding: 8px 12px;
   transition: all 0.2s ease-in;
   height: 80px;
-  background-color: var(--app-bg-light-2);
+  border-radius: 4px;
 }
 
 .chat-list-item:hover {
@@ -11,7 +11,7 @@
 }
 
 .chat-list-item:hover {
-  background-color: var(--app-bg-light-3);
+  background-color: var(--app-bg-dark-1);
   display: block;
 }
 
@@ -51,7 +51,5 @@
   color: var(--app-primary-light-3);
 }
 
-
 .unread-indicator {
-  
 }

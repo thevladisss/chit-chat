@@ -3,6 +3,19 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  position: relative;
+  padding-right: 12px;
+}
+
+.user-sidebar:after {
+  position: absolute;
+  content: "";
+  width: 2px;
+  height: 90%;
+  background-color: var(--app-bg-light-3);
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
 }
 
 .user-sidebar-header {

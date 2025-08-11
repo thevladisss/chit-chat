@@ -49,6 +49,7 @@
   display: flex;
   overflow: hidden;
   padding-top: 20px;
+  flex: 1;
 }
 
 .app-layout-main {
