@@ -28,6 +28,7 @@ export function App() {
             element: Element,
             protected: isProtected,
             public: isPublic,
+            children,
           }) => (
             <Route
               key={path}
@@ -45,7 +46,15 @@ export function App() {
                   <Element />
                 )
               }
-            />
+            >
+              {children?.map((child) => (
+                <Route
+                  key={child.path}
+                  path={child.path}
+                  element={<child.element />}
+                />
+              ))}
+            </Route>
           )
         )}
 

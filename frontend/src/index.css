@@ -60,6 +60,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+
+  background-color: var(--app-color-bg);
 }
 
 #app {
@@ -71,7 +73,6 @@ body {
 header {
   display: flex;
   justify-content: flex-end;
-  background-color: #673ab8;
 }
 
 header nav {
@@ -118,7 +119,6 @@ h6 {
 
 @media (prefers-color-scheme: dark) {
   :root {
-    color: #ccc;
-    background-color: #1a1a1a;
+    /* overrride vars */
   }
 }

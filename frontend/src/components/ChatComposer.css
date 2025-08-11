@@ -1,5 +1,4 @@
 .chat {
-  background-color: var(--app-color-bg-lighter);
   height: 100%;
   display: flex;
   flex-direction: column;

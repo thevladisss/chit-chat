@@ -1,0 +1,61 @@
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.app-layout-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+}
+
+.app-layout-header h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--app-color-primary);
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.sign-out-btn {
+  padding: 8px 16px;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.sign-out-btn:hover {
+  background: var(--app-color-danger-hover, #c82333);
+}
+
+.app-layout-content {
+  display: flex;
+  overflow: hidden;
+}
+
+.app-layout-main {
+  display: flex;
+}
+
+.app-layout-content div {
+  flex: 0 0 300px;
+}
+.app-layout-content main {
+  flex: 1;
+}
+
+.app-layout-content main > div {
+  flex: 1;
+}
+
+@media screen and (max-width: 639px) {
+  .app-layout-content {
+    flex-direction: column;
+  }
+}

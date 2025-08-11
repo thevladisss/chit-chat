@@ -1,5 +1,6 @@
 import AuthView from "../views/AuthView.tsx";
 import ChatView from "../views/ChatView.tsx";
+import AppLayout from "../layouts/AppLayout.tsx";
 import { AUTH_PATH, CHAT_PATH } from "../constants/route-paths.ts";
 
 export interface RouteConfig {
@@ -7,6 +8,7 @@ export interface RouteConfig {
   element: React.ComponentType;
   protected?: boolean;
   public?: boolean;
+  children?: RouteConfig[];
 }
 
 export const routes: RouteConfig[] = [
@@ -16,8 +18,14 @@ export const routes: RouteConfig[] = [
     public: true,
   },
   {
-    path: CHAT_PATH,
-    element: ChatView,
+    path: "",
+    element: AppLayout,
     protected: true,
+    children: [
+      {
+        path: CHAT_PATH,
+        element: ChatView,
+      },
+    ],
   },
 ];
