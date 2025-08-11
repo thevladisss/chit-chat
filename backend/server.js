@@ -4,12 +4,12 @@
  * Module dependencies.
  */
 
-const app = require('../app');
-const sessionParser = require('../app').sessionParser;
+const app = require('./app');
+const sessionParser = require('./app').sessionParser;
 const debug = require('debug')('real-time-chatting:server');
 const http = require('http');
 const WebSocket = require('ws');
-const wsHandlers = require('../ws/ws-handlers');
+const wsHandlers = require('./ws/ws-handlers');
 
 /**
  * Get port from environment and store in Express.
@@ -120,4 +120,4 @@ const bootApplication = async () => {
   });
 };
 
-bootApplication()
+bootApplication();
