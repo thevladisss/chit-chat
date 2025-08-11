@@ -6,6 +6,9 @@ Simple real-time chatting application
 
 Chit-Chat is a real-time chat application that allows users to communicate instantly. The application consists of a Node.js/Express backend and a React frontend, providing a seamless and responsive user experience for real-time messaging.
 
+<img width="1717" height="898" alt="image" src="https://github.com/user-attachments/assets/bddcdcac-da39-42bf-9eb0-5bbb7984eb9e" />
+
+
 ## Technologies Used
 
 ### Frontend
