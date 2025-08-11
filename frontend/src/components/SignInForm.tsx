@@ -1,15 +1,16 @@
 import "./SignInForm.css";
 import { type BaseSyntheticEvent, JSX, useState } from "react";
-import TextField from "./base/TextField.tsx";
+import BaseTextField from "./base/BaseTextField.tsx";
 import BaseButton from "./base/BaseButton.tsx";
 import { useUser } from "../hooks/useUser.tsx";
+import { IUser } from "../types/IUser.ts";
 
 type Props = {
   // Note: This prop is passed but not currently used in the component
   onUserAuthenticate: (user: IUser) => void;
 };
 function SignInForm({ onUserAuthenticate }: Props): JSX.Element {
-  const { signUpUser } = useUserStore();
+  const { signUpUser } = useUser();
   const [username, setUsername] = useState("");
 
   const handleInputUsername = (
@@ -35,7 +36,7 @@ function SignInForm({ onUserAuthenticate }: Props): JSX.Element {
             </h1>
           </legend>
           <h2>Come up with the unique username and proceed with chatting</h2>
-          <TextField
+          <BaseTextField
             name="username"
             immediateFocus={true}
             placeholder="John Doe..."

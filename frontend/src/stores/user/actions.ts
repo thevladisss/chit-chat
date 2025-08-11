@@ -9,3 +9,7 @@ export const signInAction = createAsyncThunk(
     return data;
   },
 );
+
+export const signOutAction = () => ({
+  type: "user/signOut",
+});

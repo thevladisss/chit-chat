@@ -26,10 +26,6 @@ function AppLayout() {
       </header>
 
       <div className="app-layout-content">
-        <div>
-          <UserSidebar />
-        </div>
-
         <main className="app-layout-main">
           <Outlet />
         </main>

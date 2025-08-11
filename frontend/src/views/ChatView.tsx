@@ -121,20 +121,20 @@ function ChatView() {
   }, SEARCH_DEBOUNCE_DELAY);
 
   return (
-    <main className="chat-view">
-      <ChatComposer
-        message={message}
-        handleInputMessage={handleInputMessage}
-        handleSubmitMessage={handleSubmitMessage}
-        isPendingMessageSend={pendingSendMessage}
-      />
+    <div className="view chat-view">
       <UserSidebar
         onSearchFilteredChats={handleSearchFilteredChats}
         onInitializeChat={handleInitializeChat}
         onSelectExistingChat={handleSelectChat}
         pendingSearchFilteredChats={false}
       ></UserSidebar>
-    </main>
+      <ChatComposer
+        message={message}
+        handleInputMessage={handleInputMessage}
+        handleSubmitMessage={handleSubmitMessage}
+        isPendingMessageSend={pendingSendMessage}
+      />
+    </div>
   );
 }
 

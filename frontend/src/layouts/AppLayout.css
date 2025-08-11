@@ -9,15 +9,26 @@
   justify-content: space-between;
   align-items: center;
   padding: 16px 24px;
+  position: relative;
+}
+
+.app-layout-header:after {
+  position: absolute;
+  content: "";
+  width: 95%;
+  height: 2px;
+  background-color: var(--app-bg-light-3);
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%);
 }
 
 .app-layout-header h1 {
   margin: 0;
   font-size: 24px;
   font-weight: 600;
-  color: var(--app-color-primary);
+  color: var(--app-primary-light-1);
   font-weight: bold;
-  text-decoration: underline;
 }
 
 .sign-out-btn {
@@ -37,15 +48,13 @@
 .app-layout-content {
   display: flex;
   overflow: hidden;
+  padding-top: 20px;
 }
 
 .app-layout-main {
   display: flex;
 }
 
-.app-layout-content div {
-  flex: 0 0 300px;
-}
 .app-layout-content main {
   flex: 1;
 }
