@@ -1,6 +1,6 @@
-import SignInView from "../views/SignInView.tsx";
+import AuthView from "../views/AuthView.tsx";
 import ChatView from "../views/ChatView.tsx";
-import { SIGN_IN_PATH, CHAT_PATH } from "../constants/route-paths.ts";
+import { AUTH_PATH, CHAT_PATH } from "../constants/route-paths.ts";
 
 export interface RouteConfig {
   path: string;
@@ -11,8 +11,8 @@ export interface RouteConfig {
 
 export const routes: RouteConfig[] = [
   {
-    path: SIGN_IN_PATH,
-    element: SignInView,
+    path: AUTH_PATH,
+    element: AuthView,
     public: true,
   },
   {

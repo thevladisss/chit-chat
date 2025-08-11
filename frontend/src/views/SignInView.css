@@ -1,8 +1,0 @@
-.sign-in-view {
-  width: min(90%, 700px);
-  margin: 120px auto 0;
-}
-
-.sign-in-view .sign-in-form {
-  border: 1px solid var(--app-color-border);
-}

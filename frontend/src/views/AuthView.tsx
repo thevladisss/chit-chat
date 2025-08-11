@@ -1,24 +1,25 @@
-import "./SignInView.css";
+import "./AuthView.css";
 import { type JSX } from "react";
 import SignInForm from "../components/SignInForm.tsx";
 import { IUser } from "../types/IUser.ts";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../hooks/useUser.tsx";
+import { CHAT_PATH } from "../constants/route-paths.ts";
 
-function SignInView(): JSX.Element {
+function AuthView(): JSX.Element {
   const navigate = useNavigate();
   const { signUpUser } = useUser();
 
   const handleUserAuthenticate = (user: IUser) => {
     signUpUser(user.username);
-    navigate("/chat");
+    navigate(CHAT_PATH);
   };
 
   return (
-    <div className="sign-in-view">
+    <div className="auth-view">
       <SignInForm onUserAuthenticate={handleUserAuthenticate}></SignInForm>
     </div>
   );
 }
 
-export default SignInView;
+export default AuthView;
