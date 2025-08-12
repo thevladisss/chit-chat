@@ -21,12 +21,12 @@ function ChatListItem({
   onSelectChat,
 }: ChatListItemProps): JSX.Element {
   const classes = classNames("chat-list-item", {
-    "selected": isSelected,
+    selected: isSelected,
   });
 
   return (
-    <li className={classes} tabIndex={0}>
-      <a role="button" onClick={() => onSelectChat()}>
+    <li className={classes} tabIndex={0} onClick={() => onSelectChat()}>
+      <a role="button">
         <div className="flex justify-between">
           <span className="chat-name">{chatName}</span>
           <div className="flex">
