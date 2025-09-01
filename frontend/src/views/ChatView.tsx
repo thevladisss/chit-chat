@@ -1,12 +1,15 @@
 import "./ChatView.css";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { sendMessage } from "../service/chatSerevice";
 import ChatComposer from "../components/ChatComposer.tsx";
 import UserSidebar from "../components/UserSidebar.tsx";
 import { useChatStore } from "../hooks/useChatStore.ts";
+import { useTimer } from "../hooks/useTimer.ts";
+import { useDateTime } from "../hooks/useDateTime.ts";
 import { ServerSideEventsEnum } from "../enums/ServerSideEventsEnum.ts";
 import { IWSMessageEventData } from "../types/ws/IWSMessageEventData.ts";
 import { debounce } from "lodash-es";
+import { useAudioRecording } from "../hooks/useAudioRecording.ts";
 
 const messageSound = new Audio("/sounds/message.mp3");
 
@@ -120,6 +123,67 @@ function ChatView() {
     getFilteredChats(search);
   }, SEARCH_DEBOUNCE_DELAY);
 
+  const { formatDurationToTime } = useDateTime();
+
+  const [lastVoiceMessage, setLastVoiceMessage] = useState<{
+    blob: Blob;
+    duration: number;
+  } | null>(null);
+
+  const sendVoiceMessageRecording = async (recordingData: {
+    blob: Blob;
+    duration: number;
+  }) => {
+    setLastVoiceMessage(recordingData);
+
+    playAudioRecording(recordingData.blob);
+  };
+
+  const {
+    isRecording: isRecordingVoiceMessage,
+    startRecording,
+    stopRecording,
+    playAudioRecording,
+  } = useAudioRecording({
+    onStartRecording: () => {
+      resetRecordingTimer();
+      startRecordingTimer();
+    },
+    onStopRecording: (recording: Blob) => {
+      setLastVoiceMessage({
+        blob: recording,
+        duration: elapsedRecordingTime,
+      });
+
+      stopRecordingTimer();
+      resetRecordingTimer();
+
+      sendVoiceMessageRecording({
+        blob: recording,
+        duration: elapsedRecordingTime,
+      });
+    },
+  });
+
+  const {
+    resetTimer: resetRecordingTimer,
+    startTimer: startRecordingTimer,
+    stopTimer: stopRecordingTimer,
+    elapsedTime: elapsedRecordingTime,
+  } = useTimer();
+
+  const elapsedRecordingTimeFormatted = useMemo(() => {
+    return formatDurationToTime(elapsedRecordingTime);
+  }, [elapsedRecordingTime]);
+
+  const handleVoiceRecordingStarted = () => {
+    startRecording();
+  };
+
+  const handleVoiceRecordingStop = () => {
+    stopRecording();
+  };
+
   return (
     <div className="view chat-view">
       <UserSidebar
@@ -130,9 +194,13 @@ function ChatView() {
       ></UserSidebar>
       <ChatComposer
         message={message}
+        voiceMessageRecordingTimeElapsed={elapsedRecordingTimeFormatted}
+        isPendingMessageSend={pendingSendMessage}
+        isRecordingVoiceMessage={isRecordingVoiceMessage}
         handleInputMessage={handleInputMessage}
         handleSubmitMessage={handleSubmitMessage}
-        isPendingMessageSend={pendingSendMessage}
+        handleVoiceMessageRecordingStart={handleVoiceRecordingStarted}
+        handleVoiceMessageRecordingCompleted={handleVoiceRecordingStop}
       />
     </div>
   );

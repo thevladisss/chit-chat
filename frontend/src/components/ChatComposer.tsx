@@ -8,16 +8,24 @@ import { IChatMessage } from "../types/IChatMessage.ts";
 type Props = HTMLProps<HTMLDivElement> & {
   message: string;
   isPendingMessageSend: boolean;
+  voiceMessageRecordingTimeElapsed: string;
+  isRecordingVoiceMessage: boolean;
   handleInputMessage: (e: ChangeEvent<HTMLInputElement>) => void;
   handleSubmitMessage: () => void;
+  handleVoiceMessageRecordingStart: () => void;
+  handleVoiceMessageRecordingCompleted: () => void;
 };
 
 function ChatComposer({
   style,
   message,
+  isRecordingVoiceMessage,
+  isPendingMessageSend,
+  voiceMessageRecordingTimeElapsed,
   handleInputMessage,
   handleSubmitMessage,
-  isPendingMessageSend,
+  handleVoiceMessageRecordingStart,
+  handleVoiceMessageRecordingCompleted,
 }: Props): JSX.Element {
   const { selectedChat, selectedChatMessages } = useChatStore();
 
@@ -55,6 +63,10 @@ function ChatComposer({
             <ChatInput
               loading={isPendingMessageSend}
               messageInput={message}
+              isRecording={isRecordingVoiceMessage}
+              voiceMessageRecordingTimeElapsed={voiceMessageRecordingTimeElapsed}
+              onVoiceRecordingStart={handleVoiceMessageRecordingStart}
+              onVoiceRecordingComplete={handleVoiceMessageRecordingCompleted}
               onInputMessage={handleInputMessage}
               onSubmitMessage={handleSubmitMessage}
             ></ChatInput>
