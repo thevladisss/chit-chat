@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-const messageSchema = new Schema({
+const textMessageSchema = new Schema({
   chatId: {
     type: Schema.Types.ObjectId,
     required: true,
@@ -27,25 +27,25 @@ const messageSchema = new Schema({
 });
 
 // Create a Map-like interface for backward compatibility
-const MessageModel = mongoose.model('Message', messageSchema);
+const TextMessageModel = mongoose.model('TextMessage', textMessageSchema);
 
 // Create a wrapper that mimics the Map interface
-const messageMap = {
+const textMessageMap = {
   get: async (messageId) => {
-    return await MessageModel.findOne({ messageId });
+    return await TextMessageModel.findOne({ messageId });
   },
   set: async (messageId, messageData) => {
-    return await MessageModel.findOneAndUpdate({ messageId }, messageData, {
+    return await TextMessageModel.findOneAndUpdate({ messageId }, messageData, {
       upsert: true,
       new: true,
     });
   },
   values: async () => {
-    return await MessageModel.find({});
+    return await TextMessageModel.find({});
   },
 };
 
-messageSchema.set('toJSON', {
+textMessageSchema.set('toJSON', {
   virtuals: true,
   versionKey: false,
   transform: function (doc, ret) {
@@ -56,11 +56,10 @@ messageSchema.set('toJSON', {
   },
 });
 
-
-module.exports = messageMap;
-module.exports.MessageModel = MessageModel;
+module.exports = textMessageMap;
+module.exports.TextMessageModel = TextMessageModel;
 
 module.exports = {
-  MessageModel,
-  messageSchema,
+  TextMessageModel,
+  textMessageSchema,
 };

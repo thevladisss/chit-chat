@@ -1,10 +1,12 @@
 const ChatRepository = require('../repositories/chat.repository');
 const UserRepository = require('../repositories/user.repository');
-const MessageRepository = require('../repositories/message.repository');
+const TextMessageRepository = require('../repositories/textMessage.repository');
+const AudioMessageRepository = require('../repositories/audioMessage.repository');
 const UserService = require('./user.service');
 const ConnectionService = require('./connection.service');
 const MessageService = require('../service/message.service');
 const ServerChatEventEnum = require('../enums/ServerChatEventEnum');
+const ChatMessageTypeEnum = require('../enums/ChatMessageType');
 const { ChatModel } = require('../models/chat.model');
 const { UserModel } = require('../models/user.model');
 
@@ -139,10 +141,71 @@ const getChat = async (chatId) => {
  * @return {Promise<{chatId: string, chat: Object, chats: Array}>} - The updated chat information
  */
 const sendChatMessage = async (sender, data) => {
-  await MessageRepository.createMessage({
+  await TextMessageRepository.createTextMessage({
     chatId: data.chatId,
     text: data.message,
     userId: sender.userId,
+  });
+
+  const chat = await ChatRepository.findById(data.chatId);
+
+  const chats = await getUserChats(sender.userId);
+
+  const chatParticipantsNoSender = chat.users.filter((userId) => {
+    return userId !== sender.userId;
+  });
+
+  const result = {
+    chatId: chat.chatId,
+    chat: chat.toJSON(),
+    chats,
+  };
+
+  const connections = await ConnectionService.getAllConnectionsByUserIds(
+    chatParticipantsNoSender,
+  );
+
+  for (const con of connections) {
+    const conChats = await getUserChats(con.userId);
+
+    con.ws.send(
+      JSON.stringify({
+        event: ServerChatEventEnum.MESSAGE,
+        data: {
+          sender: sender.userId,
+          isSenderSelf: sender.userId === con.userId,
+          chats: conChats,
+        },
+      }),
+    );
+  }
+
+  return result;
+};
+
+/**
+ * Send a voice message from a user to a chat
+ * @param {Object} sender - The user sending the message
+ * @param {string} sender.userId - The ID of the user sending the message
+ * @param {Object} data - The message data
+ * @param {string} data.chatId - The ID of the chat to send the message to
+ * @param {string} data.audioUrl - The URL of the uploaded audio file
+ * @param {number} data.audioDuration - The duration of the audio in seconds
+ * @param {string} data.audioFormat - The format of the audio file
+ * @param {number} data.fileSize - The size of the audio file in bytes
+ * @param {string} data.originalFileName - The original filename of the uploaded file
+ * @return {Promise<{chatId: string, chat: Object, chats: Array}>} - The updated chat information
+ */
+const sendVoiceMessage = async (sender, data) => {
+  // Create the audio message record directly
+  const audioMessage = await AudioMessageRepository.createAudioMessage({
+    chatId: data.chatId,
+    userId: sender.userId,
+    audioUrl: data.audioUrl,
+    audioDuration: data.audioDuration,
+    audioFormat: data.audioFormat || 'webm',
+    fileSize: data.fileSize || 0,
+    originalFileName: data.originalFileName || 'audio.webm',
   });
 
   const chat = await ChatRepository.findById(data.chatId);
@@ -226,6 +289,7 @@ module.exports = {
   getFilteredChats,
   createChat,
   sendChatMessage,
+  sendVoiceMessage,
   initializeChatForCurrentUser,
   getUserChats,
   getChat,

@@ -31,12 +31,22 @@ chatSchema.virtual('isGroupChat').get(function () {
 });
 
 chatSchema.virtual('messages', {
-  ref: 'Message',
+  ref: 'TextMessage',
   localField: '_id', // Chat._id
-  foreignField: 'chatId', // Message.chatId,
+  foreignField: 'chatId', // TextMessage.chatId,
   // Add getter to handle default value
   get: function (messages) {
     return messages && messages.length ? messages : [];
+  },
+});
+
+chatSchema.virtual('audioMessages', {
+  ref: 'AudioMessage',
+  localField: '_id', // Chat._id
+  foreignField: 'chatId', // AudioMessage.chatId,
+  // Add getter to handle default value
+  get: function (audioMessages) {
+    return audioMessages && audioMessages.length ? audioMessages : [];
   },
 });
 

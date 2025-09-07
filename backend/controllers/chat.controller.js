@@ -1,4 +1,5 @@
 const ChatService = require('../service/chat.service');
+const ChatMessageTypeEnum = require('../enums/ChatMessageType');
 
 const getAllChats = async (req, res) => {
   const user = req.session.user;
@@ -64,18 +65,35 @@ const getFilteredChats = async (req, res) => {
 };
 
 const sendMessage = async (req, res) => {
-  /** @var  {{chatId: string}} req.params */
-  const { chatId } = req.params;
+  /** @var  {{chatId: string; type: string }} req.params */
+  const { chatId, type } = req.params;
 
-  /** @var {{message: string}} req.body */
+  /** @var {{message: string, audioUrl: string, audioDuration: number}} req.body */
   const body = req.body;
 
   const user = req.session.user;
 
-  const result = await ChatService.sendChatMessage(user, {
-    chatId: chatId,
-    message: body.message,
-  });
+  let result;
+
+  if (type === ChatMessageTypeEnum.TEXT) {
+    result = await ChatService.sendChatMessage(user, {
+      chatId: chatId,
+      message: body.message,
+    });
+  } else if (type === ChatMessageTypeEnum.AUDIO) {
+    result = await ChatService.sendVoiceMessage(user, {
+      chatId: chatId,
+      audioUrl: body.audioUrl,
+      audioDuration: body.audioDuration,
+      audioFormat: body.audioFormat,
+      fileSize: body.fileSize,
+      originalFileName: body.originalFileName,
+    });
+  } else {
+    return res.status(400).json({
+      error: `Invalid message type. Must be "${ChatMessageTypeEnum.TEXT}" or "${ChatMessageTypeEnum.AUDIO}"`,
+    });
+  }
 
   return res.json({
     data: result,

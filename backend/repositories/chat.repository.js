@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { ChatModel } = require('../models/chat.model');
 const { ObjectId } = mongoose.Types;
 const { UserModel } = require('../models/user.model');
-const { MessageModel } = require('../models/message.model');
+const { TextMessageModel } = require('../models/textMessage.model');
 /**
 
  * @type {Map<string, {
@@ -180,7 +180,7 @@ const findByUserNameOrChatNameOrMessage = async (search) => {
     .exec();
 
   // Find messages containing the search term
-  const messagesByContent = await MessageModel.find({
+  const messagesByContent = await TextMessageModel.find({
     text: { $regex: searchRegex }
   }).exec();
 
