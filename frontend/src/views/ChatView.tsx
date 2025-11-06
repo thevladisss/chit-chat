@@ -39,12 +39,18 @@ function ChatView() {
 
     ws.onopen = () => {
       requestChats();
+
+      console.log("Requesting chats");
     };
 
     type WsCustomEvent<R = any> = { event: string; data: R };
 
     const handleConnectionEvent = (e: WsCustomEvent) => {
       setChats(e.data.chats);
+    };
+
+    const handleNewUserEvent = (e: WsCustomEvent) => {
+      requestChats();
     };
 
     const handleChatCreatedEvent = (e: WsCustomEvent) => {
@@ -72,6 +78,8 @@ function ChatView() {
         case ServerSideEventsEnum.ChatCreated:
           handleChatCreatedEvent(payload);
           break;
+        case ServerSideEventsEnum.NewUser:
+          handleNewUserEvent(payload);
       }
     };
   }, []);

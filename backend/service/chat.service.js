@@ -23,6 +23,31 @@ const { UserModel } = require('../models/user.model');
  *   username: string | null;
  * }[]>}
  */
+
+const notifyUsersOnNewChat = async (authenticatedUserId) => {
+  const connections =
+    await ConnectionService.getAllConnectionsNoCurrent(authenticatedUserId);
+
+  for (const con of connections) {
+    const chats = await getUserChats(con.userId);
+
+    con.ws.send(
+      JSON.stringify({
+        event: ServerChatEventEnum.NEW_USER,
+        data: chats,
+      }),
+    );
+  }
+};
+
+const createNewChatForAllUsers = async (userId) => {
+  const chats = await ChatRepository.createChatForUsers(userId);
+
+  notifyUsersOnNewChat(userId);
+
+  return chats;
+};
+
 const getUserChats = async (userId) => {
   const chats = await ChatRepository.findAllChatsByUsersIds([userId]);
 
@@ -44,6 +69,7 @@ const getUserChats = async (userId) => {
         ...item.toJSON(),
         isPersonal: item.userId.toString() === userId,
       }));
+
       shared.name = item.users.find((user) => user.id !== userId)?.username;
     } else {
       shared.name = item.username;
@@ -293,4 +319,5 @@ module.exports = {
   initializeChatForCurrentUser,
   getUserChats,
   getChat,
+  createNewChatForAllUsers,
 };
