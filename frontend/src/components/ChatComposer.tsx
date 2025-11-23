@@ -1,11 +1,10 @@
 import "./ChatComposer.css";
-import { ChangeEvent, HTMLProps, JSX } from "react";
-import ChatInput from "./ChatInputModule.tsx";
-import ChatMessage from "./ChatMessage.tsx";
-import { useChatStore } from "../hooks/useChatStore.ts";
-import { IChatMessage } from "../types/IChatMessage.ts";
+import { ChangeEvent, FormEvent, JSX } from "react";
+import BaseTextField from "./base/BaseTextField.tsx";
+import BaseButton from "./base/BaseButton.tsx";
+import VoiceButton from "./VoiceButton.tsx";
 
-type Props = HTMLProps<HTMLDivElement> & {
+type Props = {
   message: string;
   isPendingMessageSend: boolean;
   voiceMessageRecordingTimeElapsed: string;
@@ -17,7 +16,6 @@ type Props = HTMLProps<HTMLDivElement> & {
 };
 
 function ChatComposer({
-  style,
   message,
   isRecordingVoiceMessage,
   isPendingMessageSend,
@@ -27,58 +25,55 @@ function ChatComposer({
   handleVoiceMessageRecordingStart,
   handleVoiceMessageRecordingCompleted,
 }: Props): JSX.Element {
-  const { selectedChat, selectedChatMessages } = useChatStore();
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    handleSubmitMessage();
+  };
 
-  const getMessageSentTimestamp = (message: IChatMessage) => {
-    return new Date(message.sentAt).toLocaleTimeString();
+  const handleClickVoiceRecordingButton = () => {
+    if (!isRecordingVoiceMessage) {
+      handleVoiceMessageRecordingStart();
+    } else {
+      handleVoiceMessageRecordingCompleted();
+    }
   };
 
   return (
-    <div className="chat" style={style}>
-      {selectedChat ? (
-        <>
-          <div className="chat-messages-container">
-            {selectedChatMessages.length > 0 ? (
-              selectedChatMessages.map((message) => {
-                return (
-                  <ChatMessage
-                    key={message.messageId}
-                    messageId={message.messageId}
-                    chatId={message.chatId}
-                    text={message.text}
-                    isPersonal={message.isPersonal}
-                    isSeen={message.isSeen}
-                    isDelivered={message.isDelivered}
-                    sentTimestamp={getMessageSentTimestamp(message)}
-                  />
-                );
-              })
-            ) : (
-              <h3 className="no-messages-placeholder">
-                {`Start messaging with ${selectedChat.name} `}
-              </h3>
-            )}
-          </div>
-          <div className="chat-input-container">
-            <ChatInput
-              loading={isPendingMessageSend}
-              messageInput={message}
+    <div className="chat-composer">
+      <form onSubmit={handleSubmit} className="chat-input-module">
+        <div className="input-container">
+          {isRecordingVoiceMessage ? (
+            <span className="recording-time">
+              {voiceMessageRecordingTimeElapsed}
+            </span>
+          ) : (
+            <BaseTextField
+              square
+              name="message"
+              onInput={handleInputMessage}
+              placeholder="Text here..."
+              value={message}
+              size="large"
+              disabled={isRecordingVoiceMessage}
+            />
+          )}
+        </div>
+        <div className="actions">
+          {message.length > 0 ? (
+            <BaseButton type="submit">Send</BaseButton>
+          ) : (
+            <VoiceButton
+              disabled={isPendingMessageSend}
+              recordingElapsedTime={voiceMessageRecordingTimeElapsed}
+              onClick={handleClickVoiceRecordingButton}
               isRecording={isRecordingVoiceMessage}
-              voiceMessageRecordingTimeElapsed={voiceMessageRecordingTimeElapsed}
-              onVoiceRecordingStart={handleVoiceMessageRecordingStart}
-              onVoiceRecordingComplete={handleVoiceMessageRecordingCompleted}
-              onInputMessage={handleInputMessage}
-              onSubmitMessage={handleSubmitMessage}
-            ></ChatInput>
-          </div>
-        </>
-      ) : (
-        <h3 className="no-chat-selected-placeholder">
-          Select chat to start messaging
-        </h3>
-      )}
+            />
+          )}
+        </div>
+      </form>
     </div>
   );
 }
 
 export default ChatComposer;
+

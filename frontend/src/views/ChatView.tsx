@@ -1,33 +1,45 @@
 import "./ChatView.css";
-import { ChangeEvent, useEffect, useMemo, useState } from "react";
-import { sendMessage } from "../service/chatSerevice";
+import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
+import { sendTextMessage } from "../service/chatSerevice";
+import SelectedChatMessagesContainer from "../components/SelectedChatMessagesContainer.tsx";
 import ChatComposer from "../components/ChatComposer.tsx";
-import UserSidebar from "../components/UserSidebar.tsx";
 import { useChatStore } from "../hooks/useChatStore.ts";
 import { useTimer } from "../hooks/useTimer.ts";
 import { useDateTime } from "../hooks/useDateTime.ts";
 import { ServerSideEventsEnum } from "../enums/ServerSideEventsEnum.ts";
 import { IWSMessageEventData } from "../types/ws/IWSMessageEventData.ts";
-import { debounce } from "lodash-es";
 import { useAudioRecording } from "../hooks/useAudioRecording.ts";
+import ChatStatusBar from "../components/ChatStatusBar.tsx";
+
+declare global {
+  interface Window {
+    ws?: WebSocket;
+  }
+}
 
 const messageSound = new Audio("/sounds/message.mp3");
-
-const SEARCH_DEBOUNCE_DELAY = 300; // milliseconds
 
 function ChatView() {
   const playMessageSound = async () => {
     await messageSound.play();
   };
 
-  const {
-    getChats,
-    selectedChat,
-    setChats,
-    initializeChat,
-    selectChat,
-    getFilteredChats,
-  } = useChatStore();
+  const { getChats, selectedChat, setChats, setTypingChat, deleteTypingChat } =
+    useChatStore();
+
+  const selectedChatName = useMemo(
+    () => (selectedChat ? selectedChat.name : ""),
+    [selectedChat]
+  );
+
+  const selectecChatLastOnlineAt = useMemo(() => Date.now() - 1000, []);
+
+  const selectedChatparticipantsCount = useMemo(
+    () => (selectedChat ? selectedChat.users.length : null),
+    [selectedChat]
+  );
+
+  const typingTimeout = useRef<Record<string, NodeJS.Timeout>>({});
 
   let ws: WebSocket | null = null;
 
@@ -39,8 +51,6 @@ function ChatView() {
 
     ws.onopen = () => {
       requestChats();
-
-      console.log("Requesting chats");
     };
 
     type WsCustomEvent<R = any> = { event: string; data: R };
@@ -49,8 +59,29 @@ function ChatView() {
       setChats(e.data.chats);
     };
 
+    const handleLeaveConnectionEvent = (e: WsCustomEvent) => {
+      setChats(e.data.chats);
+    };
+
     const handleNewUserEvent = (e: WsCustomEvent) => {
       requestChats();
+    };
+
+    const TYPING_CLEAR_TIMEOUT = 2000;
+
+    const handleTypingInChatEvent = (e: WsCustomEvent) => {
+      const chatId = e.data.chatId as string,
+        userId = e.data.userId as string;
+
+      setTypingChat(chatId, [userId]);
+
+      if (typingTimeout.current[chatId]) {
+        clearTimeout(typingTimeout.current[chatId]);
+      }
+
+      typingTimeout.current[chatId] = setTimeout(() => {
+        deleteTypingChat(chatId);
+      }, TYPING_CLEAR_TIMEOUT);
     };
 
     const handleChatCreatedEvent = (e: WsCustomEvent) => {
@@ -72,6 +103,9 @@ function ChatView() {
         case ServerSideEventsEnum.Connection:
           handleConnectionEvent(payload);
           break;
+        case ServerSideEventsEnum.LeaveConnection:
+          handleLeaveConnectionEvent(payload);
+          break;
         case ServerSideEventsEnum.Message:
           handleMessageEvent(payload);
           break;
@@ -80,6 +114,10 @@ function ChatView() {
           break;
         case ServerSideEventsEnum.NewUser:
           handleNewUserEvent(payload);
+          break;
+        case ServerSideEventsEnum.TypingInChat:
+          handleTypingInChatEvent(payload);
+          break;
       }
     };
   }, []);
@@ -94,8 +132,23 @@ function ChatView() {
     setMessageInput("");
   };
 
+  const sendUserTypingEvent = () => {
+    if (window?.ws?.OPEN && selectedChat) {
+      window.ws.send(
+        JSON.stringify({
+          event: "typing_in_chat",
+          payload: {
+            chatId: selectedChat.chatId,
+          },
+        })
+      );
+    }
+  };
+
   const handleInputMessage = (e: ChangeEvent<HTMLInputElement>) => {
     setMessageInput(e.target.value);
+
+    sendUserTypingEvent();
   };
 
   const [pendingSendMessage, setPendingSendMessage] = useState(false);
@@ -107,7 +160,7 @@ function ChatView() {
     try {
       setPendingSendMessage(true);
 
-      const { data } = await sendMessage({
+      const { data } = await sendTextMessage({
         message,
         chatId: selectedChat.chatId,
       });
@@ -119,17 +172,6 @@ function ChatView() {
       setPendingSendMessage(false);
     }
   };
-
-  const handleInitializeChat = (userId: string) => {
-    initializeChat(userId);
-  };
-  const handleSelectChat = (chatId: string) => {
-    selectChat(chatId);
-  };
-
-  const handleSearchFilteredChats = debounce((search: string) => {
-    getFilteredChats(search);
-  }, SEARCH_DEBOUNCE_DELAY);
 
   const { formatDurationToTime } = useDateTime();
 
@@ -194,22 +236,32 @@ function ChatView() {
 
   return (
     <div className="view chat-view">
-      <UserSidebar
-        onSearchFilteredChats={handleSearchFilteredChats}
-        onInitializeChat={handleInitializeChat}
-        onSelectExistingChat={handleSelectChat}
-        pendingSearchFilteredChats={false}
-      ></UserSidebar>
-      <ChatComposer
-        message={message}
-        voiceMessageRecordingTimeElapsed={elapsedRecordingTimeFormatted}
-        isPendingMessageSend={pendingSendMessage}
-        isRecordingVoiceMessage={isRecordingVoiceMessage}
-        handleInputMessage={handleInputMessage}
-        handleSubmitMessage={handleSubmitMessage}
-        handleVoiceMessageRecordingStart={handleVoiceRecordingStarted}
-        handleVoiceMessageRecordingCompleted={handleVoiceRecordingStop}
-      />
+      {Boolean(selectedChat) && (
+        <ChatStatusBar
+          lastOnlineAt={selectecChatLastOnlineAt}
+          chatName={selectedChatName}
+          participantsCount={selectedChatparticipantsCount}
+        />
+      )}
+      <div className="chat-view-content">
+        {!Boolean(selectedChat) ? (
+          <p className="select-chat-placeholder">Please select chat</p>
+        ) : (
+          <>
+            <SelectedChatMessagesContainer />
+            <ChatComposer
+              message={message}
+              voiceMessageRecordingTimeElapsed={elapsedRecordingTimeFormatted}
+              isPendingMessageSend={pendingSendMessage}
+              isRecordingVoiceMessage={isRecordingVoiceMessage}
+              handleInputMessage={handleInputMessage}
+              handleSubmitMessage={handleSubmitMessage}
+              handleVoiceMessageRecordingStart={handleVoiceRecordingStarted}
+              handleVoiceMessageRecordingCompleted={handleVoiceRecordingStop}
+            />
+          </>
+        )}
+      </div>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { getRequest, postRequest } from "./index";
 import { IChat } from "../types/IChat.ts";
 import { IChatMessage } from "../types/IChatMessage.ts";
+import { ChatMessageTypeEnum } from "../enums/ChatMessageTypeEnum.ts";
 
 export const getAllChats = () => {
   return getRequest<IChat[]>("/api/chats/");
@@ -31,10 +32,14 @@ export const getChatMessages = (chatId: string) => {
   }>(`/api/chats/${chatId}`);
 };
 
-export const sendMessage = (payload: { chatId: string; message: string }) => {
+export const sendTextMessage = (payload: {
+  chatId: string;
+  message: string;
+}) => {
   return postRequest<{
     chats: IChat[];
   }>(`/api/chats/${payload.chatId}/messages`, {
     message: payload.message,
+    type: ChatMessageTypeEnum.Text,
   });
 };

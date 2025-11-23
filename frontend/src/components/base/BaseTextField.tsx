@@ -16,21 +16,24 @@ type Props = HTMLProps<HTMLDivElement> & {
   value: string;
   immediateFocus?: boolean;
   loading?: boolean;
-  size?: "small" | "default" | "large";
+  size?: Size;
   square?: boolean;
   onInput?: (
-    e: BaseSyntheticEvent<InputEvent, HTMLInputElement, HTMLInputElement>,
+    e: BaseSyntheticEvent<InputEvent, HTMLInputElement, HTMLInputElement>
   ) => void;
   onChange?: (
-    e: BaseSyntheticEvent<ChangeEvent, HTMLInputElement, HTMLInputElement>,
+    e: BaseSyntheticEvent<ChangeEvent, HTMLInputElement, HTMLInputElement>
   ) => void;
   onFocus?: (
-    e: BaseSyntheticEvent<FocusEvent, HTMLInputElement, HTMLInputElement>,
+    e: BaseSyntheticEvent<FocusEvent, HTMLInputElement, HTMLInputElement>
   ) => void;
   onBlur?: (
-    e: BaseSyntheticEvent<FocusEvent, HTMLInputElement, HTMLInputElement>,
+    e: BaseSyntheticEvent<FocusEvent, HTMLInputElement, HTMLInputElement>
   ) => void;
 };
+
+type Size = "small" | "default" | "large";
+
 function BaseTextField({
   className,
   style,
@@ -40,7 +43,7 @@ function BaseTextField({
   id,
   value,
   square,
-  size = "default",
+  size = "default" as Size,
   loading,
   required,
   immediateFocus,
@@ -53,10 +56,10 @@ function BaseTextField({
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const classes = classNames("text-field", className, {
-    "small": size && size === "small",
-    "large": size && size === "large",
-    "loading": loading,
-    "square": square,
+    small: size && size === "small",
+    large: size && size === "large",
+    loading: loading,
+    square: square,
   });
 
   const setFocus = () => {

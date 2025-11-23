@@ -6,5 +6,9 @@ export type IChat = {
   name: string;
   lastMessage: IChatMessage | null;
   messages: IChatMessage[];
-  participants: string[];
+  users: string[];
+  
+  online: boolean // remove
+
+  isOnline: boolean
 };

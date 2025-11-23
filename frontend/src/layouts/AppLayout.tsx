@@ -18,14 +18,12 @@ function AppLayout() {
     <div className="app-layout">
       <header className="app-layout-header">
         <h1>Chit-Chat</h1>
-        <nav>
-          <button onClick={handleSignOut} className="sign-out-btn">
-            Sign Out
-          </button>
-        </nav>
       </header>
 
       <div className="app-layout-content">
+        <div>
+          <UserSidebar></UserSidebar>
+        </div>
         <main className="app-layout-main">
           <Outlet />
         </main>

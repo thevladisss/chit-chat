@@ -4,18 +4,9 @@
   flex-direction: column;
   overflow: hidden;
   position: relative;
-  padding-right: 12px;
-}
-
-.user-sidebar:after {
-  position: absolute;
-  content: "";
-  width: 2px;
-  height: 90%;
-  background-color: var(--app-bg-light-3);
-  top: 50%;
-  right: 0;
-  transform: translateY(-50%);
+  background-color: var(--app-bg-dark-1);
+  border-right: .5px solid var(--app-bg-dark-3);
+  height: 100%;
 }
 
 .user-sidebar-header {
@@ -29,7 +20,6 @@
   display: flex;
   flex-direction: column;
   flex: 1;
-  padding: 4px 8px;
 }
 
 .chats-container {
@@ -37,4 +27,12 @@
   flex-direction: column;
   flex: 1;
   margin-top: 16px;
+}
+
+.chat-search-container {
+  padding: 12px;
+}
+
+.chat-search-container input {
+  background-color: var(--app-bg-light-1);
 }

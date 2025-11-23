@@ -1,43 +1,23 @@
-.chat {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  padding: 20px 20px 4px;
+.chat-composer {
+  flex: 0 0 auto;
 }
 
-.container {
+.chat-input-module {
   display: flex;
-  flex-direction: column;
-  flex: 1;
-  margin-top: 16px;
+  gap: 20px;
+  align-items: center;
 }
 
-.chat-messages-container {
-  display: inline-flex;
-  flex-direction: column;
-  gap: 16px;
+.input-container {
   flex: 1;
 }
 
-.chat-input-container {
-  flex: 0 0 48px;
+.input-container input {
+  background-color: var(--app-bg-light-1);
+  border: none;
 }
 
-.chat .no-messages-placeholder {
-  display: flex;
-  padding: 4px 8px;
-  text-align: center;
-  background-color: var(--app-bg-light-2);
-  width: fit-content;
-  margin: 0 auto;
-  border-radius: 4px;
+.actions {
+  flex: 0 0 auto;
 }
 
-.chat .no-chat-selected-placeholder {
-  display: flex;
-  padding: 4px 8px;
-  text-align: center;
-  background-color: var(--app-bg-light-2);
-  width: fit-content;
-  border-radius: 4px;
-}

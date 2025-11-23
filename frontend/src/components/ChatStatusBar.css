@@ -1,0 +1,49 @@
+.chat-status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background-color: var(--app-bg-dark-1);
+  border-bottom: 0.5px solid var(--app-bg-dark-3);
+  min-height: 64px;
+}
+
+.chat-status-bar:hover {
+  cursor: pointer;
+}
+
+.chat-status-bar h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--app-color-bg-white);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.chat-status-bar p {
+  font-size: 14px;
+  color: var(--app-bg-light-4);
+  margin: 4px 0 0 0;
+  line-height: 1.4;
+}
+
+.chat-status-bar-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+@media screen and (max-width: 639px) {
+  .chat-status-bar {
+    padding: 12px 16px;
+    min-height: 56px;
+  }
+
+  .chat-status-bar h2 {
+    font-size: 16px;
+  }
+
+  .chat-status-bar p {
+    font-size: 13px;
+  }
+}

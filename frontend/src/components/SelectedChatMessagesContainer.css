@@ -1,0 +1,35 @@
+.selected-chat-messages-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.chat-messages-container {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+}
+
+.no-messages-placeholder {
+  display: flex;
+  padding: 4px 8px;
+  text-align: center;
+  background-color: var(--app-bg-light-2);
+  width: fit-content;
+  margin: 0 auto;
+  border-radius: 4px;
+}
+
+.no-chat-selected-placeholder {
+  display: flex;
+  padding: 4px 8px;
+  text-align: center;
+  background-color: var(--app-bg-light-2);
+  width: fit-content;
+  border-radius: 4px;
+}
+

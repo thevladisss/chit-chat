@@ -12,20 +12,9 @@
   position: relative;
 }
 
-.app-layout-header:after {
-  position: absolute;
-  content: "";
-  width: 95%;
-  height: 2px;
-  background-color: var(--app-bg-light-3);
-  bottom: 0;
-  left: 50%;
-  transform: translate(-50%);
-}
-
 .app-layout-header h1 {
   margin: 0;
-  font-size: 24px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--app-primary-light-1);
   font-weight: bold;
@@ -48,7 +37,7 @@
 .app-layout-content {
   display: flex;
   overflow: hidden;
-  padding-top: 20px;
+
   flex: 1;
 }
 

@@ -1,31 +1,30 @@
 import { JSX, BaseSyntheticEvent, useState } from "react";
-import { useUser } from "../hooks/useUser.tsx";
 import BaseTextField from "./base/BaseTextField.tsx";
 import ChatsList from "./ChatsList.tsx";
 import { useChatStore } from "../hooks/useChatStore.ts";
-import SidebarUserInformation from "./SidebarUserInformation.tsx";
 import "./UserSidebar.css";
+import { debounce } from "lodash-es";
 
-type Props = {
-  pendingSearchFilteredChats: boolean;
-  onSearchFilteredChats: (searchValue: string) => void;
-  onInitializeChat: (userId: string) => void;
-  onSelectExistingChat: (chatId: string) => void;
-};
+function UserSidebar(): JSX.Element {
+  const SEARCH_DEBOUNCE_DELAY = 300; // milliseconds
 
-function UserSidebar({
-  onInitializeChat,
-  onSelectExistingChat,
-  onSearchFilteredChats,
-  pendingSearchFilteredChats,
-}: Props): JSX.Element {
-  const { user } = useUser();
-  const { existingChats, prospectiveChats, selectedChat } = useChatStore();
+  const [pendingSearchFilteredChats, setSearchFilteredChats] = useState(false);
+
+  const { existingChats, selectedChat, selectChat, getFilteredChats } =
+    useChatStore();
+
+  const handleSelectChat = (chatId: string) => {
+    selectChat(chatId);
+  };
+
+  const handleSearchFilteredChats = debounce((search: string) => {
+    getFilteredChats(search);
+  }, SEARCH_DEBOUNCE_DELAY);
 
   const handleSearchChats = (event: BaseSyntheticEvent<InputEvent>) => {
     const value = event.target.value;
 
-    onSearchFilteredChats(value);
+    handleSearchFilteredChats(value);
   };
 
   const [isFocusedSearchInput, setIsFocusedSearchInput] = useState(false);
@@ -41,22 +40,22 @@ function UserSidebar({
     <div className="user-sidebar">
       {/* <SidebarUserInformation username={user ? user.username : ""} /> */}
       <div className="user-sidebar-content">
-        <BaseTextField
-          onInput={handleSearchChats}
-          type="search"
-          size="large"
-          placeholder="Search chat"
-          loading={pendingSearchFilteredChats}
-          onFocus={handleSearchFocus}
-          onBlur={handleSearchBlur}
-        />
+        <div className="chat-search-container">
+          <BaseTextField
+            onInput={handleSearchChats}
+            type="search"
+            size="large"
+            placeholder="Search chat"
+            loading={pendingSearchFilteredChats}
+            onFocus={handleSearchFocus}
+            onBlur={handleSearchBlur}
+          />
+        </div>
         <div className="container">
           <ChatsList
-            existingChats={existingChats}
-            prospectiveChats={prospectiveChats}
+            chats={existingChats}
             selectedChatId={selectedChat ? selectedChat.chatId : null}
-            onInitializeChat={onInitializeChat}
-            onSelectExistingChat={onSelectExistingChat}
+            onSelectChat={handleSelectChat}
             isSearchingChats={isFocusedSearchInput}
           />
         </div>
