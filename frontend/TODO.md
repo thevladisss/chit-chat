@@ -1,5 +1,15 @@
 # Project TODO List
 
+## Architecture
+
+- [ ] Move WS logic to layout level 
+
+
+## Acessibility 
+
+- [ ] Enforce components are accessible
+
+
 ## High Priority
 
 - [ ] Security
