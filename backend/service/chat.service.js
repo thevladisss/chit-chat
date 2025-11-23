@@ -73,10 +73,10 @@ const getUserChats = async (userId) => {
     )?.username;
 
     results.push({
-      messages,
       online,
       lastMessage: null,
       ...item.toJSON(),
+      messages,
       name,
     });
   }
