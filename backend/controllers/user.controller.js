@@ -4,13 +4,17 @@ const ChatService = require('../service/chat.service');
 const createUser = async (req, res) => {
   const { username } = req.body;
 
+  const exists = await UserService.checkUserExists(username);
+
   const user = await UserService.signUpUser(username);
 
   if (user) {
     req.session.user = user.toJSON();
   }
 
-  await ChatService.createNewChatForAllUsers(user._id);
+  if (!exists) {
+    await ChatService.createNewChatForAllUsers(user._id);
+  }
 
   return res.json({ data: user.toJSON() }).status(200);
 };

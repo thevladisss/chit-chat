@@ -11,10 +11,10 @@
 .chat-list .no-history-placeholder,
 .no-chats-found-placeholder {
   display: flex;
-  padding: 4px 8px;
   text-align: center;
-  background-color: var(--app-bg-light-2);
   width: fit-content;
   margin: 0 auto;
-  border-radius: 4px;
+  background-color: var(--app-bg-light-1);
+  border-radius: 16px;
+  padding: 4px 12px;
 }

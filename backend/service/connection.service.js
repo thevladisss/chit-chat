@@ -102,6 +102,16 @@ const getConnectionByUserId = async (userId) => {
   return null;
 };
 
+const getAllConnectionsOnline = async () => {
+  const connections = await ConnectionRepository.getAllConnections();
+
+  return connections.filter((con) => {
+    const ws = memoryDb.get(con.id);
+
+    return ws.readyState === WebSocket.OPEN;
+  });
+};
+
 module.exports = {
   getConnectionByUserId,
   removeConnection,

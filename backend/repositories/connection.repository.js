@@ -22,10 +22,14 @@ const createConnection = async (payload) => {
  * Get all connections in the system
  * @return {Promise<Array<{connectionId: string, sessionId: string, userId: string, createdTimestamp: number, ws: Object}>>} - All connections
  */
-const getAllConnections = async () => {
-  const connections = await ConnectionModel.find({}).exec();
+const getAllConnections = async (projection) => {
+  let query = ConnectionModel.find({});
 
-  return connections;
+  if (projection) {
+    query = query.select(projection);
+  }
+
+  return query.exec();
 };
 
 /**

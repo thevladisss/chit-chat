@@ -5,7 +5,8 @@ const ServerChatEventEnum = {
   LEAVE_CONNECTION: "leave_connection",
   ROOM_JOIN_SUCCESS: "room_join_success",
   MESSAGE: "new_message",
-  CHAT_CREATED: "new_chat_created"
+  CHAT_CREATED: "new_chat_created",
+  TYPING_IN_CHAT: "typing_in_chat"
 }
 
 module.exports = ServerChatEventEnum;

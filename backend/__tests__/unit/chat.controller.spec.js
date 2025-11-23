@@ -17,9 +17,9 @@ describe('chat.controller.spec.js', () => {
       const request = {
         params: {
           chatId: 'chat123',
-          type: ChatMessageTypeEnum.TEXT,
         },
         body: {
+          type: ChatMessageTypeEnum.TEXT,
           message: 'Test message',
         },
         session: {
@@ -57,9 +57,9 @@ describe('chat.controller.spec.js', () => {
       const request = {
         params: {
           chatId: 'chat123',
-          type: ChatMessageTypeEnum.AUDIO,
         },
         body: {
+          type: ChatMessageTypeEnum.AUDIO,
           audioUrl: 'https://example.com/audio.mp3',
           audioDuration: 5.5,
           audioFormat: 'mp3',

@@ -5,7 +5,11 @@ import {
   startNewChatAction,
 } from "../stores/chat/actions.ts";
 import { useSelector, useDispatch } from "react-redux";
-import { setChatsAction } from "../stores/chat/slice.ts";
+import {
+  deleteTypingInChat,
+  setChatsAction,
+  setTypingInChat,
+} from "../stores/chat/slice.ts";
 import {
   selectLoadingChats,
   selectExistingChats,
@@ -41,6 +45,14 @@ export const useChatStore = () => {
     dispatch<any>(selectChatAction(chatId));
   };
 
+  const setTypingChat = (chatId: string, users: string[]) => {
+    dispatch<any>(setTypingInChat({ chatId, users: users }));
+  };
+
+  const deleteTypingChat = (chatId: string) => {
+    dispatch<any>(deleteTypingInChat({ chatId }));
+  };
+
   const selectChat = (chatId: string) => {
     dispatch<any>(selectChatAction(chatId));
   };
@@ -59,8 +71,10 @@ export const useChatStore = () => {
     startNewChat,
     selectExistingChat,
     setChats,
+    deleteTypingChat,
     initializeChat,
     selectChat,
+    setTypingChat,
 
     loadingChats,
     existingChats,

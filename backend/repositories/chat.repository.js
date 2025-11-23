@@ -3,6 +3,8 @@ const { ChatModel } = require('../models/chat.model');
 const { ObjectId } = mongoose.Types;
 const { UserModel } = require('../models/user.model');
 const { TextMessageModel } = require('../models/textMessage.model');
+const UserRepository = require('../repositories/user.repository');
+
 /**
 
  * @type {Map<string, {
@@ -64,6 +66,24 @@ const createChat = (data) => {
   });
 
   return chat.save();
+};
+
+/**
+ * Create a new chat with the specified users
+ * @param {string} userId - The chat data
+ * @param {string[]} data.usersIds - Array of user IDs to include in the chat
+ * @return {Promise<{chatId: string, users: string[], createdTimestamp: number}>} - The created chat
+ */
+const createChatForUsers = async (userId) => {
+  const users = await UserRepository.findAllExcludingId(userId);
+
+  const chats = await ChatModel.insertMany(
+    users.map((user) => ({
+      users: [user._id, userId],
+    })),
+  );
+
+  return chats;
 };
 
 /**
@@ -157,7 +177,7 @@ const findByUserNameOrChatNameOrMessage = async (search) => {
 
   // Find chats by name
   const chatsByName = await ChatModel.find({
-    name: { $regex: searchRegex }
+    name: { $regex: searchRegex },
   })
     .populate('users')
     .populate('messages')
@@ -165,15 +185,15 @@ const findByUserNameOrChatNameOrMessage = async (search) => {
 
   // Find users by username
   const usersByName = await UserModel.find({
-    username: { $regex: searchRegex }
+    username: { $regex: searchRegex },
   }).exec();
 
   // Get user IDs
-  const userIds = usersByName.map(user => user._id);
+  const userIds = usersByName.map((user) => user._id);
 
   // Find chats where these users are participants
   const chatsByParticipant = await ChatModel.find({
-    users: { $in: userIds }
+    users: { $in: userIds },
   })
     .populate('users')
     .populate('messages')
@@ -181,15 +201,17 @@ const findByUserNameOrChatNameOrMessage = async (search) => {
 
   // Find messages containing the search term
   const messagesByContent = await TextMessageModel.find({
-    text: { $regex: searchRegex }
+    text: { $regex: searchRegex },
   }).exec();
 
   // Get chat IDs from these messages
-  const chatIdsByMessage = [...new Set(messagesByContent.map(message => message.chatId))];
+  const chatIdsByMessage = [
+    ...new Set(messagesByContent.map((message) => message.chatId)),
+  ];
 
   // Find chats by these IDs
   const chatsByMessage = await ChatModel.find({
-    _id: { $in: chatIdsByMessage }
+    _id: { $in: chatIdsByMessage },
   })
     .populate('users')
     .populate('messages')
@@ -214,13 +236,23 @@ const findByUserNameOrChatNameOrMessage = async (search) => {
     const chatData = {
       chatId: chat._id.toString(),
       userId: null,
-      messages: chat.messages.map(message => ({
+      messages: chat.messages.map((message) => ({
         ...message.toJSON(),
         isPersonal: false, // We don't have the current user ID here to determine if it's personal
       })),
-      name: chat.name || (chat.users.length > 0 ? chat.users.map(user => user.username).join(', ') : ''),
-      lastMessage: chat.messages.length > 0 ? chat.messages[chat.messages.length - 1].text : null,
-      lastMessageTimestamp: chat.messages.length > 0 ? chat.messages[chat.messages.length - 1].sentAt : null,
+      name:
+        chat.name ||
+        (chat.users.length > 0
+          ? chat.users.map((user) => user.username).join(', ')
+          : ''),
+      lastMessage:
+        chat.messages.length > 0
+          ? chat.messages[chat.messages.length - 1].text
+          : null,
+      lastMessageTimestamp:
+        chat.messages.length > 0
+          ? chat.messages[chat.messages.length - 1].sentAt
+          : null,
       username: null,
     };
 
@@ -231,6 +263,7 @@ const findByUserNameOrChatNameOrMessage = async (search) => {
 };
 
 module.exports = {
+  createChatForUsers,
   findByUserNameOrChatNameOrMessage,
   findAllChatsIdsByUsersIds,
   findAllChatsByUsersIds,

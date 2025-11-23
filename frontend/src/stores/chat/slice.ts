@@ -9,8 +9,25 @@ export const slice = createSlice({
     pendingLoadChats: false,
     loadChatsError: null,
     chats: [],
+    typingChats: {},
   },
   reducers: {
+    setTypingInChat(state, action) {
+      return {
+        ...state,
+        typingChats: {
+          ...state.typingChats,
+          [action.payload.chatId]: action.payload.users,
+        },
+      };
+    },
+    deleteTypingInChat(state, action) {
+      if (action.payload.chatId in state.typingChats) {
+        const map = state.typingChats as Record<string, string[]>;
+
+        delete map[action.payload.chatId];
+      }
+    },
     setChatsAction(state, action) {
       return {
         ...state,
@@ -48,7 +65,7 @@ export const slice = createSlice({
           ...state,
           chats: action.payload,
         };
-      },
+      }
     );
 
     builder.addCase(actions.getFilteredChatsAction.pending, (state) => {
@@ -65,21 +82,21 @@ export const slice = createSlice({
           ...state,
           loadChatsError: action.payload,
         };
-      },
+      }
     );
 
     builder.addCase(
       actions.startNewChatAction.fulfilled,
       (
         state,
-        action: PayloadAction<{ chats: any[]; chat: any; chatId: string }>,
+        action: PayloadAction<{ chats: any[]; chat: any; chatId: string }>
       ) => {
         return {
           ...state,
           chats: action.payload.chats,
           selectedChatId: action.payload.chatId,
         };
-      },
+      }
     );
 
     builder.addCase(
@@ -89,11 +106,12 @@ export const slice = createSlice({
           ...state,
           selectedChatId: action.payload.chatId,
         };
-      },
+      }
     );
   },
 });
 
-export const { setChatsAction } = slice.actions;
+export const { deleteTypingInChat, setChatsAction, setTypingInChat } =
+  slice.actions;
 
 export default slice.reducer;

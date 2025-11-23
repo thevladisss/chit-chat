@@ -66,7 +66,7 @@ const getFilteredChats = async (req, res) => {
 
 const sendMessage = async (req, res) => {
   /** @var  {{chatId: string; type: string }} req.params */
-  const { chatId, type } = req.params;
+  const { chatId } = req.params;
 
   /** @var {{message: string, audioUrl: string, audioDuration: number}} req.body */
   const body = req.body;
@@ -75,12 +75,12 @@ const sendMessage = async (req, res) => {
 
   let result;
 
-  if (type === ChatMessageTypeEnum.TEXT) {
+  if (body.type === ChatMessageTypeEnum.TEXT) {
     result = await ChatService.sendChatMessage(user, {
       chatId: chatId,
       message: body.message,
     });
-  } else if (type === ChatMessageTypeEnum.AUDIO) {
+  } else if (body.type === ChatMessageTypeEnum.AUDIO) {
     result = await ChatService.sendVoiceMessage(user, {
       chatId: chatId,
       audioUrl: body.audioUrl,

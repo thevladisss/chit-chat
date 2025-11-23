@@ -1,9 +1,11 @@
 import "./ChatListItem.css";
-import { type JSX } from "react";
+import { useMemo, type JSX } from "react";
 import classNames from "classnames";
 
 type ChatListItemProps = {
   isSelected?: boolean;
+  isOnline: boolean;
+  typingUsers: string[];
   hasUnseenMessage?: boolean;
   chatName: string;
   lastMessage?: string | null;
@@ -13,6 +15,8 @@ type ChatListItemProps = {
 };
 function ChatListItem({
   isSelected,
+  isOnline,
+  typingUsers,
   chatName,
   lastMessage,
   lastMessageTimestamp,
@@ -22,7 +26,14 @@ function ChatListItem({
 }: ChatListItemProps): JSX.Element {
   const classes = classNames("chat-list-item", {
     selected: isSelected,
+    online: isOnline,
   });
+
+  const typingUsersPlaceholder = useMemo(() => {
+    return typingUsers.length > 1
+      ? `${typingUsers.join(",")} are typing...`
+      : `${typingUsers[0]} is typing`;
+  }, [typingUsers]);
 
   return (
     <li className={classes} tabIndex={0} onClick={() => onSelectChat()}>
@@ -36,7 +47,9 @@ function ChatListItem({
             {hasUnseenMessage && <span className={`unread-indicator`}>*</span>}
           </div>
         </div>
-        {lastMessage ? (
+        {typingUsers.length > 0 ? (
+          <span className="typing-placeholder">{typingUsersPlaceholder}</span>
+        ) : lastMessage ? (
           <span className="last-message">{lastMessage}</span>
         ) : (
           <span className="no-messages-placeholder">

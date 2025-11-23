@@ -3,6 +3,7 @@ const ClientChatEventEnum = require('../enums/ClientChatEventEnum');
 const ServerChatEventEnum = require('../enums/ServerChatEventEnum');
 const ConnectionService = require('../service/connection.service');
 const ChatService = require('../service/chat.service');
+const UserService = require('../service/user.service');
 
 /**
  *
@@ -69,12 +70,43 @@ const notifyOnConnectionEstablished = (ws, connection, allConnections) => {
   );
 };
 
-const handleWsMessage = async (data) => {
+const notifyOnUserTyping = async (req, ws, data) => {
+  const chatId = data.chatId;
+
+  const user = req.session.user;
+
+  const userId = user.userId;
+
+  const users = await ChatService.getUsersByChatId(chatId);
+
+  const ids = users.map((user) => user._id.toString());
+
+  const connections = await ConnectionService.getAllConnectionsByUserIds(ids);
+
+  for (const con of connections) {
+    if (con.userId != userId) {
+      con.ws.send(
+        JSON.stringify({
+          event: ServerChatEventEnum.TYPING_IN_CHAT,
+          data: {
+            userId,
+            user,
+            chatId,
+          },
+        }),
+      );
+    }
+  }
+};
+
+const handleWsMessage = async (req, ws, data) => {
   data = JSON.parse(data);
 
-  switch (data.payload.event) {
+  switch (data.event) {
     case ClientChatEventEnum.SEND_MESSAGE:
       break;
+    case ClientChatEventEnum.TYPING_IN_CHAT:
+      notifyOnUserTyping(req, ws, data.payload);
   }
 };
 
@@ -97,8 +129,8 @@ const handleWsConnection = async (wss, ws, req) => {
 
   notifyOnNewConnection(ws, allConnections);
 
-  ws.on('message', () => {
-    handleWsMessage();
+  ws.on('message', (event) => {
+    handleWsMessage(req, ws, event);
   });
   ws.on('close', () => {
     handleWsCloseConnection(connection);

@@ -1,14 +1,10 @@
 const ChatRepository = require('../repositories/chat.repository');
 const UserRepository = require('../repositories/user.repository');
+const ConnectionRepository = require('../repositories/connection.repository');
 const TextMessageRepository = require('../repositories/textMessage.repository');
 const AudioMessageRepository = require('../repositories/audioMessage.repository');
-const UserService = require('./user.service');
 const ConnectionService = require('./connection.service');
-const MessageService = require('../service/message.service');
 const ServerChatEventEnum = require('../enums/ServerChatEventEnum');
-const ChatMessageTypeEnum = require('../enums/ChatMessageType');
-const { ChatModel } = require('../models/chat.model');
-const { UserModel } = require('../models/user.model');
 
 /**
  *
@@ -51,31 +47,38 @@ const createNewChatForAllUsers = async (userId) => {
 const getUserChats = async (userId) => {
   const chats = await ChatRepository.findAllChatsByUsersIds([userId]);
 
-  const prospectiveChatters =
-    await UserRepository.findUsersNotHavingChatWithUser(userId);
+  const connections = await ConnectionRepository.getAllConnections({
+    userId: 1,
+    _id: 0,
+  });
+
+  const onlineUsersIds = connections.map(({ userId }) => userId);
 
   const results = [];
 
-  for (const item of [...chats, ...prospectiveChatters]) {
-    const shared = {
-      chatId: null,
-      messages: [],
+  for (const item of chats) {
+    const otherUserId = item.users.find((user) => user.id !== userId)._id;
+
+    const messages = item.messages.map((item) => ({
+      ...item.toJSON(),
+      isPersonal: item.userId.toString() === userId,
+    }));
+
+    const online = onlineUsersIds.some(
+      (id) => id.toString() === otherUserId.toString(),
+    );
+
+    const name = item.users.find(
+      (user) => user._id.toString() !== userId,
+    )?.username;
+
+    results.push({
+      messages,
+      online,
       lastMessage: null,
       ...item.toJSON(),
-    };
-
-    if (item instanceof ChatModel) {
-      shared.messages = item.messages.map((item) => ({
-        ...item.toJSON(),
-        isPersonal: item.userId.toString() === userId,
-      }));
-
-      shared.name = item.users.find((user) => user.id !== userId)?.username;
-    } else {
-      shared.name = item.username;
-    }
-
-    results.push(shared);
+      name,
+    });
   }
 
   return results;
@@ -279,39 +282,56 @@ const sendVoiceMessage = async (sender, data) => {
 const getFilteredChats = async (userId, search) => {
   const chats = await ChatRepository.findByUserNameOrChatNameOrMessage(search);
 
-  const prospectiveChatters =
-    await UserRepository.findUsersWhereUsernameContainsExcludingUserId(
-      search,
-      userId,
-    );
-
   const results = [];
 
-  for (const item of [...chats, ...prospectiveChatters]) {
-    const shared = {
-      chatId: null,
-      messages: [],
+  for (const item of chats) {
+    const otherUserId = item.users.find((user) => user.id !== userId)._id;
+
+    const messages = item.messages.map((item) => ({
+      ...item.toJSON(),
+      isPersonal: item.userId.toString() === userId,
+    }));
+
+    const isOnline = onlineUsersIds.some(
+      (id) => id.toString() === otherUserId.toString(),
+    );
+
+    const name = item.users.find((user) => user.id !== userId)?.username;
+
+    results.push({
+      messages,
+      isOnline,
+      name,
       lastMessage: null,
       ...item.toJSON(),
-    };
-
-    if (item instanceof ChatModel) {
-      shared.messages = item.messages.map((item) => ({
-        ...item.toJSON(),
-        isPersonal: item.userId.toString() === userId,
-      }));
-      shared.name = item.users.find((user) => user.id !== userId)?.username;
-    } else {
-      shared.name = item.username;
-    }
-
-    results.push(shared);
+    });
   }
 
   return results;
 };
 
+/**
+ * Get all users who are participants in a specific chat
+ * @param {string} chatId - The ID of the chat
+ * @return {Promise<Array<{userId: string, username: string, createdTimestamp: number}>>} - Array of users participating in the chat
+ */
+const getUsersByChatId = async (chatId) => {
+  const chat = await ChatRepository.findById(chatId);
+
+  if (!chat || !chat.users || chat.users.length === 0) {
+    return [];
+  }
+
+  // Extract user IDs (handles both ObjectId and populated user objects)
+  const userIds = chat.users.map((user) => {
+    return user._id ? user._id.toString() : user.toString();
+  });
+  // Fetch the actual user documents
+  return UserRepository.findAllById(userIds);
+};
+
 module.exports = {
+  getUsersByChatId,
   getFilteredChats,
   createChat,
   sendChatMessage,

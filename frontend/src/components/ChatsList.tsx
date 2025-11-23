@@ -3,61 +3,53 @@ import { JSX, HTMLProps, useMemo } from "react";
 import ChatListItem from "./ChatListItem.tsx";
 import { IChat } from "../types/IChat.ts";
 import classNames from "classnames";
+import { useSelector } from "react-redux";
 
 type IProspectiveChat = {
   userId: string;
   name: string;
   lastMessageTimestamp?: string;
-}
+};
 
 type Props = HTMLProps<HTMLDivElement> & {
-  existingChats: IChat[];
-  prospectiveChats: IProspectiveChat[];
+  chats: IChat[];
   selectedChatId: string | null;
   isSearchingChats?: boolean;
 
-  onSelectExistingChat: (chaId: string) => void;
-  onInitializeChat: (userId: string) => void;
+  onSelectChat: (chaId: string) => void;
 };
 function ChatsList({
   className,
   style,
-  existingChats,
-  prospectiveChats,
+  chats,
   selectedChatId,
   isSearchingChats,
 
-  onInitializeChat,
-  onSelectExistingChat,
+  onSelectChat,
 }: Props): JSX.Element {
   const classes = classNames("chat-list", className);
 
-  const handleInitializeChat = (userId: string) => {
-    onInitializeChat(userId);
-  };
+  const typingInChat = useSelector((state: any) => state.chatState.typingChats);
 
   const sortedCurrentChats = useMemo(() => {
-    return existingChats.toSorted((a, b) => {
+    return chats.toSorted((a, b) => {
       if (a.lastMessageTimestamp < b.lastMessageTimestamp) return -1;
       return 1;
     });
-  }, [existingChats]);
-
-  const sortedProspectiveChats = useMemo(() => {
-    return prospectiveChats.toSorted((a, b) => {
-      if (a.lastMessageTimestamp < b.lastMessageTimestamp) return -1;
-      return 1;
-    });
-  }, [prospectiveChats]);
+  }, [chats]);
 
   const hasChats = useMemo(() => {
-    return sortedCurrentChats.length > 0 || sortedProspectiveChats.length > 0;
-  }, [sortedCurrentChats, sortedProspectiveChats]);
+    return sortedCurrentChats.length > 0;
+  }, [sortedCurrentChats]);
 
   const getChatLastMessageTimestamp = (chat: IChat) => {
     return chat.lastMessageTimestamp
       ? new Date(chat.lastMessageTimestamp).toLocaleTimeString()
       : "";
+  };
+
+  const getTypingsUsersInChat = (chatId: string) => {
+    return chatId in typingInChat ? typingInChat[chatId] : [];
   };
 
   return (
@@ -72,19 +64,11 @@ function ChatsList({
                 lastMessageTimestamp={getChatLastMessageTimestamp(chat)}
                 chatName={chat.name}
                 key={chat.chatId}
-                onSelectChat={() => onSelectExistingChat(chat.chatId)}
+                onSelectChat={() => onSelectChat(chat.chatId)}
                 hasUnseenMessage={false}
+                typingUsers={getTypingsUsersInChat(chat.chatId)}
                 isSelected={chat.chatId === selectedChatId}
-              ></ChatListItem>
-            );
-          })}
-          {sortedProspectiveChats.map((chat) => {
-            return (
-              <ChatListItem
-                id={chat.userId}
-                chatName={chat.name}
-                key={chat.userId}
-                onSelectChat={() => handleInitializeChat(chat.userId)}
+                isOnline={chat.online}
               ></ChatListItem>
             );
           })}
@@ -92,9 +76,9 @@ function ChatsList({
       ) : isSearchingChats ? (
         <div className="no-chats-found-placeholder">No chats found</div>
       ) : (
-        <div className="no-history-placeholder">
+        <p className="no-history-placeholder">
           You do not have any chatting history
-        </div>
+        </p>
       )}
     </div>
   );

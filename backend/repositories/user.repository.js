@@ -4,6 +4,16 @@ const { ChatModel } = require('../models/chat.model');
 const { ObjectId } = require('mongoose').Types;
 
 /**
+ * Check if a user exists by username
+ * @param {string} username
+ * @return {Promise<boolean>}
+ */
+const existsByUsername = async (username) => {
+  const result = await UserModel.exists({ username }).exec();
+  return !!result;
+};
+
+/**
  * Create a new user with the given username or find an existing one
  * @param {string} username - The username to create or find
  * @return {Promise<{userId: string, username: string, createdTimestamp: number}>} - The created or found user
@@ -58,7 +68,18 @@ const findById = (userId) => {
 const findAllById = (usersIds) => {
   const objectsIds = usersIds.map((userId) => new ObjectId(userId));
 
-  return UserModel.find({ _id: { $all: objectsIds } }).exec();
+  return UserModel.find({ _id: { $in: objectsIds } }).exec();
+};
+
+/**
+ * Find multiple users by their IDs
+ * @param {string} excludedId - Exclude user with ID
+ * @return {Promise<Array<{userId: string, username: string, createdTimestamp: number}>>} - Array of found users
+ */
+const findAllExcludingId = (excludedId) => {
+  return UserModel.find({
+    _id: { $ne: new ObjectId(excludedId) },
+  }).exec();
 };
 
 /**
@@ -131,8 +152,10 @@ module.exports = {
   getAllUsersNotInChatWithProvidedUser,
   findById,
   findAllById,
+  findAllExcludingId,
   findUsersHavingChatWithUser,
   findUsersNotHavingChatWithUser,
   findUsersWhereUsernameContains,
   findUsersWhereUsernameContainsExcludingUserId,
+  existsByUsername,
 };
