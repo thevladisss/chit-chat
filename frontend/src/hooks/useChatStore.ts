@@ -17,6 +17,7 @@ import {
   selectSelectedChat,
   selectSelectedChatMessages,
 } from "../stores/user/selectors.ts";
+import { IUser } from "../types/IUser.ts";
 
 // TODO: Fix the type for dispatch calls below. Currently using 'any' which is not type-safe.
 // Should use proper AppDispatch type from the store.
@@ -45,7 +46,7 @@ export const useChatStore = () => {
     dispatch<any>(selectChatAction(chatId));
   };
 
-  const setTypingChat = (chatId: string, users: string[]) => {
+  const setTypingChat = (chatId: string, users: IUser[]) => {
     dispatch<any>(setTypingInChat({ chatId, users: users }));
   };
 

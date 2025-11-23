@@ -1,11 +1,13 @@
 import "./ChatListItem.css";
 import { useMemo, type JSX } from "react";
 import classNames from "classnames";
+import { IUser } from "../types/IUser";
 
 type ChatListItemProps = {
+  id: string;
   isSelected?: boolean;
   isOnline: boolean;
-  typingUsers: string[];
+  typingUsers: IUser[];
   hasUnseenMessage?: boolean;
   chatName: string;
   lastMessage?: string | null;
@@ -30,9 +32,9 @@ function ChatListItem({
   });
 
   const typingUsersPlaceholder = useMemo(() => {
-    return typingUsers.length > 1
-      ? `${typingUsers.join(",")} are typing...`
-      : `${typingUsers[0]} is typing`;
+    return typingUsers.length === 1
+      ? `${typingUsers[0].username} is typing`
+      : `${typingUsers.map(({ username }) => username).join(",")} are typing...`;
   }, [typingUsers]);
 
   return (

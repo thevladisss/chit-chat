@@ -10,6 +10,7 @@ import { ServerSideEventsEnum } from "../enums/ServerSideEventsEnum.ts";
 import { IWSMessageEventData } from "../types/ws/IWSMessageEventData.ts";
 import { useAudioRecording } from "../hooks/useAudioRecording.ts";
 import ChatStatusBar from "../components/ChatStatusBar.tsx";
+import { IUser } from "../types/IUser.ts";
 
 declare global {
   interface Window {
@@ -71,9 +72,10 @@ function ChatView() {
 
     const handleTypingInChatEvent = (e: WsCustomEvent) => {
       const chatId = e.data.chatId as string,
-        userId = e.data.userId as string;
+        userId = e.data.userId as string,
+        user = e.data.user as IUser;
 
-      setTypingChat(chatId, [userId]);
+      setTypingChat(chatId, [user]);
 
       if (typingTimeout.current[chatId]) {
         clearTimeout(typingTimeout.current[chatId]);
