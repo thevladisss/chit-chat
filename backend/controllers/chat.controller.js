@@ -1,6 +1,12 @@
 const ChatService = require('../service/chat.service');
 const ChatMessageTypeEnum = require('../enums/ChatMessageType');
 
+/**
+ * Returns all chats where signed in user is a participant
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @returns
+ */
 const getAllChats = async (req, res) => {
   const user = req.session.user;
 
@@ -13,26 +19,12 @@ const getAllChats = async (req, res) => {
     .status(200);
 };
 
-const initializeChat = async (req, res) => {
-  const secondUserId = req.body.userId;
-
-  const user = req.session.user;
-
-  const chat = await ChatService.initializeChatForCurrentUser(
-    user.id,
-    secondUserId,
-  );
-
-  const chats = await ChatService.getUserChats(user.id);
-
-  return res.json({
-    data: {
-      chatId: chat.chatId,
-      chats: chats,
-    },
-  });
-};
-
+/**
+ * Returns one signle chat by its ID
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @returns
+ */
 const getChat = async (req, res) => {
   const { chatId } = req.params;
 
@@ -43,6 +35,12 @@ const getChat = async (req, res) => {
   });
 };
 
+/**
+ * Returns chats filtered by name, message or name of its participants
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @returns
+ */
 const getFilteredChats = async (req, res) => {
   const user = req.session.user;
 
@@ -64,6 +62,12 @@ const getFilteredChats = async (req, res) => {
   });
 };
 
+/**
+ * Send text or voice message to the chat
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @returns
+ */
 const sendMessage = async (req, res) => {
   /** @var  {{chatId: string; type: string }} req.params */
   const { chatId } = req.params;
@@ -89,10 +93,6 @@ const sendMessage = async (req, res) => {
       fileSize: body.fileSize,
       originalFileName: body.originalFileName,
     });
-  } else {
-    return res.status(400).json({
-      error: `Invalid message type. Must be "${ChatMessageTypeEnum.TEXT}" or "${ChatMessageTypeEnum.AUDIO}"`,
-    });
   }
 
   return res.json({
@@ -103,7 +103,6 @@ const sendMessage = async (req, res) => {
 module.exports = {
   sendMessage,
   getFilteredChats,
-  initializeChat,
   getChat,
   getAllChats,
 };

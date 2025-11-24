@@ -8,7 +8,6 @@ router.use(AuthMiddleware);
 router.get('/', ChatController.getAllChats);
 router.get('/search', ChatController.getFilteredChats);
 router.get('/:chatId', ChatController.getChat);
-router.post('/initialize', ChatController.initializeChat);
 router.post('/:chatId/messages', ChatController.sendMessage);
 
 module.exports = router;
