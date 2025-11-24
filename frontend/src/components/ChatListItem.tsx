@@ -40,24 +40,37 @@ function ChatListItem({
   return (
     <li className={classes} tabIndex={0} onClick={() => onSelectChat()}>
       <a role="button">
-        <div className="flex justify-between">
-          <span className="chat-name">{chatName}</span>
-          <div className="flex">
-            <span className="last-message-timestamp">
-              {lastMessageTimestamp}
-            </span>
-            {hasUnseenMessage && <span className={`unread-indicator`}>*</span>}
-          </div>
+        <div className="logo-container">
+          <img
+            height="44"
+            width="44"
+            src="/images/user_default_avatar.png"
+            alt={chatName}
+            className="chat-logo"
+          />
         </div>
-        {typingUsers.length > 0 ? (
-          <span className="typing-placeholder">{typingUsersPlaceholder}</span>
-        ) : lastMessage ? (
-          <span className="last-message">{lastMessage}</span>
-        ) : (
-          <span className="no-messages-placeholder">
-            No messages in this chat yet...
-          </span>
-        )}
+        <div>
+          <div className="flex justify-between">
+            <span className="chat-name">{chatName}</span>
+            <div className="flex">
+              <span className="last-message-timestamp">
+                {lastMessageTimestamp}
+              </span>
+              {hasUnseenMessage && (
+                <span className={`unread-indicator`}>*</span>
+              )}
+            </div>
+          </div>
+          {typingUsers.length > 0 ? (
+            <span className="typing-placeholder">{typingUsersPlaceholder}</span>
+          ) : lastMessage ? (
+            <span className="last-message">{lastMessage}</span>
+          ) : (
+            <span className="no-messages-placeholder">
+              No messages in this chat yet...
+            </span>
+          )}
+        </div>
       </a>
     </li>
   );

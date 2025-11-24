@@ -5,15 +5,11 @@
   height: 80px;
 }
 
-.chat-list-item::after {
-  content: "";
-  position: absolute;
-  top: 2px;
-  right: 4px;
-  width: 12px;
-  height: 12px;
-  background-color: grey;
-  border-radius: 50%;
+.chat-list-item a {
+  display: flex;
+  gap: 12px;
+  height: 100%;
+  align-items: center;
 }
 
 .chat-list-item:hover {
@@ -38,7 +34,7 @@
   font-size: 10px;
 }
 
-.online::after {
+.online .logo-container::after {
   background-color: green;
 }
 
@@ -75,4 +71,26 @@
 }
 
 .unread-indicator {
+}
+
+.logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.logo-container::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 12px;
+  height: 12px;
+  background-color: grey;
+  border-radius: 50%;
+}
+
+.chat-logo {
+  border-radius: 50%;
 }
