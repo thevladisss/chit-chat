@@ -10,8 +10,12 @@ function UserSidebar(): JSX.Element {
 
   const [pendingSearchFilteredChats, setSearchFilteredChats] = useState(false);
 
-  const { existingChats, selectedChat, selectChat, getFilteredChats } =
-    useChatStore();
+  const {
+    existingChats: chats,
+    selectedChat,
+    selectChat,
+    getFilteredChats,
+  } = useChatStore();
 
   const handleSelectChat = (chatId: string) => {
     selectChat(chatId);
@@ -53,7 +57,7 @@ function UserSidebar(): JSX.Element {
         </div>
         <div className="container">
           <ChatsList
-            chats={existingChats}
+            chats={chats}
             selectedChatId={selectedChat ? selectedChat.chatId : null}
             onSelectChat={handleSelectChat}
             isSearchingChats={isFocusedSearchInput}

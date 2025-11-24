@@ -2,7 +2,6 @@ import {
   getChatsAction,
   getFilteredChatsAction,
   selectChatAction,
-  startNewChatAction,
 } from "../stores/chat/actions.ts";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -13,9 +12,8 @@ import {
 import {
   selectLoadingChats,
   selectExistingChats,
-  selectProspectiveChats,
-  selectSelectedChat,
   selectSelectedChatMessages,
+  selectSelectedChat,
 } from "../stores/user/selectors.ts";
 import { IUser } from "../types/IUser.ts";
 
@@ -36,12 +34,6 @@ export const useChatStore = () => {
     dispatch(setChatsAction(chats));
   };
 
-  const initializeChat = (userId: string) => {
-    dispatch<any>(startNewChatAction(userId));
-  };
-  const startNewChat = (userId: string) => {
-    dispatch<any>(startNewChatAction(userId));
-  };
   const selectExistingChat = (chatId: string) => {
     dispatch<any>(selectChatAction(chatId));
   };
@@ -62,24 +54,20 @@ export const useChatStore = () => {
 
   const loadingChats = useSelector(selectLoadingChats);
   const existingChats = useSelector(selectExistingChats);
-  const prospectiveChats = useSelector(selectProspectiveChats);
   const selectedChat = useSelector(selectSelectedChat);
   const selectedChatMessages = useSelector(selectSelectedChatMessages);
 
   return {
     getChats,
     getFilteredChats,
-    startNewChat,
     selectExistingChat,
     setChats,
     deleteTypingChat,
-    initializeChat,
     selectChat,
     setTypingChat,
 
     loadingChats,
     existingChats,
-    prospectiveChats,
     selectedChat,
     selectedChatMessages,
   };

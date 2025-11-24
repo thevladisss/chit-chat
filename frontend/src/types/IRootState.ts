@@ -3,10 +3,14 @@ import { AxiosError } from "axios";
 import { IUser } from "./IUser.ts";
 
 export type IChatSliceState = {
+  selectedChat: IChat | null;
+  pendingSelectChat: boolean
+  selectChatError: AxiosError | null;
+
+  chats: IChat[];
   pendingLoadChats: boolean;
   loadChatsError: AxiosError | null;
-  chats: IChat[];
-  selectedChatId: string | null;
+
 };
 
 export type IUserSliceState = IUser | null;

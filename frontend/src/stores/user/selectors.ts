@@ -12,39 +12,26 @@ export const selectExistingChats = createSelector(
     return chats.filter((chat) => {
       return !!chat.chatId;
     });
-  },
-);
-
-export const selectProspectiveChats = createSelector(
-  (state: IRootState) => state.chatState.chats,
-  (chats): IChat[] => {
-    return chats.filter((chat) => {
-      return !chat.chatId;
-    });
-  },
-);
-
-export const selectSelectedChat = createSelector(
-  [
-    (state: IRootState) => state.chatState.chats,
-    (state: IRootState) => state.chatState.selectedChatId,
-  ],
-  (chats, selectedId) => {
-    return selectedId
-      ? chats.find((chat) => {
-          return chat.chatId === selectedId;
-        })
-      : null;
-  },
+  }
 );
 
 export const selectSelectedChatMessages = createSelector(
-  [
-    (state: IRootState) => state.chatState.chats,
-    (state: IRootState) => state.chatState.selectedChatId,
-  ],
-  (chats, selectedChatId) => {
-    const chat = chats.find((chat) => chat.chatId === selectedChatId);
+  [(state: IRootState) => state.chatState.selectedChat],
+  (chat: IChat) => {
     return chat ? chat.messages : [];
-  },
+  }
+);
+
+export const selectSelectedChatId = createSelector(
+  [(state: IRootState) => state.chatState.selectedChat],
+  (selectedChat: IChat) => {
+    return selectedChat ? selectedChat.chatId : null;
+  }
+);
+
+export const selectSelectedChat = createSelector(
+  [(state: IRootState) => state.chatState.selectedChat],
+  (selectedChat: IChat) => {
+    return selectedChat;
+  }
 );

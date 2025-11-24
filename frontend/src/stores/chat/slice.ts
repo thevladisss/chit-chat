@@ -1,10 +1,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import * as actions from "./actions.ts";
 import { IChatSliceState } from "../../types/IRootState.ts";
+import { IChat } from "../../types/IChat.ts";
 
 export const slice = createSlice({
   name: "chatState",
   initialState: {
+    selectedChat: null,
     selectedChatId: null,
     pendingLoadChats: false,
     loadChatsError: null,
@@ -36,6 +38,7 @@ export const slice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    /* Get Chats */
     builder.addCase(actions.getChatsAction.fulfilled, (state, action) => {
       return {
         ...state,
@@ -58,6 +61,7 @@ export const slice = createSlice({
       };
     });
 
+    /* Get filtered chats */
     builder.addCase(
       actions.getFilteredChatsAction.fulfilled,
       (state, action) => {
@@ -85,29 +89,18 @@ export const slice = createSlice({
       }
     );
 
+    /* Select active chat */
     builder.addCase(
-      actions.startNewChatAction.fulfilled,
-      (
-        state,
-        action: PayloadAction<{ chats: any[]; chat: any; chatId: string }>
-      ) => {
+      actions.selectChatAction.fulfilled,
+      (state: IChatSliceState, action: PayloadAction<IChat>) => {
         return {
           ...state,
-          chats: action.payload.chats,
-          selectedChatId: action.payload.chatId,
+          selectedChat: action.payload,
         };
       }
     );
 
-    builder.addCase(
-      actions.selectChatAction.fulfilled,
-      (state: IChatSliceState, action: PayloadAction<{ chatId: string }>) => {
-        return {
-          ...state,
-          selectedChatId: action.payload.chatId,
-        };
-      }
-    );
+    //TODO: Add rejected and pending hanlding for Select active chat 
   },
 });
 

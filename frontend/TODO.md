@@ -1,9 +1,7 @@
 # Project TODO List
 
 ## Architecture
-
-- [ ] Move WS logic to layout level 
-
+- [ ] Use redux selectors directly intead of custom hooks (useChatStore)
 
 ## Acessibility 
 
