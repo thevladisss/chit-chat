@@ -184,12 +184,12 @@ const findByUserNameOrChatNameOrMessage = async (search) => {
     .exec();
 
   // Find users by username
-  const usersByName = await UserModel.find({
+  const usersByUsername = await UserModel.find({
     username: { $regex: searchRegex },
   }).exec();
 
-  // Get user IDs
-  const userIds = usersByName.map((user) => user._id);
+  // Get user IDs from found users
+  const userIds = usersByUsername.map((user) => user._id);
 
   // Find chats where these users are participants
   const chatsByParticipant = await ChatModel.find({
@@ -209,7 +209,7 @@ const findByUserNameOrChatNameOrMessage = async (search) => {
     ...new Set(messagesByContent.map((message) => message.chatId)),
   ];
 
-  // Find chats by these IDs
+  // Find chats by _id
   const chatsByMessage = await ChatModel.find({
     _id: { $in: chatIdsByMessage },
   })
@@ -229,37 +229,7 @@ const findByUserNameOrChatNameOrMessage = async (search) => {
     }
   }
 
-  // Format the results to match the expected return type
-  const results = [];
-
-  for (const chat of uniqueChats.values()) {
-    const chatData = {
-      chatId: chat._id.toString(),
-      userId: null,
-      messages: chat.messages.map((message) => ({
-        ...message.toJSON(),
-        isPersonal: false, // We don't have the current user ID here to determine if it's personal
-      })),
-      name:
-        chat.name ||
-        (chat.users.length > 0
-          ? chat.users.map((user) => user.username).join(', ')
-          : ''),
-      lastMessage:
-        chat.messages.length > 0
-          ? chat.messages[chat.messages.length - 1].text
-          : null,
-      lastMessageTimestamp:
-        chat.messages.length > 0
-          ? chat.messages[chat.messages.length - 1].sentAt
-          : null,
-      username: null,
-    };
-
-    results.push(chatData);
-  }
-
-  return results;
+  return [...uniqueChats.values()];
 };
 
 module.exports = {

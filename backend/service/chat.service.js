@@ -282,6 +282,13 @@ const sendVoiceMessage = async (sender, data) => {
 const getFilteredChats = async (userId, search) => {
   const chats = await ChatRepository.findByUserNameOrChatNameOrMessage(search);
 
+  const connections = await ConnectionRepository.getAllConnections({
+    userId: 1,
+    _id: 0,
+  });
+
+  const onlineUsersIds = connections.map(({ userId }) => userId);
+
   const results = [];
 
   for (const item of chats) {
@@ -292,18 +299,20 @@ const getFilteredChats = async (userId, search) => {
       isPersonal: item.userId.toString() === userId,
     }));
 
-    const isOnline = onlineUsersIds.some(
+    const online = onlineUsersIds.some(
       (id) => id.toString() === otherUserId.toString(),
     );
 
-    const name = item.users.find((user) => user.id !== userId)?.username;
+    const name = item.users.find(
+      (user) => user._id.toString() !== userId,
+    )?.username;
 
     results.push({
-      messages,
-      isOnline,
-      name,
+      online,
       lastMessage: null,
       ...item.toJSON(),
+      messages,
+      name,
     });
   }
 
