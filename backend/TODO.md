@@ -1,5 +1,9 @@
 # Project TODO List
 
+## Architecture
+
+- [ ] Consider merging filter endpoint with search chats endpoint and use queyr params
+
 ## High Priority
 
 - [ ] Security
