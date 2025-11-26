@@ -4,8 +4,9 @@
 
 .chat-input-module {
   display: flex;
-  gap: 20px;
+  gap: 12px;
   align-items: center;
+  background-color: var(--app-bg-light-5);
 }
 
 .input-container {
@@ -13,11 +14,10 @@
 }
 
 .input-container input {
-  background-color: var(--app-bg-light-1);
   border: none;
 }
 
 .actions {
   flex: 0 0 auto;
+  padding-right: 4px;
 }
-
