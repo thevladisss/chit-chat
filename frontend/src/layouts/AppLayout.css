@@ -45,16 +45,43 @@
   display: flex;
 }
 
+.app-layout-content > div:first-of-type {
+  flex: 0 0 380px;
+}
+
 .app-layout-content main {
   flex: 1;
+  transition: all 0.2s ease-in-out;
 }
 
 .app-layout-content main > div {
   flex: 1;
 }
 
-@media screen and (max-width: 639px) {
-  .app-layout-content {
-    flex-direction: column;
+@media screen and (max-width: 580px) {
+  .root:not(.in-chat) {
+    .app-layout-content > div:first-of-type {
+      flex: 1;
+    }
+
+    .app-layout-content main {
+      min-width: 0px;
+      flex: 0;
+    }
+
+    .app-layout-main > .view {
+      transform: translate3d(100vw, 0, 0);
+    }
+  }
+
+  .root.in-chat {
+    .app-layout-content > div:first-of-type {
+      flex: 0;
+      min-width: 0px;
+    }
+
+    .app-layout-main > .view {
+      transform: translate3d(0);
+    }
   }
 }

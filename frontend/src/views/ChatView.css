@@ -4,6 +4,7 @@
   height: 100%;
   background-color: var(--app-bg-dark-3);
   position: relative;
+  transition: transform 0.2s ease-in-out;
 }
 
 .chat-view-content {
@@ -25,16 +26,6 @@
 .chat-view > .chat-list {
   flex: 0 0 30%;
 }
-
-@media screen and (max-width: 639px) {
-  .chat-view {
-    margin: 0;
-    display: flex;
-    flex-direction: column-reverse;
-    overflow: hidden;
-  }
-}
-
 
 .select-chat-placeholder {
   position: absolute;

@@ -32,3 +32,12 @@ export const selectChatAction = createAsyncThunk<IChat, string>(
     return data;
   }
 );
+
+export const leaveSelecteChatAction = createAsyncThunk(
+  "chats/leaveSelecteChatAction",
+  async () => {
+    //TODO: Add API call to leave the selected chat
+
+    return Promise.resolve();
+  }
+);

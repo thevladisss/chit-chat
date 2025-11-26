@@ -13,58 +13,78 @@ import {
   AUTH_PATH,
   WILDCARD_PATH,
 } from "./constants/route-paths.ts";
+import classNames from "classnames";
+import { useScreen } from "./hooks/useScreen.ts";
+import { useSelector } from "react-redux";
+import { type IRootState } from "./types/IRootState.ts";
 
 export function App() {
+  const { smAndSmaller } = useScreen();
+
+  const isInChat = useSelector((state: IRootState) =>
+    Boolean(state.chatState.selectedChat)
+  );
+
   return (
-    <Router>
-      <Routes>
-        {/* Default route redirect */}
-        <Route path={ROOT_PATH} element={<Navigate to={AUTH_PATH} replace />} />
+    <div
+      className={classNames("root", {
+        mobile: smAndSmaller,
+        "in-chat": isInChat,
+      })}
+    >
+      <Router>
+        <Routes>
+          {/* Default route redirect */}
+          <Route
+            path={ROOT_PATH}
+            element={<Navigate to={AUTH_PATH} replace />}
+          />
 
-        {/* Dynamic routes from configuration */}
-        {routes.map(
-          ({
-            path,
-            element: Element,
-            protected: isProtected,
-            public: isPublic,
-            children,
-          }) => (
-            <Route
-              key={path}
-              path={path}
-              element={
-                isProtected ? (
-                  <RouteGuard type="protected">
+          {/* Dynamic routes from configuration */}
+          {routes.map(
+            ({
+              path,
+              element: Element,
+              protected: isProtected,
+              public: isPublic,
+              children,
+            }) => (
+              <Route
+                key={path}
+                path={path}
+                element={
+                  isProtected ? (
+                    <RouteGuard type="protected">
+                      <Element />
+                    </RouteGuard>
+                  ) : isPublic ? (
+                    <RouteGuard type="public">
+                      <Element />
+                    </RouteGuard>
+                  ) : (
                     <Element />
-                  </RouteGuard>
-                ) : isPublic ? (
-                  <RouteGuard type="public">
-                    <Element />
-                  </RouteGuard>
-                ) : (
-                  <Element />
-                )
-              }
-            >
-              {children?.map((child) => (
-                <Route
-                  key={child.path}
-                  path={child.path}
-                  element={<child.element />}
-                />
-              ))}
-            </Route>
-          )
-        )}
+                  )
+                }
+              >
+                {children?.map((child) => (
+                  <Route
+                    key={child.path}
+                    path={child.path}
+                    element={<child.element />}
+                  />
+                ))}
+              </Route>
+            )
+          )}
 
-        {/* Catch all route */}
-        <Route
-          path={WILDCARD_PATH}
-          element={<Navigate to={AUTH_PATH} replace />}
-        />
-      </Routes>
-    </Router>
+          {/* Catch all route */}
+          <Route
+            path={WILDCARD_PATH}
+            element={<Navigate to={AUTH_PATH} replace />}
+          />
+        </Routes>
+      </Router>
+    </div>
   );
 }
 

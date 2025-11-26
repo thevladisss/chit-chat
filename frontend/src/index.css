@@ -111,18 +111,11 @@ h6 {
   margin: 0;
 }
 
-@media (max-width: 639px) {
-  main {
-    margin: 2rem;
-  }
-}
-
 @media (prefers-color-scheme: dark) {
   :root {
     /* overrride vars */
   }
 }
-
 
 input:focus {
   outline: none;

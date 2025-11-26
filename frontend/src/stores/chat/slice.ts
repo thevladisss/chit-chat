@@ -100,7 +100,17 @@ export const slice = createSlice({
       }
     );
 
-    //TODO: Add rejected and pending hanlding for Select active chat 
+    builder.addCase(
+      actions.leaveSelecteChatAction.fulfilled,
+      (state: IChatSliceState) => {
+        return {
+          ...state,
+          selectedChat: null,
+        };
+      }
+    );
+
+    //TODO: Add rejected and pending hanlding for Select active chat
   },
 });
 

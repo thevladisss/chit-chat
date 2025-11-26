@@ -8,8 +8,12 @@ import { useTimer } from "../hooks/useTimer.ts";
 import { useDateTime } from "../hooks/useDateTime.ts";
 import { useAudioRecording } from "../hooks/useAudioRecording.ts";
 import ChatStatusBar from "../components/ChatStatusBar.tsx";
+import { useDispatch } from "../hooks/useDispatch.ts";
+import { leaveSelecteChatAction } from "../stores/chat/actions.ts";
 
 function ChatView() {
+  const dispatch = useDispatch();
+
   const { selectedChat, setChats } = useChatStore();
 
   const selectedChatName = useMemo(
@@ -132,6 +136,10 @@ function ChatView() {
     stopRecording();
   };
 
+  const handleLeaveChat = async () => {
+    await dispatch(leaveSelecteChatAction());
+  };
+
   return (
     <div className="view chat-view">
       {Boolean(selectedChat) && (
@@ -139,6 +147,7 @@ function ChatView() {
           lastOnlineAt={selectecChatLastOnlineAt}
           chatName={selectedChatName}
           participantsCount={selectedChatparticipantsCount}
+          onLeaveChat={handleLeaveChat}
         />
       )}
       <div className="chat-view-content">

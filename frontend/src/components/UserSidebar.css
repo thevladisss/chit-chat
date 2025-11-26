@@ -1,5 +1,5 @@
 .user-sidebar {
-  width: 380px;
+  width: 100%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -7,6 +7,8 @@
   background-color: var(--app-bg-dark-1);
   border-right: .5px solid var(--app-bg-dark-3);
   height: 100%;
+  max-width: 580px;
+  transition: transform 0.2s ease-in-out;
 }
 
 .user-sidebar-header {

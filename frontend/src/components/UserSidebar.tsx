@@ -27,8 +27,12 @@ function UserSidebar(): JSX.Element {
     getFilteredChats(search);
   }, SEARCH_DEBOUNCE_DELAY);
 
+  const [searchValue, setSearchValue] = useState("");
+
   const handleSearchChats = (event: BaseSyntheticEvent<InputEvent>) => {
     const value = event.target.value;
+
+    setSearchValue(value);
 
     handleSearchFilteredChats(value);
   };
@@ -62,7 +66,7 @@ function UserSidebar(): JSX.Element {
             chats={chats}
             selectedChatId={selectedChat ? selectedChat.chatId : null}
             onSelectChat={handleSelectChat}
-            isSearchingChats={isFocusedSearchInput}
+            isSearchingChats={Boolean(searchValue)}
           />
         </div>
       </div>
