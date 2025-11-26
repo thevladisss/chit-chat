@@ -18,7 +18,9 @@ function UserSidebar(): JSX.Element {
   } = useChatStore();
 
   const handleSelectChat = (chatId: string) => {
-    selectChat(chatId);
+    if (!selectedChat || selectedChat.chatId != chatId) {
+      selectChat(chatId);
+    }
   };
 
   const handleSearchFilteredChats = debounce((search: string) => {
