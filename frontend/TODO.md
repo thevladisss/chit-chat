@@ -1,14 +1,22 @@
 # Project TODO List
 
+## Features 
+
+- [ ] Unread messages: shows count of unread messages in chat in sidebar. Logic to mark messages as read in opened chat
+- [ ] Implement voice messages functionality
+
 ## Architecture
+
 - [ ] Use redux selectors directly intead of custom hooks (useChatStore)
+- [ ] Update logic for showing "typing"
 
 ## Acessibility 
 
 - [ ] Enforce components are accessible
 
+## UI Improvements
 
-## High Priority
+- [ ] Add skeletons loading indicators for chat list search in sidebar 
 
 - [ ] Security
   - [ ] Implement proper authentication flow
@@ -25,14 +33,6 @@
   - [ ] Set up testing library
   - [ ] Achieve 80% code coverage
   - [ ] Add end-to-end tests
-
-## Features
-
-- [ ] User Experience
-  - [ ] Add loading states for all async operations
-  - [ ] Implement proper error messages
-  - [ ] Add animations for better UX
-  - [ ] Implement responsive design for mobile
 
 ## Technical Debt
 
@@ -66,16 +66,3 @@
   - [ ] Add environment-specific configurations
   - [ ] Set up monitoring and error tracking
 
-## Nice to Have
-
-- [ ] Features
-  - [ ] Add dark mode
-  - [ ] Implement keyboard shortcuts
-  - [ ] Add user preferences
-  - [ ] Implement offline mode
-
-## In Progress
-
-- [ ] Current sprint tasks
-  - [ ] Task 1
-  - [ ] Task 2
