@@ -6,6 +6,7 @@
   background-color: var(--app-bg-dark-1);
   border-bottom: 0.5px solid var(--app-bg-dark-3);
   min-height: 64px;
+  gap: 12px;
 }
 
 .chat-status-bar:hover {
