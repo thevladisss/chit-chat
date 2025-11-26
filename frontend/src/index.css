@@ -122,3 +122,8 @@ h6 {
     /* overrride vars */
   }
 }
+
+
+input:focus {
+  outline: none;
+}
