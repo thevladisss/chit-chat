@@ -8,6 +8,37 @@ const ServerChatEventEnum = require('../enums/ServerChatEventEnum');
 
 /**
  *
+ * @param {Object} chat - The chat object
+ * @param {Object} sender - The sender object
+ * @param {string} sender.userId - The ID of the user sending the message
+ */
+const notifyUsersOnNewChatMessage = async (chat, sender) => {
+  const chatParticipantsNoSender = chat.users.filter((userId) => {
+    return userId !== sender.userId;
+  });
+
+  const connections = await ConnectionService.getAllConnectionsByUserIds(
+    chatParticipantsNoSender,
+  );
+
+  for (const con of connections) {
+    const conChats = await getUserChats(con.userId);
+
+    con.ws.send(
+      JSON.stringify({
+        event: ServerChatEventEnum.MESSAGE,
+        data: {
+          sender: sender.userId,
+          isSenderSelf: sender.userId === con.userId,
+          chats: conChats,
+        },
+      }),
+    );
+  }
+};
+
+/**
+ *
  * @param userId {string}
  * @return {Promise<{
  *   chatId: string | null;
@@ -86,41 +117,6 @@ const getUserChats = async (userId) => {
 
 /**
  *
- * @param initiatorUserId {string}
- * @param secondUserId {string}
- * @return {Promise<*>}
- */
-const initializeChatForCurrentUser = async (initiatorUserId, secondUserId) => {
-  const usersIds = [initiatorUserId, secondUserId];
-
-  let chat = await ChatRepository.findByUsersIds(usersIds);
-
-  if (!chat) {
-    chat = await ChatRepository.createChat({
-      usersIds,
-    });
-  }
-
-  const connections = await ConnectionService.getAllConnectionsByUserIds([
-    secondUserId,
-  ]);
-
-  for (const con of connections) {
-    const chats = await getUserChats(con.userId);
-
-    con.ws.send(
-      JSON.stringify({
-        event: ServerChatEventEnum.CHAT_CREATED,
-        data: chats,
-      }),
-    );
-  }
-
-  return chat.toJSON();
-};
-
-/**
- *
  * @param data {{ usersIds: string[] }}
  * @return {Promise<{
  *   chatId: string
@@ -180,34 +176,13 @@ const sendChatMessage = async (sender, data) => {
 
   const chats = await getUserChats(sender.userId);
 
-  const chatParticipantsNoSender = chat.users.filter((userId) => {
-    return userId !== sender.userId;
-  });
-
   const result = {
     chatId: chat.chatId,
     chat: chat.toJSON(),
     chats,
   };
 
-  const connections = await ConnectionService.getAllConnectionsByUserIds(
-    chatParticipantsNoSender,
-  );
-
-  for (const con of connections) {
-    const conChats = await getUserChats(con.userId);
-
-    con.ws.send(
-      JSON.stringify({
-        event: ServerChatEventEnum.MESSAGE,
-        data: {
-          sender: sender.userId,
-          isSenderSelf: sender.userId === con.userId,
-          chats: conChats,
-        },
-      }),
-    );
-  }
+  notifyUsersOnNewChatMessage(chat, sender);
 
   return result;
 };
@@ -227,7 +202,7 @@ const sendChatMessage = async (sender, data) => {
  */
 const sendVoiceMessage = async (sender, data) => {
   // Create the audio message record directly
-  const audioMessage = await AudioMessageRepository.createAudioMessage({
+  await AudioMessageRepository.createAudioMessage({
     chatId: data.chatId,
     userId: sender.userId,
     audioUrl: data.audioUrl,
@@ -239,36 +214,15 @@ const sendVoiceMessage = async (sender, data) => {
 
   const chat = await ChatRepository.findById(data.chatId);
 
-  const chats = await getUserChats(sender.userId);
-
-  const chatParticipantsNoSender = chat.users.filter((userId) => {
-    return userId !== sender.userId;
-  });
+  // const chats = await getUserChats(sender.userId);
 
   const result = {
     chatId: chat.chatId,
     chat: chat.toJSON(),
-    chats,
+    chats: [],
   };
 
-  const connections = await ConnectionService.getAllConnectionsByUserIds(
-    chatParticipantsNoSender,
-  );
-
-  for (const con of connections) {
-    const conChats = await getUserChats(con.userId);
-
-    con.ws.send(
-      JSON.stringify({
-        event: ServerChatEventEnum.MESSAGE,
-        data: {
-          sender: sender.userId,
-          isSenderSelf: sender.userId === con.userId,
-          chats: conChats,
-        },
-      }),
-    );
-  }
+  notifyUsersOnNewChatMessage(chat, sender);
 
   return result;
 };
@@ -340,12 +294,13 @@ const getUsersByChatId = async (chatId) => {
 };
 
 module.exports = {
+  notifyUsersOnNewChatMessage,
+
   getUsersByChatId,
   getFilteredChats,
   createChat,
   sendChatMessage,
   sendVoiceMessage,
-  initializeChatForCurrentUser,
   getUserChats,
   getChat,
   createNewChatForAllUsers,
