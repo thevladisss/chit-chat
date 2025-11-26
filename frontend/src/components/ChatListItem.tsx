@@ -2,6 +2,7 @@ import "./ChatListItem.css";
 import { useMemo, type JSX } from "react";
 import classNames from "classnames";
 import { IUser } from "../types/IUser";
+import { formatUnixTimestamp } from "../utils/dateTimeUtil";
 
 type ChatListItemProps = {
   id: string;
@@ -11,10 +12,11 @@ type ChatListItemProps = {
   hasUnseenMessage?: boolean;
   chatName: string;
   lastMessage?: string | null;
-  lastMessageTimestamp?: string;
+  lastMessageTimestamp: number | null;
 
   onSelectChat: () => void;
 };
+
 function ChatListItem({
   isSelected,
   isOnline,
@@ -53,9 +55,11 @@ function ChatListItem({
           <div className="flex justify-between">
             <span className="chat-name">{chatName}</span>
             <div className="flex">
-              <span className="last-message-timestamp">
-                {lastMessageTimestamp}
-              </span>
+              {lastMessageTimestamp && (
+                <span className="last-message-timestamp">
+                  {formatUnixTimestamp(lastMessageTimestamp)}
+                </span>
+              )}
               {hasUnseenMessage && (
                 <span className={`unread-indicator`}>*</span>
               )}

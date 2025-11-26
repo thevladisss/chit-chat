@@ -2,7 +2,7 @@ import { IChatMessage } from "./IChatMessage.ts";
 
 export type IChat = {
   chatId: string;
-  lastMessageTimestamp: string;
+  lastMessageTimestamp: number | null;
   name: string;
   lastMessage: IChatMessage | null;
   messages: IChatMessage[];

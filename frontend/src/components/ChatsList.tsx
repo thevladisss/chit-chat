@@ -5,12 +5,6 @@ import { IChat } from "../types/IChat.ts";
 import classNames from "classnames";
 import { useSelector } from "react-redux";
 
-type IProspectiveChat = {
-  userId: string;
-  name: string;
-  lastMessageTimestamp?: string;
-};
-
 type Props = HTMLProps<HTMLDivElement> & {
   chats: IChat[];
   selectedChatId: string | null;
@@ -42,12 +36,6 @@ function ChatsList({
     return sortedCurrentChats.length > 0;
   }, [sortedCurrentChats]);
 
-  const getChatLastMessageTimestamp = (chat: IChat) => {
-    return chat.lastMessageTimestamp
-      ? new Date(chat.lastMessageTimestamp).toLocaleTimeString()
-      : "";
-  };
-
   const getTypingsUsersInChat = (chatId: string) => {
     return chatId in typingInChat ? typingInChat[chatId] : [];
   };
@@ -61,7 +49,7 @@ function ChatsList({
               <ChatListItem
                 id={chat.chatId}
                 lastMessage={chat.lastMessage ? chat.lastMessage.text : ""}
-                lastMessageTimestamp={getChatLastMessageTimestamp(chat)}
+                lastMessageTimestamp={chat.lastMessageTimestamp}
                 chatName={chat.name}
                 key={chat.chatId}
                 onSelectChat={() => onSelectChat(chat.chatId)}
