@@ -17,6 +17,7 @@
 ## UI Improvements
 
 - [ ] Add skeletons loading indicators for chat list search in sidebar 
+- [ ] Use optimistic updates for message sending 
 
 - [ ] Security
   - [ ] Implement proper authentication flow
