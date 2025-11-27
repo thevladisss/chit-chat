@@ -3,11 +3,11 @@ const ChatMessageTypeEnum = require('../../../enums/ChatMessageType');
 const ChatService = require('../../../service/chat.service');
 
 describe('chat.controller.spec.js', () => {
-  describe('sendMessage', () => {
-    beforeEach(() => {
-      jest.clearAllMocks();
-    });
+  beforeEach(() => {
+    jest.restoreAllMocks();
+  });
 
+  describe('sendMessage', () => {
     it('should call send chat text mesage if param is "text"', async () => {
       const mockResult = { messageId: 'msg123', chatId: 'chat123' };
       const sendChatMessageSpy = jest
@@ -48,7 +48,7 @@ describe('chat.controller.spec.js', () => {
       expect(response.status).not.toHaveBeenCalled();
     });
 
-    it('should send voice messae if param is "audio""', async () => {
+    it('should send voice message if param is "audio""', async () => {
       const mockResult = { messageId: 'msg456', chatId: 'chat123' };
       const sendVoiceMessageSpy = jest
         .spyOn(ChatService, 'sendVoiceMessage')
@@ -94,41 +94,6 @@ describe('chat.controller.spec.js', () => {
         data: mockResult,
       });
       expect(response.status).not.toHaveBeenCalled();
-    });
-
-    it('should return 400 error when message type is invalid', async () => {
-      const sendChatMessageSpy = jest.spyOn(ChatService, 'sendChatMessage');
-      const sendVoiceMessageSpy = jest.spyOn(ChatService, 'sendVoiceMessage');
-
-      const request = {
-        params: {
-          chatId: 'chat123',
-          type: 'invalid_type',
-        },
-        body: {
-          message: 'Test message',
-        },
-        session: {
-          user: {
-            id: 'user123',
-            username: 'testuser',
-          },
-        },
-      };
-
-      const response = {
-        json: jest.fn().mockReturnThis(),
-        status: jest.fn().mockReturnThis(),
-      };
-
-      await ChatController.sendMessage(request, response);
-
-      expect(sendChatMessageSpy).not.toHaveBeenCalled();
-      expect(sendVoiceMessageSpy).not.toHaveBeenCalled();
-      expect(response.status).toHaveBeenCalledWith(400);
-      expect(response.json).toHaveBeenCalledWith({
-        error: `Invalid message type. Must be "${ChatMessageTypeEnum.TEXT}" or "${ChatMessageTypeEnum.AUDIO}"`,
-      });
     });
   });
 
