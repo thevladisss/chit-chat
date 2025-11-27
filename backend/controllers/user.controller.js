@@ -8,6 +8,8 @@ const createUser = async (req, res) => {
 
   const user = await UserService.signUpUser(username);
 
+  //TODO: Add handling for scneario when user does not exist
+
   if (user) {
     req.session.user = user.toJSON();
   }
