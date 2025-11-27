@@ -1,6 +1,6 @@
-const ChatController = require('../../controllers/chat.controller');
-const ChatMessageTypeEnum = require('../../enums/ChatMessageType');
-const ChatService = require('../../service/chat.service');
+const ChatController = require('../../../controllers/chat.controller');
+const ChatMessageTypeEnum = require('../../../enums/ChatMessageType');
+const ChatService = require('../../../service/chat.service');
 
 describe('chat.controller.spec.js', () => {
   describe('sendMessage', () => {
