@@ -5,6 +5,7 @@ const TextMessageRepository = require('../repositories/textMessage.repository');
 const AudioMessageRepository = require('../repositories/audioMessage.repository');
 const ConnectionService = require('./connection.service');
 const ServerChatEventEnum = require('../enums/ServerChatEventEnum');
+const ChatMapper = require('../mappers/chat.mapper');
 
 /**
  *
@@ -13,9 +14,15 @@ const ServerChatEventEnum = require('../enums/ServerChatEventEnum');
  * @param {string} sender.userId - The ID of the user sending the message
  */
 const notifyUsersOnNewChatMessage = async (chat, sender) => {
-  const chatParticipantsNoSender = chat.users.filter((userId) => {
-    return userId !== sender.userId;
-  });
+  const chatParticipantsNoSender = chat.users
+    .map((user) => {
+      // Handle both ObjectId and populated user objects
+      if (user._id) {
+        return user._id.toString();
+      }
+      return user.toString();
+    })
+    .filter((userId) => userId !== sender.userId);
 
   const connections = await ConnectionService.getAllConnectionsByUserIds(
     chatParticipantsNoSender,
@@ -83,33 +90,10 @@ const getUserChats = async (userId) => {
     _id: 0,
   });
 
-  const onlineUsersIds = connections.map(({ userId }) => userId);
-
   const results = [];
 
   for (const item of chats) {
-    const otherUserId = item.users.find((user) => user.id !== userId)._id;
-
-    const messages = item.messages.map((item) => ({
-      ...item.toJSON(),
-      isPersonal: item.userId.toString() === userId,
-    }));
-
-    const online = onlineUsersIds.some(
-      (id) => id.toString() === otherUserId.toString(),
-    );
-
-    const name = item.users.find(
-      (user) => user._id.toString() !== userId,
-    )?.username;
-
-    results.push({
-      online,
-      lastMessage: null,
-      ...item.toJSON(),
-      messages,
-      name,
-    });
+    results.push(ChatMapper.mapChatToListResponse(userId, item, connections));
   }
 
   return results;
@@ -135,25 +119,15 @@ const createChat = async (data) => {
  * @param {string} chatId - The ID of the chat to retrieve
  * @return {Promise<{chatId: string, users: string[], messages: Array, name: string, lastMessage: string|null}>} - The chat with messages and name
  */
-const getChat = async (chatId) => {
+const getChat = async (userId, chatId) => {
   const chat = await ChatRepository.findById(chatId);
 
   if (!chat) {
     return null;
   }
 
-  const chatName = chat.users.map((user) => user.username).join(', ');
-
   // Return the chat with additional information
-  return {
-    ...chat.toJSON(),
-    lastMessage: chat.lastMessage ? chat.lastMessage.text : null,
-    lastMessageTimestamp: chat.lastMessage
-      ? chat.lastMessage.createdTimestamp
-      : null,
-
-    name: chatName,
-  };
+  return ChatMapper.mapChatToResponse(userId, chat);
 };
 
 /**
@@ -178,7 +152,7 @@ const sendChatMessage = async (sender, data) => {
 
   const result = {
     chatId: chat.chatId,
-    chat: chat.toJSON(),
+    chat: ChatMapper.mapChatToResponse(sender.userId, chat),
     chats,
   };
 
@@ -214,12 +188,12 @@ const sendVoiceMessage = async (sender, data) => {
 
   const chat = await ChatRepository.findById(data.chatId);
 
-  // const chats = await getUserChats(sender.userId);
+  const chats = await getUserChats(sender.userId);
 
   const result = {
     chatId: chat.chatId,
-    chat: chat.toJSON(),
-    chats: [],
+    chat: ChatMapper.mapChatToResponse(sender.userId, chat),
+    chats,
   };
 
   notifyUsersOnNewChatMessage(chat, sender);

@@ -28,7 +28,9 @@ const getAllChats = async (req, res) => {
 const getChat = async (req, res) => {
   const { chatId } = req.params;
 
-  const result = await ChatService.getChat(chatId);
+  const user = req.session.user;
+
+  const result = await ChatService.getChat(user.id, chatId);
 
   return res.json({
     data: result,
