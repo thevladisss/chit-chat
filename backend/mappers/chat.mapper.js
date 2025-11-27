@@ -21,8 +21,6 @@ const mapChatToResponse = (userId, chat) => {
 };
 
 const mapChatToListResponse = (userId, chat, connections) => {
-
-  console.log('log users', userId, chat.users);
   const otherUserId = chat.users.find((user) => user.id !== userId)._id;
 
   //TODO: Use messages mapper
