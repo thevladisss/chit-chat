@@ -4,7 +4,6 @@ import {
   type BaseSyntheticEvent,
   ChangeEvent,
   useRef,
-  useEffect,
 } from "react";
 import "./BaseTextField.css";
 import classNames from "classnames";
@@ -14,7 +13,7 @@ type Props = HTMLProps<HTMLDivElement> & {
   placeholder?: string;
   name: string;
   value: string;
-  immediateFocus?: boolean;
+  autoFocus?: boolean;
   loading?: boolean;
   size?: Size;
   square?: boolean;
@@ -46,7 +45,7 @@ function BaseTextField({
   size = "default" as Size,
   loading,
   required,
-  immediateFocus,
+  autoFocus,
 
   onBlur,
   onFocus,
@@ -62,16 +61,6 @@ function BaseTextField({
     square: square,
   });
 
-  const setFocus = () => {
-    if (inputRef.current) inputRef.current.focus();
-  };
-
-  useEffect(() => {
-    if (immediateFocus && inputRef.current instanceof HTMLInputElement) {
-      setFocus();
-    }
-  }, []);
-
   return (
     <div className={classes} style={style}>
       {loading && <span className="spinner" />}
@@ -84,6 +73,7 @@ function BaseTextField({
         value={value}
         placeholder={placeholder}
         required={required}
+        autoFocus={autoFocus}
         aria-required={required}
         disabled={loading}
         onInput={onInput}

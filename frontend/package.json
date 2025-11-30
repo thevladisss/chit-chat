@@ -7,6 +7,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "format": "npx prettier --write src/**/*.{tsx,jsx,ts,js}",
+    "test": "npm run test:unit",
     "test:unit": "vitest run"
   },
   "dependencies": {
