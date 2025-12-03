@@ -1,7 +1,5 @@
 import { Outlet } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import { useUser } from "../hooks/useUser.tsx";
-import { AUTH_PATH } from "../constants/route-paths.ts";
+
 import UserSidebar from "../components/UserSidebar.tsx";
 import "./AppLayout.css";
 import { useEffect, useRef } from "react";
@@ -9,6 +7,8 @@ import { ServerSideEventsEnum } from "../enums/ServerSideEventsEnum.ts";
 import { useChatStore } from "../hooks/useChatStore.ts";
 import { IUser } from "../types/IUser.ts";
 import { IWSMessageEventData } from "../types/ws/IWSMessageEventData.ts";
+import { useDispatch } from "../hooks/useDispatch.ts";
+import { setSelectedChatAction } from "../stores/chat/slice.ts";
 
 const messageSound = new Audio("/sounds/message.mp3");
 
@@ -16,6 +16,8 @@ function AppLayout() {
   const playMessageSound = async () => {
     await messageSound.play();
   };
+
+  const dispatch = useDispatch();
 
   const { getChats, setChats, setTypingChat, deleteTypingChat } =
     useChatStore();
@@ -75,6 +77,7 @@ function AppLayout() {
       }
 
       setChats(e.data.chats);
+      dispatch(setSelectedChatAction(e.data.chat));
     };
 
     ws.onmessage = (e: MessageEvent) => {

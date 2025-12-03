@@ -30,6 +30,12 @@ export const slice = createSlice({
         delete map[action.payload.chatId];
       }
     },
+    setSelectedChatAction(state, action) {
+      return {
+        ...state,
+        selectedChat: action.payload,
+      };
+    },
     setChatsAction(state, action) {
       return {
         ...state,
@@ -114,7 +120,11 @@ export const slice = createSlice({
   },
 });
 
-export const { deleteTypingInChat, setChatsAction, setTypingInChat } =
-  slice.actions;
+export const {
+  setSelectedChatAction,
+  deleteTypingInChat,
+  setChatsAction,
+  setTypingInChat,
+} = slice.actions;
 
 export default slice.reducer;

@@ -14,19 +14,16 @@ const ChatMapper = require('../mappers/chat.mapper');
  * @param {string} sender.userId - The ID of the user sending the message
  */
 const notifyUsersOnNewChatMessage = async (chat, sender) => {
-  const chatParticipantsNoSender = chat.users
-    .map((user) => {
-      // Handle both ObjectId and populated user objects
-      if (user._id) {
-        return user._id.toString();
-      }
-      return user.toString();
-    })
-    .filter((userId) => userId !== sender.userId);
+  const chatParticipantsIds = chat.users.map((user) => {
+    // Handle both ObjectId and populated user objects
+    if (user._id) {
+      return user._id.toString();
+    }
+    return user.toString();
+  });
 
-  const connections = await ConnectionService.getAllConnectionsByUserIds(
-    chatParticipantsNoSender,
-  );
+  const connections =
+    await ConnectionService.getAllConnectionsByUserIds(chatParticipantsIds);
 
   for (const con of connections) {
     const conChats = await getUserChats(con.userId);
@@ -38,6 +35,7 @@ const notifyUsersOnNewChatMessage = async (chat, sender) => {
           sender: sender.userId,
           isSenderSelf: sender.userId === con.userId,
           chats: conChats,
+          chat: ChatMapper.mapChatToResponse(con.userId, chat),
         },
       }),
     );
@@ -215,33 +213,10 @@ const getFilteredChats = async (userId, search) => {
     _id: 0,
   });
 
-  const onlineUsersIds = connections.map(({ userId }) => userId);
-
   const results = [];
 
   for (const item of chats) {
-    const otherUserId = item.users.find((user) => user.id !== userId)._id;
-
-    const messages = item.messages.map((item) => ({
-      ...item.toJSON(),
-      isPersonal: item.userId.toString() === userId,
-    }));
-
-    const online = onlineUsersIds.some(
-      (id) => id.toString() === otherUserId.toString(),
-    );
-
-    const name = item.users.find(
-      (user) => user._id.toString() !== userId,
-    )?.username;
-
-    results.push({
-      online,
-      lastMessage: null,
-      ...item.toJSON(),
-      messages,
-      name,
-    });
+    results.push(ChatMapper.mapChatToListResponse(userId, item, connections));
   }
 
   return results;
