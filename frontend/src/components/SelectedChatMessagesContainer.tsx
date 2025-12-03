@@ -2,16 +2,11 @@ import "./SelectedChatMessagesContainer.css";
 import { HTMLProps, JSX, useMemo } from "react";
 import ChatMessage from "./ChatMessage.tsx";
 import { useChatStore } from "../hooks/useChatStore.ts";
-import { IChatMessage } from "../types/IChatMessage.ts";
 
 type Props = HTMLProps<HTMLDivElement>;
 
 function SelectedChatMessagesContainer({ style }: Props): JSX.Element {
   const { selectedChat, selectedChatMessages } = useChatStore();
-
-  const getMessageSentTimestamp = (message: IChatMessage) => {
-    return new Date(message.sentAt).toLocaleTimeString();
-  };
 
   const selectedChatName = useMemo(() => {
     return selectedChat ? selectedChat.name : "";
@@ -30,7 +25,7 @@ function SelectedChatMessagesContainer({ style }: Props): JSX.Element {
               isPersonal={message.isPersonal}
               isSeen={message.isSeen}
               isDelivered={message.isDelivered}
-              sentTimestamp={getMessageSentTimestamp(message)}
+              sentTimestamp={message.sentAt}
             />
           ))}
         </div>

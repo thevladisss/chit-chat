@@ -7,9 +7,8 @@
   background-color: var(--app-bg-dark-1);
 }
 
-.chat-message--personal {
-  background-color: var(--app-primary-light-1);
-  box-shadow : 0 0 4px 2px var(--app-primary-dark-2);
+.personal {
+  background-color: var(--app-primary-dark-2);
 }
 
 .sent-timestamp {

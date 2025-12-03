@@ -1,5 +1,5 @@
 export type IChatMessage = {
-  sentAt: string;
+  sentAt: number;
   messageId: string;
   chatId: string;
   text: string;
