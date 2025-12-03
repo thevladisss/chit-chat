@@ -16,9 +16,7 @@ function SignInForm({ onUserAuthenticate }: Props): JSX.Element {
   const handleInputUsername = (
     e: BaseSyntheticEvent<InputEvent, HTMLInputElement>
   ) => {
-    if (e.target?.value) {
-      setUsername(e.target.value);
-    }
+    setUsername(e.target.value.trim());
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -43,6 +41,7 @@ function SignInForm({ onUserAuthenticate }: Props): JSX.Element {
             onInput={handleInputUsername}
             value={username}
             required
+            autoFocus
           />
         </fieldset>
 
