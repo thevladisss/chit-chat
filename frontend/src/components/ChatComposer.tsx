@@ -53,6 +53,7 @@ function ChatComposer({
               placeholder="Text here..."
               value={message}
               size="large"
+              autoFocus={true}
               disabled={isRecordingVoiceMessage}
             />
           )}
