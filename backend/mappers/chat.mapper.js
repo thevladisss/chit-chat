@@ -1,3 +1,5 @@
+const { mapMessagesToResponse } = require('./message.mapper');
+
 const mapChatToResponse = (userId, chat) => {
   const chatName = chat.users
     .filter((user) => user.id !== userId)
@@ -13,10 +15,7 @@ const mapChatToResponse = (userId, chat) => {
 
     name: chatName,
     //TODO: Use messages mapper
-    messages: chat.messages.map((item) => ({
-      ...item.toJSON(),
-      isPersonal: item.userId.toString() === userId,
-    })),
+    messages: mapMessagesToResponse(userId, chat.messages),
   };
 };
 
@@ -24,10 +23,6 @@ const mapChatToListResponse = (userId, chat, connections) => {
   const otherUserId = chat.users.find((user) => user.id !== userId)._id;
 
   //TODO: Use messages mapper
-  const messages = chat.messages.map((item) => ({
-    ...item.toJSON(),
-    isPersonal: item.userId.toString() === userId,
-  }));
 
   const online = connections.some(
     (connection) => connection.userId.toString() === otherUserId.toString(),
@@ -40,7 +35,7 @@ const mapChatToListResponse = (userId, chat, connections) => {
   return {
     ...chat.toJSON(),
     online,
-    messages,
+    messages: mapMessagesToResponse(userId, chat.messages),
     name,
   };
 };
