@@ -1,6 +1,7 @@
 const UserController = require('../../../controllers/user.controller');
 const UserService = require('../../../service/user.service');
 const ChatService = require('../../../service/chat.service');
+const UserMapper = require('../../../mappers/user.mapper');
 
 describe('user.controller.spec.js', () => {
   describe('createUser', () => {
@@ -19,13 +20,15 @@ describe('user.controller.spec.js', () => {
           }),
         };
 
+        const user = UserMapper.mapUserToResponse(mockUser);
+
         const checkUserExistsSpy = jest
           .spyOn(UserService, 'checkUserExists')
           .mockResolvedValue(false);
 
         const signUpUserSpy = jest
           .spyOn(UserService, 'signUpUser')
-          .mockResolvedValue(mockUser);
+          .mockResolvedValue(user);
 
         jest
           .spyOn(ChatService, 'createNewChatForAllUsers')
@@ -60,13 +63,15 @@ describe('user.controller.spec.js', () => {
           }),
         };
 
+        const user = UserMapper.mapUserToResponse(mockUser);
+
         const checkUserExistsSpy = jest
           .spyOn(UserService, 'checkUserExists')
           .mockResolvedValue(true);
 
         const signUpUserSpy = jest
           .spyOn(UserService, 'signUpUser')
-          .mockResolvedValue(mockUser);
+          .mockResolvedValue(user);
 
         const createNewChatForAllUsersSpy = jest
           .spyOn(ChatService, 'createNewChatForAllUsers')
@@ -103,9 +108,11 @@ describe('user.controller.spec.js', () => {
           }),
         };
 
+        const user = UserMapper.mapUserToResponse(mockUser);
+
         jest.spyOn(UserService, 'checkUserExists').mockResolvedValue(false);
 
-        jest.spyOn(UserService, 'signUpUser').mockResolvedValue(mockUser);
+        jest.spyOn(UserService, 'signUpUser').mockResolvedValue(user);
 
         jest
           .spyOn(ChatService, 'createNewChatForAllUsers')
@@ -125,10 +132,7 @@ describe('user.controller.spec.js', () => {
 
         await UserController.createUser(request, response);
 
-        expect(request.session.user).toEqual({
-          userId: 'user123',
-          username: 'testuser',
-        });
+        expect(request.session.user).toMatchObject(user);
       });
 
       it('should set user session if user exists', async () => {
@@ -141,9 +145,11 @@ describe('user.controller.spec.js', () => {
           }),
         };
 
+        const user = UserMapper.mapUserToResponse(mockUser);
+
         jest.spyOn(UserService, 'checkUserExists').mockResolvedValue(true);
 
-        jest.spyOn(UserService, 'signUpUser').mockResolvedValue(mockUser);
+        jest.spyOn(UserService, 'signUpUser').mockResolvedValue(user);
 
         jest
           .spyOn(ChatService, 'createNewChatForAllUsers')
@@ -163,10 +169,7 @@ describe('user.controller.spec.js', () => {
 
         await UserController.createUser(request, response);
 
-        expect(request.session.user).toEqual({
-          userId: 'user123',
-          username: 'testuser',
-        });
+        expect(request.session.user).toEqual(user);
       });
 
       it('should not set session user if UserService.signUpUser returns null', async () => {
@@ -212,9 +215,11 @@ describe('user.controller.spec.js', () => {
           }),
         };
 
+        const user = UserMapper.mapUserToResponse(mockUser);
+
         jest.spyOn(UserService, 'checkUserExists').mockResolvedValue(false);
 
-        jest.spyOn(UserService, 'signUpUser').mockResolvedValue(mockUser);
+        jest.spyOn(UserService, 'signUpUser').mockResolvedValue(user);
 
         jest
           .spyOn(ChatService, 'createNewChatForAllUsers')
@@ -235,10 +240,7 @@ describe('user.controller.spec.js', () => {
         await UserController.createUser(request, response);
 
         expect(response.json).toHaveBeenCalledWith({
-          data: {
-            userId: 'user123',
-            username: 'testuser',
-          },
+          data: user,
         });
         expect(response.status).toHaveBeenCalledWith(200);
       });

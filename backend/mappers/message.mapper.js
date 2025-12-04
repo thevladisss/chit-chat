@@ -1,8 +1,5 @@
 
-//TODO: Add test
 const mapMessageToResponse = (userId, message) => {
-  console.log(userId, message);
-
   return {
     ...message.toJSON(),
     isPersonal: message.userId.toString() === userId,

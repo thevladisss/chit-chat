@@ -11,14 +11,14 @@ const createUser = async (req, res) => {
   //TODO: Add handling for scneario when user does not exist
 
   if (user) {
-    req.session.user = user.toJSON();
+    req.session.user = user;
   }
 
   if (!exists) {
-    await ChatService.createNewChatForAllUsers(user._id);
+    await ChatService.createNewChatForAllUsers(user.userId);
   }
 
-  return res.json({ data: user.toJSON() }).status(200);
+  return res.json({ data: user }).status(200);
 };
 
 module.exports = {

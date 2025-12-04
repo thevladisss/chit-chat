@@ -1,12 +1,14 @@
 const UserRepository = require('../repositories/user.repository');
+const { mapUserToResponse } = require('../mappers/user.mapper');
 
 /**
  *
  * @param username
- * @return {Promise<import("mongoose").Document>}
+ * @return {Promise<{id: string, userId: string, username: string, createdTimestamp: number}>}
  */
 const signUpUser = async (username) => {
-  return UserRepository.createOrFindFirstUser(username);
+  const user = await UserRepository.createOrFindFirstUser(username);
+  return mapUserToResponse(user);
 };
 
 const checkUserExists = (username) => {
