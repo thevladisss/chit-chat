@@ -1,12 +1,6 @@
 # Dependencies
 node_modules/
 
-# Build output
-dist/
-dist-ssr/
-build/
-*.tsbuildinfo
-
 # Environment variables
 .env
 .env.local
@@ -30,6 +24,10 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Uploads (user-uploaded files)
+uploads/*
+!uploads/.gitkeep
+
 # OS files
 .DS_Store
 .DS_Store?
@@ -40,19 +38,19 @@ ehthumbs.db
 Thumbs.db
 
 # IDE files
-.vscode/*
-!.vscode/extensions.json
+.vscode/
 .idea/
 *.swp
 *.swo
 *~
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
+
+# Build artifacts
+dist/
+build/
+*.tsbuildinfo
 
 # Temporary files
 *.tmp
 *.temp
 .cache/
-*.local
+
