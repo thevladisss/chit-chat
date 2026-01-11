@@ -48,3 +48,9 @@
     font-size: 13px;
   }
 }
+
+.actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
