@@ -17,6 +17,8 @@ function AppLayout() {
     await messageSound.play();
   };
 
+  const username = useSelector(selectUserName);
+
   const dispatch = useDispatch();
 
   const { getChats, setChats, setTypingChat, deleteTypingChat } =
@@ -109,7 +111,9 @@ function AppLayout() {
   return (
     <div className="app-layout">
       <header className="app-layout-header">
-        <h1>Chit-Chat</h1>
+        <h1>
+          Chit-Chat - <span>{username}</span>
+        </h1>
       </header>
 
       <div className="app-layout-content">
