@@ -1,4 +1,4 @@
-const userMapper = require('../../../mappers/user.mapper');
+const userMapper = require('../../../src/mappers/user.mapper');
 
 describe('user.mapper', () => {
   describe('mapUserToResponse', () => {

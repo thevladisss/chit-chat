@@ -1,12 +1,12 @@
-const ChatRepository = require('../../../repositories/chat.repository');
-const ConnectionRepository = require('../../../repositories/connection.repository');
-const UserRepository = require('../../../repositories/user.repository');
-const TextMessageRepository = require('../../../repositories/textMessage.repository');
-const AudioMessageRepository = require('../../../repositories/audioMessage.repository');
-const ConnectionService = require('../../../service/connection.service');
-const ChatService = require('../../../service/chat.service');
-const ServerChatEventEnum = require('../../../enums/ServerChatEventEnum');
-const ChatMapper = require('../../../mappers/chat.mapper');
+const ChatRepository = require('../../../src/repositories/chat.repository');
+const ConnectionRepository = require('../../../src/repositories/connection.repository');
+const UserRepository = require('../../../src/repositories/user.repository');
+const TextMessageRepository = require('../../../src/repositories/textMessage.repository');
+const AudioMessageRepository = require('../../../src/repositories/audioMessage.repository');
+const ConnectionService = require('../../../src/service/connection.service');
+const ChatService = require('../../../src/service/chat.service');
+const ServerChatEventEnum = require('../../../src/enums/ServerChatEventEnum');
+const ChatMapper = require('../../../src/mappers/chat.mapper');
 
 describe('chat.service', () => {
   afterEach(() => {

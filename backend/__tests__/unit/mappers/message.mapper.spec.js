@@ -1,4 +1,4 @@
-const messageMapper = require('../../../mappers/message.mapper');
+const messageMapper = require('../../../src/mappers/message.mapper');
 
 describe('message.mapper', () => {
   describe('mapMessageToResponse', () => {

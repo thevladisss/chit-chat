@@ -1,4 +1,4 @@
-const chatMapper = require('../../../mappers/chat.mapper');
+const chatMapper = require('../../../src/mappers/chat.mapper');
 
 describe('chat.mapper', () => {
   describe('mapChatToResponse', () => {

@@ -1,7 +1,7 @@
-const UserController = require('../../../controllers/user.controller');
-const UserService = require('../../../service/user.service');
-const ChatService = require('../../../service/chat.service');
-const UserMapper = require('../../../mappers/user.mapper');
+const UserController = require('../../../src/controllers/user.controller');
+const UserService = require('../../../src/service/user.service');
+const ChatService = require('../../../src/service/chat.service');
+const UserMapper = require('../../../src/mappers/user.mapper');
 
 describe('user.controller.spec.js', () => {
   describe('createUser', () => {

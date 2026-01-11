@@ -71,6 +71,7 @@ const notifyOnConnectionEstablished = (ws, connection, allConnections) => {
 };
 
 const notifyOnUserTyping = async (req, ws, data) => {
+  console.log('Notify on user typing', data);
   const chatId = data.chatId;
 
   const user = req.session.user;
@@ -102,11 +103,14 @@ const notifyOnUserTyping = async (req, ws, data) => {
 const handleWsMessage = async (req, ws, data) => {
   data = JSON.parse(data);
 
+  console.log('Gor message', req, ws, data);
+
   switch (data.event) {
     case ClientChatEventEnum.SEND_MESSAGE:
       break;
     case ClientChatEventEnum.TYPING_IN_CHAT:
       notifyOnUserTyping(req, ws, data.payload);
+      break;
   }
 };
 

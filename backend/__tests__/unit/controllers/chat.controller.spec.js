@@ -1,6 +1,6 @@
-const ChatController = require('../../../controllers/chat.controller');
-const ChatMessageTypeEnum = require('../../../enums/ChatMessageType');
-const ChatService = require('../../../service/chat.service');
+const ChatController = require('../../../src/controllers/chat.controller');
+const ChatMessageTypeEnum = require('../../../src/enums/ChatMessageType');
+const ChatService = require('../../../src/service/chat.service');
 
 describe('chat.controller.spec.js', () => {
   beforeEach(() => {

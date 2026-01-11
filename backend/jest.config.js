@@ -4,10 +4,10 @@ module.exports = {
   collectCoverage: true,
   coverageDirectory: 'coverage',
   collectCoverageFrom: [
-    'controllers/**/*.js',
-    'service/**/*.js',
-    'repositories/**/*.js',
-    'models/**/*.js',
+    'src/controllers/**/*.js',
+    'src/service/**/*.js',
+    'src/repositories/**/*.js',
+    'src/models/**/*.js',
     '!**/node_modules/**',
     '!**/vendor/**'
   ],
