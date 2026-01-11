@@ -1,12 +1,17 @@
 import "./SelectedChatMessagesContainer.css";
 import { HTMLProps, JSX, useMemo } from "react";
 import ChatMessage from "./ChatMessage.tsx";
-import { useChatStore } from "../hooks/useChatStore.ts";
+import { useSelector } from "react-redux";
+import {
+  selectSelectedChat,
+  selectSelectedChatMessages,
+} from "../stores/user/selectors.ts";
 
 type Props = HTMLProps<HTMLDivElement>;
 
 function SelectedChatMessagesContainer({ style }: Props): JSX.Element {
-  const { selectedChat, selectedChatMessages } = useChatStore();
+  const selectedChat = useSelector(selectSelectedChat);
+  const selectedChatMessages = useSelector(selectSelectedChatMessages);
 
   const selectedChatName = useMemo(() => {
     return selectedChat ? selectedChat.name : "";

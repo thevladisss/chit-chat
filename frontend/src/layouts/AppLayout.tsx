@@ -4,11 +4,18 @@ import UserSidebar from "../components/UserSidebar.tsx";
 import "./AppLayout.css";
 import { useEffect, useRef } from "react";
 import { ServerSideEventsEnum } from "../enums/ServerSideEventsEnum.ts";
-import { useChatStore } from "../hooks/useChatStore.ts";
 import { IUser } from "../types/IUser.ts";
 import { IWSMessageEventData } from "../types/ws/IWSMessageEventData.ts";
-import { useDispatch } from "../hooks/useDispatch.ts";
-import { setSelectedChatAction } from "../stores/chat/slice.ts";
+import {
+  setSelectedChatAction,
+  setChatsAction,
+  setTypingInChat,
+  deleteTypingInChat,
+} from "../stores/chat/slice.ts";
+import { useSelector, useDispatch } from "react-redux";
+import { selectUserName } from "../stores/chat/selectors.ts";
+import { getChatsAction } from "../stores/chat/actions.ts";
+import type { AppDispatch } from "../stores";
 
 const messageSound = new Audio("/sounds/message.mp3");
 
@@ -18,11 +25,14 @@ function AppLayout() {
   };
 
   const username = useSelector(selectUserName);
+  const dispatch = useDispatch<AppDispatch>();
 
-  const dispatch = useDispatch();
-
-  const { getChats, setChats, setTypingChat, deleteTypingChat } =
-    useChatStore();
+  const getChats = () => dispatch(getChatsAction());
+  const setChats = (chats: any[]) => dispatch(setChatsAction(chats));
+  const setTypingChat = (chatId: string, users: IUser[]) =>
+    dispatch(setTypingInChat({ chatId, users }));
+  const deleteTypingChat = (chatId: string) =>
+    dispatch(deleteTypingInChat({ chatId }));
 
   const typingTimeout = useRef<Record<string, NodeJS.Timeout>>({});
 

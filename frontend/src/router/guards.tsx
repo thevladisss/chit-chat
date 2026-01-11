@@ -1,6 +1,7 @@
 import { Navigate } from "react-router-dom";
-import { useUser } from "../hooks/useUser.tsx";
+import { useSelector } from "react-redux";
 import { AUTH_PATH, CHAT_PATH } from "../constants/route-paths.ts";
+import { selectUser } from "../stores/chat/selectors.ts";
 
 interface RouteGuardProps {
   children: React.ReactNode;
@@ -8,7 +9,7 @@ interface RouteGuardProps {
 }
 
 export function RouteGuard({ children, type }: RouteGuardProps) {
-  const { user } = useUser();
+  const user = useSelector(selectUser);
 
   if (type === "protected" && !user) {
     return <Navigate to={AUTH_PATH} replace />;

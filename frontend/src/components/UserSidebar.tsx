@@ -1,21 +1,31 @@
 import { JSX, BaseSyntheticEvent, useState } from "react";
 import BaseTextField from "./base/BaseTextField.tsx";
 import ChatsList from "./ChatsList.tsx";
-import { useChatStore } from "../hooks/useChatStore.ts";
+import { useSelector, useDispatch } from "react-redux";
 import "./UserSidebar.css";
 import { debounce } from "lodash-es";
+import {
+  selectExistingChats,
+  selectSelectedChat,
+} from "../stores/user/selectors.ts";
+import {
+  getFilteredChatsAction,
+  selectChatAction,
+} from "../stores/chat/actions.ts";
+import type { AppDispatch } from "../stores";
 
 function UserSidebar(): JSX.Element {
   const SEARCH_DEBOUNCE_DELAY = 300; // milliseconds
 
   const [pendingSearchFilteredChats, setSearchFilteredChats] = useState(false);
 
-  const {
-    existingChats: chats,
-    selectedChat,
-    selectChat,
-    getFilteredChats,
-  } = useChatStore();
+  const dispatch = useDispatch<AppDispatch>();
+  const chats = useSelector(selectExistingChats);
+  const selectedChat = useSelector(selectSelectedChat);
+
+  const selectChat = (chatId: string) => dispatch(selectChatAction(chatId));
+  const getFilteredChats = (search: string) =>
+    dispatch(getFilteredChatsAction(search));
 
   const handleSelectChat = (chatId: string) => {
     if (!selectedChat || selectedChat.chatId != chatId) {

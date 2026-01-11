@@ -2,15 +2,17 @@ import "./SignInForm.css";
 import { type BaseSyntheticEvent, JSX, useState } from "react";
 import BaseTextField from "./base/BaseTextField.tsx";
 import BaseButton from "./base/BaseButton.tsx";
-import { useUser } from "../hooks/useUser.tsx";
+import { useDispatch } from "react-redux";
 import { IUser } from "../types/IUser.ts";
+import { signInAction } from "../stores/user/actions.ts";
+import type { AppDispatch } from "../stores";
 
 type Props = {
   // Note: This prop is passed but not currently used in the component
   onUserAuthenticate: (user: IUser) => void;
 };
 function SignInForm({ onUserAuthenticate }: Props): JSX.Element {
-  const { signUpUser } = useUser();
+  const dispatch = useDispatch<AppDispatch>();
   const [username, setUsername] = useState("");
 
   const handleInputUsername = (
@@ -21,7 +23,7 @@ function SignInForm({ onUserAuthenticate }: Props): JSX.Element {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    signUpUser(username);
+    dispatch(signInAction(username));
   };
 
   return (

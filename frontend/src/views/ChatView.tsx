@@ -3,18 +3,21 @@ import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import { sendTextMessage } from "../service/chatSerevice";
 import SelectedChatMessagesContainer from "../components/SelectedChatMessagesContainer.tsx";
 import ChatComposer from "../components/ChatComposer.tsx";
-import { useChatStore } from "../hooks/useChatStore.ts";
+import { useSelector, useDispatch } from "react-redux";
 import { useTimer } from "../hooks/useTimer.ts";
 import { useDateTime } from "../hooks/useDateTime.ts";
 import { useAudioRecording } from "../hooks/useAudioRecording.ts";
 import ChatStatusBar from "../components/ChatStatusBar.tsx";
-import { useDispatch } from "../hooks/useDispatch.ts";
 import { leaveSelecteChatAction } from "../stores/chat/actions.ts";
+import { setChatsAction } from "../stores/chat/slice.ts";
+import { selectSelectedChat } from "../stores/user/selectors.ts";
+import type { AppDispatch } from "../stores";
 
 function ChatView() {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
+  const selectedChat = useSelector(selectSelectedChat);
 
-  const { selectedChat, setChats } = useChatStore();
+  const setChats = (chats: any[]) => dispatch(setChatsAction(chats));
 
   const selectedChatName = useMemo(
     () => (selectedChat ? selectedChat.name : ""),
