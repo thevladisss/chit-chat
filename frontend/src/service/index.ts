@@ -1,6 +1,9 @@
 import axios, { AxiosResponse } from 'axios';
+import { formatQueryParams } from '../utils/http.util';
 
 const BASE_PATH = (import.meta.env.VITE_API_URL as string) ?? '';
+
+
 
 const client = axios.create({
   withCredentials: true,
@@ -12,15 +15,17 @@ const client = axios.create({
     },
   ],
 });
+
 export const getRequest = <R>(
   url: string,
   params: Record<string, string> = {},
   options = {},
 ): Promise<AxiosResponse<R>> => {
+
+  
+  
   return client.get(url, {
-    params: {
-      ...params,
-    },
+    params: formatQueryParams(params),
     ...options,
   });
 };
