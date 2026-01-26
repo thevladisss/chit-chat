@@ -74,6 +74,7 @@ export const slice = createSlice({
         return {
           ...state,
           chats: action.payload,
+          pendingLoadChats: false,
         };
       }
     );
@@ -91,6 +92,7 @@ export const slice = createSlice({
         return {
           ...state,
           loadChatsError: action.payload,
+          pendingLoadChats: false,
         };
       }
     );
