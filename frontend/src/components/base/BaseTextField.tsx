@@ -8,7 +8,7 @@ import {
 import "./BaseTextField.css";
 import classNames from "classnames";
 
-type Props = HTMLProps<HTMLDivElement> & {
+type Props = Omit<HTMLProps<HTMLDivElement>, "size"> & {
   label?: string;
   placeholder?: string;
   name: string;
