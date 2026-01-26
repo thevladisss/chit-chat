@@ -12,23 +12,27 @@ export const selectExistingChats = createSelector(
     return chats.filter((chat) => {
       return !!chat.chatId;
     });
-  }
+  },
 );
 
 export const selectSelectedChatMessages = createSelector(
   [(state: IRootState) => state.chatState.selectedChat],
   (chat: IChat) => {
     return chat ? chat.messages : [];
-  }
+  },
 );
 
 export const selectSelectedChatId = createSelector(
   [(state: IRootState) => state.chatState.selectedChat],
   (selectedChat: IChat) => {
     return selectedChat ? selectedChat.chatId : null;
-  }
+  },
 );
 
 export const selectSelectedChat = (state: IRootState): IChat | null => {
   return state.chatState.selectedChat;
+};
+
+export const selectIsLoggedIn = (state: IRootState): boolean => {
+  return state.userState !== null;
 };

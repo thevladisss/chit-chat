@@ -13,11 +13,14 @@ import {
   deleteTypingInChat,
 } from "../stores/chat/slice.ts";
 import { useSelector, useDispatch } from "react-redux";
+import { useWebSocketContext } from "../contexts/websocket.context.ts";
 import { selectUserName } from "../stores/chat/selectors.ts";
 import { getChatsAction } from "../stores/chat/actions.ts";
 import type { AppDispatch } from "../stores";
 
 const messageSound = new Audio("/sounds/message.mp3");
+
+type WsCustomEvent<R = any> = { event: string; data: R };
 
 function AppLayout() {
   const playMessageSound = async () => {
@@ -36,86 +39,93 @@ function AppLayout() {
 
   const typingTimeout = useRef<Record<string, NodeJS.Timeout>>({});
 
-  let ws: WebSocket | null = null;
+  const getWebSocket = useWebSocketContext();
 
-  useEffect(() => {
-    if (!ws) {
-      ws = new WebSocket(import.meta.env.VITE_WS_URL || "ws://localhost:3000");
-      window.ws = ws;
+  const handleWsOpen = () => {
+    getChats();
+  };
+
+  const handleConnectionEvent = (e: WsCustomEvent) => {
+    setChats(e.data.chats);
+  };
+
+  const handleLeaveConnectionEvent = (e: WsCustomEvent) => {
+    setChats(e.data.chats);
+  };
+
+  const handleNewUserEvent = (e: WsCustomEvent) => {
+    getChats();
+  };
+
+  const handleChatCreatedEvent = (e: WsCustomEvent) => {
+    setChats(e.data);
+  };
+
+  const handleMessageEvent = (e: WsCustomEvent<IWSMessageEventData>) => {
+    if (!e.data.isSenderSelf) {
+      playMessageSound();
     }
 
-    ws.onopen = () => {
-      getChats();
-    };
+    setChats(e.data.chats);
+    dispatch(setSelectedChatAction(e.data.chat));
+  };
 
-    type WsCustomEvent<R = any> = { event: string; data: R };
+  const TYPING_CLEAR_TIMEOUT = 2000;
 
-    const handleConnectionEvent = (e: WsCustomEvent) => {
-      setChats(e.data.chats);
-    };
+  const handleTypingInChatEvent = (e: WsCustomEvent) => {
+    const chatId = e.data.chatId as string,
+      user = e.data.user as IUser;
 
-    const handleLeaveConnectionEvent = (e: WsCustomEvent) => {
-      setChats(e.data.chats);
-    };
+    setTypingChat(chatId, [user]);
 
-    const handleNewUserEvent = (e: WsCustomEvent) => {
-      getChats();
-    };
+    if (typingTimeout.current[chatId]) {
+      clearTimeout(typingTimeout.current[chatId]);
+    }
 
-    const TYPING_CLEAR_TIMEOUT = 2000;
+    typingTimeout.current[chatId] = setTimeout(() => {
+      deleteTypingChat(chatId);
+    }, TYPING_CLEAR_TIMEOUT);
+  };
 
-    const handleTypingInChatEvent = (e: WsCustomEvent) => {
-      const chatId = e.data.chatId as string,
-        user = e.data.user as IUser;
+  const handleWsMessage = (e: MessageEvent) => {
+    const payload = JSON.parse(e.data) as WsCustomEvent;
 
-      setTypingChat(chatId, [user]);
+    switch (payload.event) {
+      case ServerSideEventsEnum.Connection:
+        handleConnectionEvent(payload);
+        break;
+      case ServerSideEventsEnum.LeaveConnection:
+        handleLeaveConnectionEvent(payload);
+        break;
+      case ServerSideEventsEnum.Message:
+        handleMessageEvent(payload);
+        break;
+      case ServerSideEventsEnum.ChatCreated:
+        handleChatCreatedEvent(payload);
+        break;
+      case ServerSideEventsEnum.NewUser:
+        handleNewUserEvent(payload);
+        break;
+      case ServerSideEventsEnum.TypingInChat:
+        handleTypingInChatEvent(payload);
+        break;
+    }
+  };
 
-      if (typingTimeout.current[chatId]) {
-        clearTimeout(typingTimeout.current[chatId]);
-      }
+  useEffect(() => {
+    const ws = getWebSocket();
 
-      typingTimeout.current[chatId] = setTimeout(() => {
-        deleteTypingChat(chatId);
-      }, TYPING_CLEAR_TIMEOUT);
-    };
+    if (ws) {
+      ws.onopen = () => {
+        handleWsOpen();
+      };
 
-    const handleChatCreatedEvent = (e: WsCustomEvent) => {
-      setChats(e.data);
-    };
-
-    const handleMessageEvent = (e: WsCustomEvent<IWSMessageEventData>) => {
-      if (!e.data.isSenderSelf) {
-        playMessageSound();
-      }
-
-      setChats(e.data.chats);
-      dispatch(setSelectedChatAction(e.data.chat));
-    };
-
-    ws.onmessage = (e: MessageEvent) => {
-      const payload = JSON.parse(e.data) as WsCustomEvent;
-
-      switch (payload.event) {
-        case ServerSideEventsEnum.Connection:
-          handleConnectionEvent(payload);
-          break;
-        case ServerSideEventsEnum.LeaveConnection:
-          handleLeaveConnectionEvent(payload);
-          break;
-        case ServerSideEventsEnum.Message:
-          handleMessageEvent(payload);
-          break;
-        case ServerSideEventsEnum.ChatCreated:
-          handleChatCreatedEvent(payload);
-          break;
-        case ServerSideEventsEnum.NewUser:
-          handleNewUserEvent(payload);
-          break;
-        case ServerSideEventsEnum.TypingInChat:
-          handleTypingInChatEvent(payload);
-          break;
-      }
-    };
+      ws.onmessage = (e: MessageEvent) => {
+        handleWsMessage(e);
+      };
+    } else {
+      console.error("WebSocket connection not established");
+    }
   }, []);
 
   return (

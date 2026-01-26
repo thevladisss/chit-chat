@@ -17,13 +17,35 @@ import classNames from "classnames";
 import { useScreen } from "./hooks/useScreen.ts";
 import { useSelector } from "react-redux";
 import { type IRootState } from "./types/IRootState.ts";
+import { useEffect, useRef } from "react";
+import { WebSocketContext } from "./contexts/websocket.context.ts";
+import { selectIsLoggedIn } from "./stores/user/selectors.ts";
 
 export function App() {
   const { smAndSmaller } = useScreen();
 
+  const isLoggedIn = useSelector(selectIsLoggedIn);
+
   const isInChat = useSelector((state: IRootState) =>
-    Boolean(state.chatState.selectedChat)
+    Boolean(state.chatState.selectedChat),
   );
+
+  const wsRef = useRef<WebSocket | null>(null);
+
+  const getWebSocket = () => {
+    return wsRef.current;
+  };
+
+  useEffect(() => {
+    if (isLoggedIn && !wsRef.current) {
+      wsRef.current = new WebSocket(import.meta.env.VITE_WS_URL);
+    }
+
+    return () => {
+      wsRef.current?.close();
+      wsRef.current = null;
+    };
+  }, [isLoggedIn]);
 
   return (
     <div
@@ -32,58 +54,60 @@ export function App() {
         "in-chat": isInChat,
       })}
     >
-      <Router>
-        <Routes>
-          {/* Default route redirect */}
-          <Route
-            path={ROOT_PATH}
-            element={<Navigate to={AUTH_PATH} replace />}
-          />
+      <WebSocketContext.Provider value={getWebSocket}>
+        <Router>
+          <Routes>
+            {/* Default route redirect */}
+            <Route
+              path={ROOT_PATH}
+              element={<Navigate to={AUTH_PATH} replace />}
+            />
 
-          {/* Dynamic routes from configuration */}
-          {routes.map(
-            ({
-              path,
-              element: Element,
-              protected: isProtected,
-              public: isPublic,
-              children,
-            }) => (
-              <Route
-                key={path}
-                path={path}
-                element={
-                  isProtected ? (
-                    <RouteGuard type="protected">
+            {/* Dynamic routes from configuration */}
+            {routes.map(
+              ({
+                path,
+                element: Element,
+                protected: isProtected,
+                public: isPublic,
+                children,
+              }) => (
+                <Route
+                  key={path}
+                  path={path}
+                  element={
+                    isProtected ? (
+                      <RouteGuard type="protected">
+                        <Element />
+                      </RouteGuard>
+                    ) : isPublic ? (
+                      <RouteGuard type="public">
+                        <Element />
+                      </RouteGuard>
+                    ) : (
                       <Element />
-                    </RouteGuard>
-                  ) : isPublic ? (
-                    <RouteGuard type="public">
-                      <Element />
-                    </RouteGuard>
-                  ) : (
-                    <Element />
-                  )
-                }
-              >
-                {children?.map((child) => (
-                  <Route
-                    key={child.path}
-                    path={child.path}
-                    element={<child.element />}
-                  />
-                ))}
-              </Route>
-            )
-          )}
+                    )
+                  }
+                >
+                  {children?.map((child) => (
+                    <Route
+                      key={child.path}
+                      path={child.path}
+                      element={<child.element />}
+                    />
+                  ))}
+                </Route>
+              ),
+            )}
 
-          {/* Catch all route */}
-          <Route
-            path={WILDCARD_PATH}
-            element={<Navigate to={AUTH_PATH} replace />}
-          />
-        </Routes>
-      </Router>
+            {/* Catch all route */}
+            <Route
+              path={WILDCARD_PATH}
+              element={<Navigate to={AUTH_PATH} replace />}
+            />
+          </Routes>
+        </Router>
+      </WebSocketContext.Provider>
     </div>
   );
 }
