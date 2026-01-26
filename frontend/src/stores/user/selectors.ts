@@ -29,9 +29,6 @@ export const selectSelectedChatId = createSelector(
   }
 );
 
-export const selectSelectedChat = createSelector(
-  [(state: IRootState) => state.chatState.selectedChat],
-  (selectedChat: IChat) => {
-    return selectedChat;
-  }
-);
+export const selectSelectedChat = (state: IRootState): IChat | null => {
+  return state.chatState.selectedChat;
+};
