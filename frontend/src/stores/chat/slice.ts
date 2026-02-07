@@ -1,18 +1,32 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import * as actions from "./actions.ts";
-import { IChatSliceState } from "../../types/IRootState.ts";
 import { IChat } from "../../types/IChat.ts";
+
+export type ChatSliceState = {
+  selectedChat: IChat | null;
+  selectedChatId: string | null;
+  chats: IChat[];
+  pendingLoadChats: boolean;
+  loadChatsError: Error | null;
+  pendingSelectChat: boolean;
+  selectChatError: Error | null;
+  typingChats: Record<string, string[]>;
+};
+
+const initialState = {
+  selectedChat: null,
+  selectedChatId: null,
+  pendingSelectChat: false,
+  selectChatError: null,
+  pendingLoadChats: false,
+  loadChatsError: null,
+  chats: [],
+  typingChats: {},
+} satisfies ChatSliceState;
 
 export const slice = createSlice({
   name: "chatState",
-  initialState: {
-    selectedChat: null,
-    selectedChatId: null,
-    pendingLoadChats: false,
-    loadChatsError: null,
-    chats: [],
-    typingChats: {},
-  },
+  initialState,
   reducers: {
     setTypingInChat(state, action) {
       return {
@@ -64,6 +78,7 @@ export const slice = createSlice({
       return {
         ...state,
         loadChatsError: action.payload,
+        pendingLoadChats: false,
       };
     });
 
@@ -76,7 +91,7 @@ export const slice = createSlice({
           chats: action.payload,
           pendingLoadChats: false,
         };
-      }
+      },
     );
 
     builder.addCase(actions.getFilteredChatsAction.pending, (state) => {
@@ -94,28 +109,28 @@ export const slice = createSlice({
           loadChatsError: action.payload,
           pendingLoadChats: false,
         };
-      }
+      },
     );
 
     /* Select active chat */
     builder.addCase(
       actions.selectChatAction.fulfilled,
-      (state: IChatSliceState, action: PayloadAction<IChat>) => {
+      (state: ChatSliceState, action: PayloadAction<IChat>) => {
         return {
           ...state,
           selectedChat: action.payload,
         };
-      }
+      },
     );
 
     builder.addCase(
       actions.leaveSelecteChatAction.fulfilled,
-      (state: IChatSliceState) => {
+      (state: ChatSliceState) => {
         return {
           ...state,
           selectedChat: null,
         };
-      }
+      },
     );
 
     //TODO: Add rejected and pending hanlding for Select active chat

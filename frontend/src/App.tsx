@@ -16,7 +16,7 @@ import {
 import classNames from "classnames";
 import { useScreen } from "./hooks/useScreen.ts";
 import { useSelector } from "react-redux";
-import { type IRootState } from "./types/IRootState.ts";
+import { type RootState } from "./stores";
 import { useEffect, useRef } from "react";
 import { WebSocketContext } from "./contexts/websocket.context.ts";
 import { selectIsLoggedIn } from "./stores/user/selectors.ts";
@@ -26,7 +26,7 @@ export function App() {
 
   const isLoggedIn = useSelector(selectIsLoggedIn);
 
-  const isInChat = useSelector((state: IRootState) =>
+  const isInChat = useSelector((state: RootState) =>
     Boolean(state.chatState.selectedChat),
   );
 

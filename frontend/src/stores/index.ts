@@ -1,6 +1,8 @@
 import { configureStore } from "@reduxjs/toolkit";
 import userReducer from "./user/slice.ts";
 import chatsReducer from "./chat/slice.ts";
+import type { UserSliceState } from "./user/slice.ts";
+import type { ChatSliceState } from "./chat/slice.ts";
 
 const store = configureStore({
   reducer: {
@@ -9,7 +11,11 @@ const store = configureStore({
   },
 });
 
-export type RootState = ReturnType<typeof store.getState>;
+export type RootState = {
+  userState: UserSliceState;
+  chatState: ChatSliceState;
+};
+
 export type AppDispatch = typeof store.dispatch;
 
 export default store;
