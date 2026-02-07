@@ -3,14 +3,16 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "cross-env NODE_ENV=development nodemon ./src/server.js",
-    "debug": "cross-env NODE_ENV=development nodemon --inspect ./src/server.js",
+    "build": "tsc",
+    "start": "cross-env NODE_ENV=development nodemon --exec ts-node ./src/server.ts",
+    "start:prod": "node dist/server.js",
+    "debug": "cross-env NODE_ENV=development NODE_OPTIONS=--inspect nodemon --exec ts-node ./src/server.ts",
     "format": "prettier --write **/*.{js,ts}",
-    "test": "npm run test:unit",
+    "test": "npm run test:unit --coverage=false",
     "test:unit": "jest",
     "test:integration": "jest",
     "test:watch": "jest --watch",
-    "db:drop": "node scripts/db-drop.js"
+    "db:drop": "ts-node scripts/db-drop.ts"
   },
   "dependencies": {
     "axios": "^1.7.9",
@@ -32,8 +34,23 @@
     "ws": "^8.18.1"
   },
   "devDependencies": {
+    "@types/cookie-parser": "^1.4.7",
+    "@types/cors": "^2.8.17",
+    "@types/debug": "^4.1.12",
+    "@types/express": "^4.17.21",
+    "@types/express-session": "^1.17.10",
+    "@types/jest": "^30.0.0",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^20.14.12",
+    "@types/uuid": "^9.0.8",
+    "@types/ws": "^8.5.10",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
     "jest": "^29.7.0",
     "prettier": "^3.5.1",
-    "supertest": "^6.3.3"
+    "supertest": "^6.3.3",
+    "ts-jest": "^29.1.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4"
   }
 }
