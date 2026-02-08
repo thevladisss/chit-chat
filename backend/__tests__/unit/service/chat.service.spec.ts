@@ -409,7 +409,7 @@ describe('chat.service', () => {
         .spyOn(ConnectionService, 'getAllConnectionsByUserIds')
         .mockResolvedValue([]);
 
-      const result = await ChatService.sendChatMessage(sender, data);
+      const result = await ChatService.sendChatMessage(sender.id, data);
 
       expect(createTextMessageSpy).toHaveBeenCalledWith({
         chatId: data.chatId,
