@@ -1,7 +1,6 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import BaseButton from "./BaseButton";
+import BaseButton from "../base/BaseButton";
 
 describe("BaseButton", () => {
   it("should render button with children text", () => {
@@ -18,7 +17,7 @@ describe("BaseButton", () => {
       <BaseButton>
         <span>Save</span>
         <span>Changes</span>
-      </BaseButton>
+      </BaseButton>,
     );
     const button = screen.getByRole("button");
     expect(button).toBeInTheDocument();
@@ -52,7 +51,7 @@ describe("BaseButton", () => {
 
     it("should apply custom className to button", () => {
       const { container } = render(
-        <BaseButton className="custom-class">Button</BaseButton>
+        <BaseButton className="custom-class">Button</BaseButton>,
       );
       const button = container.querySelector(".base-button.custom-class");
       expect(button).toBeInTheDocument();
@@ -60,10 +59,10 @@ describe("BaseButton", () => {
 
     it("should apply multiple custom classNames", () => {
       const { container } = render(
-        <BaseButton className="custom-class another-class">Button</BaseButton>
+        <BaseButton className="custom-class another-class">Button</BaseButton>,
       );
       const button = container.querySelector(
-        ".base-button.custom-class.another-class"
+        ".base-button.custom-class.another-class",
       );
       expect(button).toBeInTheDocument();
     });
@@ -108,7 +107,7 @@ describe("BaseButton", () => {
       render(
         <BaseButton onClick={handleClick} loading>
           Click me
-        </BaseButton>
+        </BaseButton>,
       );
       const button = screen.getByRole("button");
 
