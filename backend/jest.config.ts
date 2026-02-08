@@ -14,7 +14,7 @@ export default {
     '!**/*.d.ts',
   ],
   coverageReporters: ['text', 'lcov'],
-  testPathIgnorePatterns: ['/node_modules/'],
+  testPathIgnorePatterns: ['/node_modules/', '/__tests__/integration/'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   transform: {
     '^.+\\.ts$': ['ts-jest', { tsconfig: 'tsconfig.jest.json' }],

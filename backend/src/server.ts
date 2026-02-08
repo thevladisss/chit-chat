@@ -5,6 +5,7 @@
  */
 
 import app, { sessionParser } from './app';
+import connectDB from './database';
 import debug from 'debug';
 import http from 'http';
 import WebSocket from 'ws';
@@ -91,6 +92,8 @@ function onListening(): void {
 const wss = new WebSocket.WebSocketServer({ noServer: true });
 
 const bootApplication = async (): Promise<void> => {
+  await connectDB();
+
   server.listen(port);
 
   server.on('error', onError);

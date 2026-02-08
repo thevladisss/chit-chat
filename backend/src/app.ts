@@ -5,15 +5,11 @@ import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import cors from 'cors';
 import session from 'express-session';
-import connectDB from './database';
 import { sessionStore } from './session';
 import chatRouter from './routes/chat.route';
 import userRouter from './routes/user.route';
 
 const app: Express = express();
-
-// Connect to MongoDB
-connectDB().catch((err) => console.error('Could not connect to MongoDB', err));
 
 export const sessionParser = session({
   resave: false,
