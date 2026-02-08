@@ -1,9 +1,7 @@
 import 'express-session';
-import type { SessionUser } from './types/session';
 
 declare module 'express-session' {
   interface SessionData {
-    user?: SessionUser;
     userId?: string;
     wsConnectionId?: string;
   }

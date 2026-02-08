@@ -1,16 +1,24 @@
 import { Request, Response, NextFunction } from 'express';
+import UserRepository from '../repositories/user.repository';
 
-const authMiddleware = (
+const authMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction,
-): void => {
-  console.log('Log req.session', req.session);
-  if (req.session && req.session.userId) {
-    next();
-  } else {
+): Promise<void> => {
+  if (!req.session?.userId) {
     res.status(401).end();
+    return;
   }
+
+  const exists = await UserRepository.existsById(req.session.userId);
+
+  if (!exists) {
+    res.status(401).end();
+    return;
+  }
+
+  next();
 };
 
 export default authMiddleware;

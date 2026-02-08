@@ -6,6 +6,11 @@ import { Types } from 'mongoose';
 /**
  * Check if a user exists by username
  */
+export const existsById = async (userId: string): Promise<boolean> => {
+  const result = await UserModel.exists({ _id: userId }).exec();
+  return !!result;
+};
+
 export const existsByUsername = async (username: string): Promise<boolean> => {
   const result = await UserModel.exists({ username }).exec();
   return !!result;
@@ -150,5 +155,6 @@ export default {
   findUsersNotHavingChatWithUser,
   findUsersWhereUsernameContains,
   findUsersWhereUsernameContainsExcludingUserId,
+  existsById,
   existsByUsername,
 };

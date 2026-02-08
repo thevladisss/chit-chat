@@ -7,7 +7,7 @@ import ServerChatEventEnum from '../enums/ServerChatEventEnum';
 import ChatMapper from '../mappers/chat.mapper';
 import { IChat } from '../models/chat.model';
 import { WebSocket } from 'ws';
-import type { IUser, TransformedUser } from '../models/user.model';
+import type { IUser } from '../models/user.model';
 import { Types } from 'mongoose';
 
 interface SendChatMessageData {
@@ -17,7 +17,7 @@ interface SendChatMessageData {
 
 const notifyUsersOnNewChatMessage = async (
   chat: IChat,
-  sender: IUser | TransformedUser,
+  sender: IUser,
 ): Promise<void> => {
   const chatParticipantsIds: string[] = chat.users.map(
     (item: IUser | Types.ObjectId) => {
@@ -33,8 +33,7 @@ const notifyUsersOnNewChatMessage = async (
   const connections =
     await ConnectionService.getAllConnectionsByUserIds(chatParticipantsIds);
 
-  // Get userId from sender - handle both IUser (hydrated document) and TransformedUser
-  const senderUserId = 'userId' in sender ? sender.id : sender._id.toString();
+  const senderUserId = sender._id.toString();
 
   for (const con of connections) {
     if (con.ws && con.ws.readyState === WebSocket.OPEN) {
@@ -125,13 +124,13 @@ export const getChat = async (
 };
 
 export const sendChatMessage = async (
-  sender: IUser | TransformedUser,
+  userId: string,
   data: SendChatMessageData,
 ): Promise<any> => {
   await TextMessageRepository.createTextMessage({
     chatId: data.chatId,
     text: data.message,
-    userId: sender.id.toString(),
+    userId,
   });
 
   const chat = await ChatRepository.findByIdOrFail(data.chatId);
@@ -140,15 +139,15 @@ export const sendChatMessage = async (
     throw new Error('Chat not found');
   }
 
-  const chats = await getUserChats(sender.id.toString());
+  const chats = await getUserChats(userId);
 
   const result = {
     chatId: chat.chatId,
-    chat: ChatMapper.mapChatToResponse(sender.id.toString(), chat),
+    chat: ChatMapper.mapChatToResponse(userId, chat),
     chats,
   };
 
-  const senderUser = await UserRepository.findByIdOrFail(sender.id.toString());
+  const senderUser = await UserRepository.findByIdOrFail(userId);
 
   await notifyUsersOnNewChatMessage(chat, senderUser);
 

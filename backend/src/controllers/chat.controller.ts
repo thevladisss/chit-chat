@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import ChatService from '../service/chat.service';
 import ChatMessageTypeEnum from '../enums/ChatMessageType';
-import UserRepository from '../repositories/user.repository';
 
 /**
  * Returns all chats where signed in user is a participant
@@ -10,15 +9,7 @@ export const getAllChats = async (
   req: Request,
   res: Response,
 ): Promise<Response> => {
-  const userId = req.session?.userId ?? '';
-
-  console.log('Log userId', userId);
-
-  const user = UserRepository.findByIdOrFail(userId);
-
-  if (!user) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
+  const userId = req.session.userId!;
 
   const data = await ChatService.getUserChats(userId);
 
@@ -37,15 +28,9 @@ export const getChat = async (
   res: Response,
 ): Promise<Response> => {
   const { chatId } = req.params;
-  const userId = req.session?.userId ?? '';
+  const userId = req.session.userId!;
 
-  const user = await UserRepository.findByIdOrFail(userId);
-
-  if (!user) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-
-  const result = await ChatService.getChat(user.id, chatId);
+  const result = await ChatService.getChat(userId, chatId);
 
   return res.json({
     data: result,
@@ -59,22 +44,16 @@ export const getFilteredChats = async (
   req: Request,
   res: Response,
 ): Promise<Response> => {
-  const userId = req.session?.userId ?? '';
-
-  const user = await UserRepository.findByIdOrFail(userId);
-
-  if (!user) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
+  const userId = req.session.userId!;
 
   const search = req.query.search as string | undefined;
 
   let chats;
 
   if (!search) {
-    chats = await ChatService.getUserChats(user.id);
+    chats = await ChatService.getUserChats(userId);
   } else {
-    chats = await ChatService.getFilteredChats(user.id, search);
+    chats = await ChatService.getFilteredChats(userId, search);
   }
 
   return res.json({
@@ -91,16 +70,10 @@ export const sendMessage = async (
 ): Promise<Response> => {
   const { chatId } = req.params;
   const body = req.body;
-  const userId = req.session?.userId ?? '';
-
-  const user = await UserRepository.findByIdOrFail(userId);
-
-  if (!user) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
+  const userId = req.session.userId!;
 
   if (body.type === ChatMessageTypeEnum.TEXT) {
-    const data = await ChatService.sendChatMessage(user, {
+    const data = await ChatService.sendChatMessage(userId, {
       chatId: chatId,
       message: body.message,
     });
