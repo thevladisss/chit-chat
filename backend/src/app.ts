@@ -37,4 +37,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api/chats', chatRouter);
 app.use('/api/users', userRouter);
 
+app.get('*', (_req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 export default app;
