@@ -1,7 +1,4 @@
-import session from 'express-session';
+import { RedisStore } from 'connect-redis';
+import { redisClient } from './redis';
 
-export const sessionStore = new session.MemoryStore();
-
-export default {
-  sessionStore,
-};
+export const sessionStore = new RedisStore({ client: redisClient });

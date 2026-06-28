@@ -6,6 +6,7 @@
 
 import app, { sessionParser } from './app';
 import connectDB from './database';
+import { connectRedis } from './redis';
 import debug from 'debug';
 import http from 'http';
 import WebSocket from 'ws';
@@ -93,6 +94,10 @@ const wss = new WebSocket.WebSocketServer({ noServer: true });
 
 const bootApplication = async (): Promise<void> => {
   await connectDB();
+  console.log(`MongoDB connected on ${process.env.MONGODB_URI}\n`);
+
+  await connectRedis();
+  console.log(`Redis connected on ${process.env.REDIS_URL}\n`);
 
   server.listen(port);
 
