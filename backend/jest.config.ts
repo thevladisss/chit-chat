@@ -15,6 +15,9 @@ export default {
   ],
   coverageReporters: ['text', 'lcov'],
   testPathIgnorePatterns: ['/node_modules/', '/__tests__/integration/'],
+  moduleNameMapper: {
+    '.*/redis$': '<rootDir>/__tests__/__mocks__/redis.ts',
+  },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   transform: {
     '^.+\\.ts$': ['ts-jest', { tsconfig: 'tsconfig.jest.json' }],
