@@ -1,10 +1,11 @@
 {
-  "name": "lan-file-exchange",
+  "name": "chit-chat",
   "version": "1.0.0",
   "description": "Application to facilitate file exchange between devices on local network",
   "main": "main.js",
   "scripts": {
-    "start": "npm run start:server && npm run start:client",
+    "start": "docker compose up redis mongo -d && concurrently -n backend,frontend -c blue,green \"npm start -w backend\" \"npm run dev -w frontend\"",
+    "dev": "concurrently -n backend,frontend -c blue,green \"npm start -w backend\" \"npm run dev -w frontend\"",
     "start:server": "cd backend && npm run start",
     "start:client": "cd frontend && npm run dev",
     "start:app": "npm run start:server & npm run start:client & electron main.js",
@@ -17,6 +18,7 @@
   "author": "Vladyslav Nosal",
   "license": "ISC",
   "devDependencies": {
+    "concurrently": "^10.0.3",
     "electron": "^34.2.0"
   }
 }
