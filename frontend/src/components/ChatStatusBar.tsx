@@ -6,10 +6,11 @@ import { useScreen } from "../hooks/useScreen.ts";
 
 type Props = {
   chatName: string;
-  participantsCount: number;
-  onLeaveChat: () => void;
-  onVideoCall: () => void;
-  onAudioCall: () => void;
+  participantsCount: number | null;
+  lastOnlineAt: number; // unix timestamp
+  onLeaveChat?: () => void;
+  onVideoCall?: () => void;
+  onAudioCall?: () => void;
 };
 
 export default function ChatStatusBar({
@@ -25,22 +26,22 @@ export default function ChatStatusBar({
       {smAndSmaller && (
         <div className="actions">
         <BaseButton
-            onClick={() => onLeaveChat()}
+            onClick={() => onLeaveChat?.()}
             icon={<Icon path={mdiArrowLeft} size={1} title="Leave" />}
           />
         </div>
       )}
       <div className="chat-status-bar-info">
         <h2>{chatName}</h2>
-        <p>{participantsCount} members</p>
+        {<p>{participantsCount} members</p>}
       </div>
       <div className="actions">
         <BaseButton
-          onClick={() => onAudioCall()}
+          onClick={() => onAudioCall?.()}
           icon={<Icon path={mdiPhone} size={1} title="Video Call" />}
         />
         <BaseButton
-          onClick={() => onVideoCall()}
+          onClick={() => onVideoCall?.()}
           icon={<Icon path={mdiVideo} size={1} title="Video Call" />}
         />
       </div>
