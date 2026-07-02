@@ -1,6 +1,6 @@
 import { Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { AUTH_PATH, CHAT_PATH } from "../constants/route-paths.ts";
+import { AUTH_PATH, SELECT_CHAT_VIEW_PATH } from "../constants/route-paths.ts";
 import { selectUser } from "../stores/chat/selectors.ts";
 
 interface RouteGuardProps {
@@ -16,7 +16,7 @@ export function RouteGuard({ children, type }: RouteGuardProps) {
   }
 
   if (type === "public" && user) {
-    return <Navigate to={CHAT_PATH} replace />;
+    return <Navigate to={SELECT_CHAT_VIEW_PATH} replace />;
   }
 
   return <>{children}</>;

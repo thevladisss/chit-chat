@@ -4,7 +4,7 @@ import SignInForm from "../components/SignInForm.tsx";
 import { IUser } from "../types/IUser.ts";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { CHAT_PATH } from "../constants/route-paths.ts";
+import { SELECT_CHAT_VIEW_PATH } from "../constants/route-paths.ts";
 import { signInAction } from "../stores/user/actions.ts";
 import type { AppDispatch } from "../stores";
 
@@ -14,7 +14,7 @@ function AuthView(): JSX.Element {
 
   const handleUserAuthenticate = (user: IUser) => {
     dispatch(signInAction(user.username));
-    navigate(CHAT_PATH);
+    navigate(SELECT_CHAT_VIEW_PATH);
   };
 
   return (

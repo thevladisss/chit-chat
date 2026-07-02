@@ -26,13 +26,3 @@
 .chat-view > .chat-list {
   flex: 0 0 30%;
 }
-
-.select-chat-placeholder {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: var(--app-bg-light-1);
-  border-radius: 16px;
-  padding: 4px 12px;
-}

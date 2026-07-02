@@ -1,5 +1,6 @@
 import "./ChatView.css";
-import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { sendTextMessage } from "../service/chatSerevice";
 import SelectedChatMessagesContainer from "../components/SelectedChatMessagesContainer.tsx";
 import ChatComposer from "../components/ChatComposer.tsx";
@@ -8,27 +9,45 @@ import { useTimer } from "../hooks/useTimer.ts";
 import { useDateTime } from "../hooks/useDateTime.ts";
 import { useAudioRecording } from "../hooks/useAudioRecording.ts";
 import ChatStatusBar from "../components/ChatStatusBar.tsx";
-import { leaveSelecteChatAction } from "../stores/chat/actions.ts";
+import {
+  leaveSelecteChatAction,
+  selectChatAction,
+} from "../stores/chat/actions.ts";
 import { setChatsAction } from "../stores/chat/slice.ts";
 import { selectSelectedChat } from "../stores/user/selectors.ts";
+import { SELECT_CHAT_VIEW_PATH } from "../constants/route-paths.ts";
 import type { AppDispatch } from "../stores";
+import { useWebSocket } from "../hooks/useWebSocket.ts";
+
+interface RouteParams {
+  id: string;
+  [key: string]: string;
+}
 
 function ChatView() {
+  const { id } = useParams<RouteParams>();
+  const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const selectedChat = useSelector(selectSelectedChat);
+
+  useEffect(() => {
+    if (id) {
+      dispatch(selectChatAction(id));
+    }
+  }, [id, dispatch]);
 
   const setChats = (chats: any[]) => dispatch(setChatsAction(chats));
 
   const selectedChatName = useMemo(
     () => (selectedChat ? selectedChat.name : ""),
-    [selectedChat]
+    [selectedChat],
   );
 
   const selectecChatLastOnlineAt = useMemo(() => Date.now() - 1000, []);
 
   const selectedChatparticipantsCount = useMemo(
     () => (selectedChat ? selectedChat.users.length : null),
-    [selectedChat]
+    [selectedChat],
   );
 
   const [message, setMessageInput] = useState("");
@@ -37,15 +56,19 @@ function ChatView() {
     setMessageInput("");
   };
 
+  const { getWs } = useWebSocket();
+
   const sendUserTypingEvent = () => {
-    if (window?.ws?.OPEN && selectedChat) {
-      window.ws.send(
+    const ws = getWs();
+
+    if (ws?.OPEN && selectedChat) {
+      ws.send(
         JSON.stringify({
           event: "typing_in_chat",
           payload: {
             chatId: selectedChat.chatId,
           },
-        })
+        }),
       );
     }
   };
@@ -73,6 +96,7 @@ function ChatView() {
       resetMessageInput();
       setChats(data.chats);
     } catch (e) {
+      console.error(e);
     } finally {
       setPendingSendMessage(false);
     }
@@ -80,7 +104,7 @@ function ChatView() {
 
   const { formatDurationToTime } = useDateTime();
 
-  const [lastVoiceMessage, setLastVoiceMessage] = useState<{
+  const [, setLastVoiceMessage] = useState<{
     blob: Blob;
     duration: number;
   } | null>(null);
@@ -141,36 +165,31 @@ function ChatView() {
 
   const handleLeaveChat = async () => {
     await dispatch(leaveSelecteChatAction());
+    navigate(SELECT_CHAT_VIEW_PATH);
   };
 
   return (
     <div className="view chat-view">
       {Boolean(selectedChat) && (
         <ChatStatusBar
-          lastOnlineAt={selectecChatLastOnlineAt}
+          lastOnlineAt={selectecChatLastOnlineAt as number}
           chatName={selectedChatName}
-          participantsCount={selectedChatparticipantsCount}
+          participantsCount={selectedChatparticipantsCount as number}
           onLeaveChat={handleLeaveChat}
         />
       )}
       <div className="chat-view-content">
-        {!Boolean(selectedChat) ? (
-          <p className="select-chat-placeholder">Please select chat</p>
-        ) : (
-          <>
-            <SelectedChatMessagesContainer />
-            <ChatComposer
-              message={message}
-              voiceMessageRecordingTimeElapsed={elapsedRecordingTimeFormatted}
-              isPendingMessageSend={pendingSendMessage}
-              isRecordingVoiceMessage={isRecordingVoiceMessage}
-              handleInputMessage={handleInputMessage}
-              handleSubmitMessage={handleSubmitMessage}
-              handleVoiceMessageRecordingStart={handleVoiceRecordingStarted}
-              handleVoiceMessageRecordingCompleted={handleVoiceRecordingStop}
-            />
-          </>
-        )}
+        <SelectedChatMessagesContainer />
+        <ChatComposer
+          message={message}
+          voiceMessageRecordingTimeElapsed={elapsedRecordingTimeFormatted}
+          isPendingMessageSend={pendingSendMessage}
+          isRecordingVoiceMessage={isRecordingVoiceMessage}
+          handleInputMessage={handleInputMessage}
+          handleSubmitMessage={handleSubmitMessage}
+          handleVoiceMessageRecordingStart={handleVoiceRecordingStarted}
+          handleVoiceMessageRecordingCompleted={handleVoiceRecordingStop}
+        />
       </div>
     </div>
   );

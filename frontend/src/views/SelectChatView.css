@@ -1,0 +1,17 @@
+.select-chat-view {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: var(--app-bg-dark-3);
+  position: relative;
+}
+
+.select-chat-placeholder {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: var(--app-bg-light-1);
+  border-radius: 16px;
+  padding: 4px 12px;
+}

@@ -2,10 +2,22 @@ import { screen, act, fireEvent } from "@testing-library/react";
 import UserSidebar from "../UserSidebar.tsx";
 import { IChat } from "../../types/IChat.ts";
 import { renderWithProviders } from "../../../test/utils.tsx";
-import * as chatActions from "../../stores/chat/actions.ts";
+import { MemoryRouter } from "react-router-dom";
 
 const mockSearchChats = vi.hoisted(() => vi.fn());
 const mockGetChat = vi.hoisted(() => vi.fn());
+const mockNavigate = vi.hoisted(() => vi.fn());
+
+vi.mock("react-router-dom", async () => {
+  const actual = await vi.importActual<typeof import("react-router-dom")>(
+    "react-router-dom",
+  );
+
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
 
 vi.mock("../../service/chatSerevice.ts", () => ({
   searchChats: mockSearchChats,
@@ -48,6 +60,7 @@ const mockChats: IChat[] = [
 
 describe("UserSidebar", () => {
   beforeEach(() => {
+    vi.clearAllMocks();
     vi.useFakeTimers();
 
     mockSearchChats.mockResolvedValue({ data: [] });
@@ -60,7 +73,11 @@ describe("UserSidebar", () => {
 
   describe("chat search", () => {
     it("should render search input with correct placeholder", async () => {
-      await renderWithProviders(<UserSidebar />, {
+      await renderWithProviders(
+        <MemoryRouter>
+          <UserSidebar />
+        </MemoryRouter>,
+        {
         preloadedState: {
           chatState: { ...defaultChatState, chats: mockChats },
         },
@@ -71,7 +88,11 @@ describe("UserSidebar", () => {
     });
 
     it("should update search value when user types", async () => {
-      await renderWithProviders(<UserSidebar />, {
+      await renderWithProviders(
+        <MemoryRouter>
+          <UserSidebar />
+        </MemoryRouter>,
+        {
         preloadedState: {
           chatState: { ...defaultChatState, chats: mockChats },
         },
@@ -89,7 +110,11 @@ describe("UserSidebar", () => {
     });
 
     it("should dispatch getFilteredChatsAction after debounce delay when user types", async () => {
-      const { store } = await renderWithProviders(<UserSidebar />, {
+      const { store } = await renderWithProviders(
+        <MemoryRouter>
+          <UserSidebar />
+        </MemoryRouter>,
+        {
         preloadedState: {
           chatState: { ...defaultChatState, chats: mockChats },
         },
@@ -115,7 +140,11 @@ describe("UserSidebar", () => {
     });
 
     it("should not dispatch immediately when user types (debounce delay)", async () => {
-      const { store } = await renderWithProviders(<UserSidebar />, {
+      const { store } = await renderWithProviders(
+        <MemoryRouter>
+          <UserSidebar />
+        </MemoryRouter>,
+        {
         preloadedState: {
           chatState: { ...defaultChatState, chats: mockChats },
         },
@@ -144,7 +173,11 @@ describe("UserSidebar", () => {
     });
 
     it("should debounce multiple rapid input changes", async () => {
-      await renderWithProviders(<UserSidebar />, {
+      await renderWithProviders(
+        <MemoryRouter>
+          <UserSidebar />
+        </MemoryRouter>,
+        {
         preloadedState: {
           chatState: { ...defaultChatState, chats: mockChats },
         },
@@ -176,7 +209,11 @@ describe("UserSidebar", () => {
     });
 
     it("should cancel previous debounced calls when user types again", async () => {
-      await renderWithProviders(<UserSidebar />, {
+      await renderWithProviders(
+        <MemoryRouter>
+          <UserSidebar />
+        </MemoryRouter>,
+        {
         preloadedState: {
           chatState: { ...defaultChatState, chats: mockChats },
         },
@@ -216,7 +253,11 @@ describe("UserSidebar", () => {
         },
       ];
 
-      await renderWithProviders(<UserSidebar />, {
+      await renderWithProviders(
+        <MemoryRouter>
+          <UserSidebar />
+        </MemoryRouter>,
+        {
         preloadedState: {
           chatState: { ...defaultChatState, chats: filteredChats },
         },
@@ -226,10 +267,12 @@ describe("UserSidebar", () => {
       expect(screen.getByText("Filtered Chat")).toBeInTheDocument();
     });
 
-    it("should call selectChatAction when a chat is clicked", async () => {
-      const selectChatActionSpy = vi.spyOn(chatActions, "selectChatAction");
-
-      await renderWithProviders(<UserSidebar />, {
+    it("should navigate to chat page when a chat is clicked", async () => {
+      await renderWithProviders(
+        <MemoryRouter>
+          <UserSidebar />
+        </MemoryRouter>,
+        {
         preloadedState: {
           chatState: { ...defaultChatState, chats: mockChats },
         },
@@ -239,7 +282,7 @@ describe("UserSidebar", () => {
         fireEvent.click(screen.getByText("Chat 1"));
       });
 
-      expect(selectChatActionSpy).toHaveBeenCalledWith("chat-1");
+      expect(mockNavigate).toHaveBeenCalledWith("/chats/chat-1");
     });
 
     it("should not call selectChatAction if the same chat is already selected", async () => {
@@ -256,7 +299,11 @@ describe("UserSidebar", () => {
 
       vi.clearAllMocks();
 
-      await renderWithProviders(<UserSidebar />, {
+      await renderWithProviders(
+        <MemoryRouter>
+          <UserSidebar />
+        </MemoryRouter>,
+        {
         preloadedState: {
           chatState: { ...defaultChatState, chats: mockChats, selectedChat },
         },
@@ -274,7 +321,11 @@ describe("UserSidebar", () => {
       // Note: The component uses local state `pendingSearchFilteredChats` which is never updated
       // This test verifies the component structure, but the actual loading state
       // is controlled by local state, not Redux state
-      await renderWithProviders(<UserSidebar />, {
+      await renderWithProviders(
+        <MemoryRouter>
+          <UserSidebar />
+        </MemoryRouter>,
+        {
         preloadedState: {
           chatState: { ...defaultChatState, chats: mockChats },
         },
@@ -286,7 +337,11 @@ describe("UserSidebar", () => {
     });
 
     it("should set isSearchingChats to true when search value is not empty", async () => {
-      await renderWithProviders(<UserSidebar />, {
+      await renderWithProviders(
+        <MemoryRouter>
+          <UserSidebar />
+        </MemoryRouter>,
+        {
         preloadedState: {
           chatState: { ...defaultChatState, chats: [] },
         },
