@@ -1,17 +1,12 @@
-let ws: WebSocket | null = null;
+import { useContext } from "react";
+import { WebSocketContext } from "../contexts/websocket.context";
 
 type WebSocketReturn = {
   getWs: () => WebSocket | null;
 };
 
 export const useWebSocket = (): WebSocketReturn => {
-  if (!ws) {
-    ws = new WebSocket(import.meta.env.VITE_WS_URL);
-  }
-
-  const getWs = () => {
-    return ws;
-  };
+  const getWs = useContext(WebSocketContext);
 
   return {
     getWs,

@@ -13,10 +13,11 @@ import {
   deleteTypingInChat,
 } from "../stores/chat/slice.ts";
 import { useSelector, useDispatch } from "react-redux";
-import { useWebSocketContext } from "../contexts/websocket.context.ts";
 import { selectUserName } from "../stores/chat/selectors.ts";
 import { getChatsAction } from "../stores/chat/actions.ts";
 import type { AppDispatch } from "../stores";
+import { IChat } from "../types/IChat.ts";
+import { useWebSocket } from "../hooks/useWebSocket.ts";
 
 const messageSound = new Audio("/sounds/message.mp3");
 
@@ -31,7 +32,7 @@ function AppLayout() {
   const dispatch = useDispatch<AppDispatch>();
 
   const getChats = () => dispatch(getChatsAction());
-  const setChats = (chats: any[]) => dispatch(setChatsAction(chats));
+  const setChats = (chats: IChat[]) => dispatch(setChatsAction(chats));
   const setTypingChat = (chatId: string, users: IUser[]) =>
     dispatch(setTypingInChat({ chatId, users }));
   const deleteTypingChat = (chatId: string) =>
@@ -39,7 +40,7 @@ function AppLayout() {
 
   const typingTimeout = useRef<Record<string, NodeJS.Timeout>>({});
 
-  const getWebSocket = useWebSocketContext();
+  const { getWs } = useWebSocket();
 
   const handleWsOpen = () => {
     getChats();
@@ -53,7 +54,7 @@ function AppLayout() {
     setChats(e.data.chats);
   };
 
-  const handleNewUserEvent = (e: WsCustomEvent) => {
+  const handleNewUserEvent = () => {
     getChats();
   };
 
@@ -104,7 +105,7 @@ function AppLayout() {
         handleChatCreatedEvent(payload);
         break;
       case ServerSideEventsEnum.NewUser:
-        handleNewUserEvent(payload);
+        handleNewUserEvent();
         break;
       case ServerSideEventsEnum.TypingInChat:
         handleTypingInChatEvent(payload);
@@ -113,7 +114,7 @@ function AppLayout() {
   };
 
   useEffect(() => {
-    const ws = getWebSocket();
+    const ws = getWs();
 
     if (ws) {
       ws.onopen = () => {
@@ -132,7 +133,7 @@ function AppLayout() {
     <div className="app-layout">
       <header className="app-layout-header">
         <h1>
-          Chit-Chat - <span>{username}</span>
+          Chit-Chat - <span>@{username}</span>
         </h1>
       </header>
 
