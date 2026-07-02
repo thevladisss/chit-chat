@@ -143,8 +143,6 @@ const handleWsMessage = async (
       : Buffer.from(data);
   const parsedData = JSON.parse(raw.toString());
 
-  console.log('Got message', req, ws, parsedData);
-
   switch (parsedData.event) {
     case ClientChatEventEnum.SEND_MESSAGE:
       break;
