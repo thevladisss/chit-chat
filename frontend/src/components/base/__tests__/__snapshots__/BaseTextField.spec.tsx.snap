@@ -1,0 +1,15 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`BaseTextField > rendering > should match snapshot 1`] = `
+<DocumentFragment>
+  <div
+    class="text-field"
+  >
+    <input
+      name="username"
+      type="text"
+      value=""
+    />
+  </div>
+</DocumentFragment>
+`;

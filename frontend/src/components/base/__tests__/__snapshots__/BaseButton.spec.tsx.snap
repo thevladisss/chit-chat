@@ -1,0 +1,11 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`BaseButton > rendering > should match snapshot 1`] = `
+<DocumentFragment>
+  <button
+    class="base-button"
+  >
+    Click me
+  </button>
+</DocumentFragment>
+`;
