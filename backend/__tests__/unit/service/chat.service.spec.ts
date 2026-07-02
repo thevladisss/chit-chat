@@ -1,5 +1,4 @@
 import ChatRepository from '../../../src/repositories/chat.repository';
-import ConnectionRepository from '../../../src/repositories/connection.repository';
 import UserRepository from '../../../src/repositories/user.repository';
 import TextMessageRepository from '../../../src/repositories/textMessage.repository';
 import ConnectionService from '../../../src/service/connection.service';
@@ -55,12 +54,12 @@ describe('chat.service', () => {
       } as any;
 
       const connectionsMock = [
-        { userId: { toString: () => 'user-2' } },
-        { userId: { toString: () => 'user-3' } },
+        { userId: 'user-2' },
+        { userId: 'user-3' },
       ] as any[];
 
       const getAllConnectionsSpy = jest
-        .spyOn(ConnectionRepository, 'getAllConnections')
+        .spyOn(ConnectionService, 'getAllConnections')
         .mockResolvedValue(connectionsMock);
 
       const findByUserNameOrChatNameOrMessageSpy = jest
@@ -75,10 +74,7 @@ describe('chat.service', () => {
       expect(findByUserNameOrChatNameOrMessageSpy).toHaveBeenCalledWith(
         'Second',
       );
-      expect(getAllConnectionsSpy).toHaveBeenCalledWith({
-        userId: 1,
-        _id: 0,
-      });
+      expect(getAllConnectionsSpy).toHaveBeenCalled();
 
       expect(results.length).toBe(1);
       expect(results[0]).toMatchObject(
@@ -92,7 +88,7 @@ describe('chat.service', () => {
 
     it('should return empty collection if repository yields nothing', async () => {
       const getAllConnectionsSpy = jest
-        .spyOn(ConnectionRepository, 'getAllConnections')
+        .spyOn(ConnectionService, 'getAllConnections')
         .mockResolvedValue([]);
 
       const findByUserNameOrChatNameOrMessageSpy = jest
@@ -108,10 +104,7 @@ describe('chat.service', () => {
       expect(findByUserNameOrChatNameOrMessageSpy).toHaveBeenCalledWith(
         'unknown',
       );
-      expect(getAllConnectionsSpy).toHaveBeenCalledWith({
-        userId: 1,
-        _id: 0,
-      });
+      expect(getAllConnectionsSpy).toHaveBeenCalled();
     });
   });
 
@@ -298,20 +291,20 @@ describe('chat.service', () => {
           },
         ],
       } as any;
-      const connectionsMock = [{ userId: { toString: () => 'user-2' } }] as any[];
+      const connectionsMock = [{ userId: 'user-2' }] as any[];
 
       const findAllChatsByUsersIdsSpy = jest
         .spyOn(ChatRepository, 'findAllChatsByUsersIds')
         .mockResolvedValue([mockChat]);
 
       const getAllConnectionsSpy = jest
-        .spyOn(ConnectionRepository, 'getAllConnections')
+        .spyOn(ConnectionService, 'getAllConnections')
         .mockResolvedValue(connectionsMock);
 
       const result = await ChatService.getUserChats(userId);
 
       expect(findAllChatsByUsersIdsSpy).toHaveBeenCalledWith([userId]);
-      expect(getAllConnectionsSpy).toHaveBeenCalledWith({ userId: 1, _id: 0 });
+      expect(getAllConnectionsSpy).toHaveBeenCalled();
 
       expect(result.length).toBe(1);
       expect(result[0]).toMatchObject(
@@ -327,7 +320,7 @@ describe('chat.service', () => {
         .mockResolvedValue([]);
 
       jest
-        .spyOn(ConnectionRepository, 'getAllConnections')
+        .spyOn(ConnectionService, 'getAllConnections')
         .mockResolvedValue([]);
 
       const result = await ChatService.getUserChats(userId);
@@ -401,7 +394,7 @@ describe('chat.service', () => {
         .spyOn(ChatRepository, 'findAllChatsByUsersIds')
         .mockResolvedValue([mockGetUserChats1]);
       jest
-        .spyOn(ConnectionRepository, 'getAllConnections')
+        .spyOn(ConnectionService, 'getAllConnections')
         .mockResolvedValue([]);
       jest.spyOn(UserRepository, 'findByIdOrFail').mockResolvedValue(sender);
 
@@ -474,7 +467,7 @@ describe('chat.service', () => {
         });
 
       jest
-        .spyOn(ConnectionRepository, 'getAllConnections')
+        .spyOn(ConnectionService, 'getAllConnections')
         .mockResolvedValue([]);
 
       const result = await ChatService.createNewChatForAllUsers(userId);

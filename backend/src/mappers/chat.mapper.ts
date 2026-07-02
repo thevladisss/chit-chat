@@ -1,5 +1,4 @@
 import type { IChat, TransformedChat } from '../models/chat.model';
-import type { IConnection } from '../models/connection.model';
 import type { IUser } from '../models/user.model';
 import { mapMessagesToResponse } from './message.mapper';
 import type { ChatResponse, ChatListItemResponse } from '../types/responses';
@@ -37,7 +36,7 @@ export const mapChatToResponse = (
 export const mapChatToListResponse = (
   userId: string,
   chat: IChat,
-  connections: IConnection[],
+  connections: { userId: string }[],
 ): ChatListItemResponse => {
   const users = chat.users as (Types.ObjectId | IUser)[];
   const otherUser = users.find(

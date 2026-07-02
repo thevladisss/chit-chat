@@ -1,6 +1,5 @@
 import ChatRepository from '../repositories/chat.repository';
 import UserRepository from '../repositories/user.repository';
-import ConnectionRepository from '../repositories/connection.repository';
 import TextMessageRepository from '../repositories/textMessage.repository';
 import ConnectionService from './connection.service';
 import ServerChatEventEnum from '../enums/ServerChatEventEnum';
@@ -85,10 +84,7 @@ export const createNewChatForAllUsers = async (
 export const getUserChats = async (userId: string): Promise<any[]> => {
   const chats = await ChatRepository.findAllChatsByUsersIds([userId]);
 
-  const connections = await ConnectionRepository.getAllConnections({
-    userId: 1,
-    _id: 0,
-  });
+  const connections = await ConnectionService.getAllConnections();
 
   const results = [];
 
@@ -160,10 +156,7 @@ export const getFilteredChats = async (
 ): Promise<any[]> => {
   const chats = await ChatRepository.findByUserNameOrChatNameOrMessage(search);
 
-  const connections = await ConnectionRepository.getAllConnections({
-    userId: 1,
-    _id: 0,
-  });
+  const connections = await ConnectionService.getAllConnections();
 
   const results = [];
 

@@ -212,7 +212,7 @@ describe('chat.mapper', () => {
       } as any;
 
       const connections = [
-        { userId: { toString: () => otherUserId } },
+        { userId: otherUserId },
       ] as any[];
 
       const result = chatMapper.mapChatToListResponse(
@@ -257,7 +257,7 @@ describe('chat.mapper', () => {
         messages: [],
       } as any;
 
-      const connections = [{ userId: { toString: () => 'user-3' } }] as any[];
+      const connections = [{ userId: 'user-3' }] as any[];
 
       const result = chatMapper.mapChatToListResponse(
         currentUserId,
@@ -398,8 +398,8 @@ describe('chat.mapper', () => {
       } as any;
 
       const connections = [
-        { userId: { toString: () => 'user-3' } },
-        { userId: { toString: () => otherUserId } },
+        { userId: 'user-3' },
+        { userId: otherUserId },
         { userId: { toString: () => 'user-4' } },
       ] as any[];
 

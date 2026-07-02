@@ -1,7 +1,6 @@
 export type { TransformedUser } from '../models/user.model';
 export type {
   ConnectionWithSocket,
-  ConnectionJSON,
   StoreConnectionPayload,
 } from './connection';
 export type {
