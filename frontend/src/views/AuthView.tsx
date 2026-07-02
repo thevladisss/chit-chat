@@ -1,7 +1,6 @@
 import "./AuthView.css";
 import { type JSX } from "react";
 import SignInForm from "../components/SignInForm.tsx";
-import { IUser } from "../types/IUser.ts";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { SELECT_CHAT_VIEW_PATH } from "../constants/route-paths.ts";
@@ -12,14 +11,17 @@ function AuthView(): JSX.Element {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
 
-  const handleUserAuthenticate = (user: IUser) => {
-    dispatch(signInAction(user.username));
+  const handleUserAuthenticate = (username: string) => {
+    dispatch(signInAction(username));
     navigate(SELECT_CHAT_VIEW_PATH);
   };
 
   return (
     <div className="auth-view">
-      <SignInForm onUserAuthenticate={handleUserAuthenticate}></SignInForm>
+      <SignInForm
+        pending={false}
+        onUserAuthenticate={handleUserAuthenticate}
+      ></SignInForm>
     </div>
   );
 }

@@ -1,5 +1,10 @@
 import "./BaseButton.css";
-import { HTMLProps, JSX, type PropsWithChildren } from "react";
+import {
+  ButtonHTMLAttributes,
+  HTMLProps,
+  JSX,
+  type PropsWithChildren,
+} from "react";
 import classNames from "classnames";
 
 type Props = HTMLProps<HTMLButtonElement> &
@@ -24,7 +29,7 @@ function BaseButton({
 
   return (
     <button
-      type={type}
+      type={type as ButtonHTMLAttributes<HTMLButtonElement>["type"]}
       style={style}
       className={classes}
       disabled={loading}

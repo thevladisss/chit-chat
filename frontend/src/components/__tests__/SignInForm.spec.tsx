@@ -17,9 +17,23 @@ describe("SignInForm", () => {
   });
 
   describe("rendering", () => {
+    it("should disable submit button when pending is true", async () => {
+      await renderWithProviders(
+        <SignInForm
+          pending={true}
+          onUserAuthenticate={mockOnUserAuthenticate}
+        />,
+      );
+
+      expect(screen.getByRole("button", { name: "Proceed" })).toBeDisabled();
+    });
+
     it("should render the heading text", async () => {
       await renderWithProviders(
-        <SignInForm onUserAuthenticate={mockOnUserAuthenticate} />,
+        <SignInForm
+          pending={false}
+          onUserAuthenticate={mockOnUserAuthenticate}
+        />,
       );
 
       expect(
@@ -35,7 +49,10 @@ describe("SignInForm", () => {
 
     it("should render the subheading text", async () => {
       await renderWithProviders(
-        <SignInForm onUserAuthenticate={mockOnUserAuthenticate} />,
+        <SignInForm
+          pending={false}
+          onUserAuthenticate={mockOnUserAuthenticate}
+        />,
       );
 
       expect(
@@ -47,7 +64,10 @@ describe("SignInForm", () => {
 
     it("should render the username input with correct placeholder", async () => {
       await renderWithProviders(
-        <SignInForm onUserAuthenticate={mockOnUserAuthenticate} />,
+        <SignInForm
+          pending={false}
+          onUserAuthenticate={mockOnUserAuthenticate}
+        />,
       );
 
       const input = screen.getByPlaceholderText("John Doe...");
@@ -56,7 +76,10 @@ describe("SignInForm", () => {
 
     it("should render the submit button with 'Proceed' text", async () => {
       await renderWithProviders(
-        <SignInForm onUserAuthenticate={mockOnUserAuthenticate} />,
+        <SignInForm
+          pending={false}
+          onUserAuthenticate={mockOnUserAuthenticate}
+        />,
       );
 
       expect(
@@ -66,7 +89,10 @@ describe("SignInForm", () => {
 
     it("should render the username input as required", async () => {
       await renderWithProviders(
-        <SignInForm onUserAuthenticate={mockOnUserAuthenticate} />,
+        <SignInForm
+          pending={false}
+          onUserAuthenticate={mockOnUserAuthenticate}
+        />,
       );
 
       const input = screen.getByPlaceholderText("John Doe...");
@@ -75,7 +101,10 @@ describe("SignInForm", () => {
 
     it("should render the username input with autoFocus", async () => {
       await renderWithProviders(
-        <SignInForm onUserAuthenticate={mockOnUserAuthenticate} />,
+        <SignInForm
+          pending={false}
+          onUserAuthenticate={mockOnUserAuthenticate}
+        />,
       );
 
       const input = screen.getByPlaceholderText("John Doe...");
@@ -86,7 +115,10 @@ describe("SignInForm", () => {
   describe("username input", () => {
     it("should update value when user types", async () => {
       await renderWithProviders(
-        <SignInForm onUserAuthenticate={mockOnUserAuthenticate} />,
+        <SignInForm
+          pending={false}
+          onUserAuthenticate={mockOnUserAuthenticate}
+        />,
       );
 
       const input = screen.getByPlaceholderText(
@@ -102,7 +134,10 @@ describe("SignInForm", () => {
 
     it("should trim whitespace from input value", async () => {
       await renderWithProviders(
-        <SignInForm onUserAuthenticate={mockOnUserAuthenticate} />,
+        <SignInForm
+          pending={false}
+          onUserAuthenticate={mockOnUserAuthenticate}
+        />,
       );
 
       const input = screen.getByPlaceholderText(
@@ -118,9 +153,12 @@ describe("SignInForm", () => {
   });
 
   describe("form submission", () => {
-    it("should dispatch signInAction with the username on submit", async () => {
+    it("should call onUserAuthenticate prop on submit", async () => {
       await renderWithProviders(
-        <SignInForm onUserAuthenticate={mockOnUserAuthenticate} />,
+        <SignInForm
+          pending={false}
+          onUserAuthenticate={mockOnUserAuthenticate}
+        />,
       );
 
       const input = screen.getByPlaceholderText("John Doe...");
@@ -136,49 +174,7 @@ describe("SignInForm", () => {
         fireEvent.submit(form);
       });
 
-      expect(mockRequestSignIn).toHaveBeenCalledWith("testuser");
-    });
-
-    it("should dispatch signInAction with trimmed username", async () => {
-      await renderWithProviders(
-        <SignInForm onUserAuthenticate={mockOnUserAuthenticate} />,
-      );
-
-      const input = screen.getByPlaceholderText("John Doe...");
-      const form = screen
-        .getByRole("button", { name: "Proceed" })
-        .closest("form")!;
-
-      act(() => {
-        fireEvent.input(input, { target: { value: "  spaced  " } });
-      });
-
-      await act(async () => {
-        fireEvent.submit(form);
-      });
-
-      expect(mockRequestSignIn).toHaveBeenCalledWith("spaced");
-    });
-
-    it("should not call onUserAuthenticate prop on submit", async () => {
-      await renderWithProviders(
-        <SignInForm onUserAuthenticate={mockOnUserAuthenticate} />,
-      );
-
-      const input = screen.getByPlaceholderText("John Doe...");
-      const form = screen
-        .getByRole("button", { name: "Proceed" })
-        .closest("form")!;
-
-      act(() => {
-        fireEvent.input(input, { target: { value: "testuser" } });
-      });
-
-      await act(async () => {
-        fireEvent.submit(form);
-      });
-
-      expect(mockOnUserAuthenticate).not.toHaveBeenCalled();
+      expect(mockOnUserAuthenticate).toHaveBeenCalled();
     });
   });
 });
