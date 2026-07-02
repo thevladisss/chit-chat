@@ -30,25 +30,6 @@ const defaultProps = {
 
 describe("ChatStatusBar", () => {
   describe("rendering", () => {
-    it("should render the chat name", () => {
-      render(<ChatStatusBar {...defaultProps} />);
-
-      expect(screen.getByText("Test Chat")).toBeInTheDocument();
-    });
-
-    it("should render the participants count", () => {
-      render(<ChatStatusBar {...defaultProps} participantsCount={10} />);
-
-      expect(screen.getByText("10 members")).toBeInTheDocument();
-    });
-
-    it("should render the chat name in an h2 element", () => {
-      render(<ChatStatusBar {...defaultProps} />);
-
-      const heading = screen.getByRole("heading", { level: 2 });
-      expect(heading).toHaveTextContent("Test Chat");
-    });
-
     it("should render call action buttons", () => {
       render(<ChatStatusBar {...defaultProps} />);
 
@@ -65,25 +46,77 @@ describe("ChatStatusBar", () => {
     });
   });
 
-  describe("interaction", () => {
-    it("should call onAudioCall when audio call button is clicked", () => {
-      const onAudioCall = vi.fn();
-      render(<ChatStatusBar {...defaultProps} onAudioCall={onAudioCall} />);
+  describe("props", () => {
+    describe("chatName", () => {
+      it("should render the chat name", () => {
+        render(<ChatStatusBar {...defaultProps} />);
 
-      // There are multiple buttons, get all and click the audio one
-      const buttons = screen.getAllByRole("button");
-      // Audio call button comes before video call button in the actions div
-      fireEvent.click(buttons[0]);
-      expect(onAudioCall).toHaveBeenCalledTimes(1);
+        expect(screen.getByText("Test Chat")).toBeInTheDocument();
+      });
+
+      it("should render the chat name in an h2 element", () => {
+        render(<ChatStatusBar {...defaultProps} />);
+
+        const heading = screen.getByRole("heading", { level: 2 });
+        expect(heading).toHaveTextContent("Test Chat");
+      });
     });
 
-    it("should call onVideoCall when video call button is clicked", () => {
-      const onVideoCall = vi.fn();
-      render(<ChatStatusBar {...defaultProps} onVideoCall={onVideoCall} />);
+    describe("participantsCount", () => {
+      it("should render the participants count", () => {
+        render(<ChatStatusBar {...defaultProps} participantsCount={10} />);
 
-      const buttons = screen.getAllByRole("button");
-      fireEvent.click(buttons[1]);
-      expect(onVideoCall).toHaveBeenCalledTimes(1);
+        expect(screen.getByText("10 members")).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe("handlers", () => {
+    describe("onAudioCall", () => {
+      it("should call onAudioCall when audio call button is clicked", () => {
+        const onAudioCall = vi.fn();
+        render(<ChatStatusBar {...defaultProps} onAudioCall={onAudioCall} />);
+
+        // There are multiple buttons, get all and click the audio one
+        const buttons = screen.getAllByRole("button");
+        // Audio call button comes before video call button in the actions div
+        fireEvent.click(buttons[0]);
+        expect(onAudioCall).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    describe("onVideoCall", () => {
+      it("should call onVideoCall when video call button is clicked", () => {
+        const onVideoCall = vi.fn();
+        render(<ChatStatusBar {...defaultProps} onVideoCall={onVideoCall} />);
+
+        const buttons = screen.getAllByRole("button");
+        fireEvent.click(buttons[1]);
+        expect(onVideoCall).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    describe("onLeaveChat", () => {
+      it("should call onLeaveChat when back button is clicked on small screens", () => {
+        mockUseScreen.mockReturnValue({
+          xs: true,
+          sm: false,
+          md: false,
+          lg: false,
+          xl: false,
+          smAndSmaller: true,
+          mdAndSmaller: true,
+          lgAndSmaller: true,
+          width: 400,
+          height: 600,
+        });
+
+        const onLeaveChat = vi.fn();
+        render(<ChatStatusBar {...defaultProps} onLeaveChat={onLeaveChat} />);
+
+        fireEvent.click(screen.getByTitle("Leave").closest("button")!);
+        expect(onLeaveChat).toHaveBeenCalledTimes(1);
+      });
     });
   });
 
@@ -105,27 +138,6 @@ describe("ChatStatusBar", () => {
       render(<ChatStatusBar {...defaultProps} />);
 
       expect(screen.getByTitle("Leave")).toBeInTheDocument();
-    });
-
-    it("should call onLeaveChat when back button is clicked on small screens", () => {
-      mockUseScreen.mockReturnValue({
-        xs: true,
-        sm: false,
-        md: false,
-        lg: false,
-        xl: false,
-        smAndSmaller: true,
-        mdAndSmaller: true,
-        lgAndSmaller: true,
-        width: 400,
-        height: 600,
-      });
-
-      const onLeaveChat = vi.fn();
-      render(<ChatStatusBar {...defaultProps} onLeaveChat={onLeaveChat} />);
-
-      fireEvent.click(screen.getByTitle("Leave").closest("button")!);
-      expect(onLeaveChat).toHaveBeenCalledTimes(1);
     });
 
     it("should not show back button on larger screens", () => {

@@ -17,17 +17,6 @@ describe("SignInForm", () => {
   });
 
   describe("rendering", () => {
-    it("should disable submit button when pending is true", async () => {
-      await renderWithProviders(
-        <SignInForm
-          pending={true}
-          onUserAuthenticate={mockOnUserAuthenticate}
-        />,
-      );
-
-      expect(screen.getByRole("button", { name: "Proceed" })).toBeDisabled();
-    });
-
     it("should render the heading text", async () => {
       await renderWithProviders(
         <SignInForm
@@ -112,6 +101,21 @@ describe("SignInForm", () => {
     });
   });
 
+  describe("props", () => {
+    describe("pending", () => {
+      it("should disable submit button when pending is true", async () => {
+        await renderWithProviders(
+          <SignInForm
+            pending={true}
+            onUserAuthenticate={mockOnUserAuthenticate}
+          />,
+        );
+
+        expect(screen.getByRole("button", { name: "Proceed" })).toBeDisabled();
+      });
+    });
+  });
+
   describe("username input", () => {
     it("should update value when user types", async () => {
       await renderWithProviders(
@@ -152,29 +156,31 @@ describe("SignInForm", () => {
     });
   });
 
-  describe("form submission", () => {
-    it("should call onUserAuthenticate prop on submit", async () => {
-      await renderWithProviders(
-        <SignInForm
-          pending={false}
-          onUserAuthenticate={mockOnUserAuthenticate}
-        />,
-      );
+  describe("handlers", () => {
+    describe("onUserAuthenticate", () => {
+      it("should call onUserAuthenticate prop on submit", async () => {
+        await renderWithProviders(
+          <SignInForm
+            pending={false}
+            onUserAuthenticate={mockOnUserAuthenticate}
+          />,
+        );
 
-      const input = screen.getByPlaceholderText("John Doe...");
-      const form = screen
-        .getByRole("button", { name: "Proceed" })
-        .closest("form")!;
+        const input = screen.getByPlaceholderText("John Doe...");
+        const form = screen
+          .getByRole("button", { name: "Proceed" })
+          .closest("form")!;
 
-      act(() => {
-        fireEvent.input(input, { target: { value: "testuser" } });
+        act(() => {
+          fireEvent.input(input, { target: { value: "testuser" } });
+        });
+
+        await act(async () => {
+          fireEvent.submit(form);
+        });
+
+        expect(mockOnUserAuthenticate).toHaveBeenCalled();
       });
-
-      await act(async () => {
-        fireEvent.submit(form);
-      });
-
-      expect(mockOnUserAuthenticate).toHaveBeenCalled();
     });
   });
 });

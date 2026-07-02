@@ -40,23 +40,27 @@ describe("SidebarUserInformation", () => {
 
       expect(screen.getByTitle("Logout")).toBeInTheDocument();
     });
+  });
 
-    it("should render with different username", () => {
-      render(<SidebarUserInformation username="Jane" />);
+  describe("props", () => {
+    describe("username", () => {
+      it("should render with different username", () => {
+        render(<SidebarUserInformation username="Jane" />);
 
-      expect(screen.getByText("Jane")).toBeInTheDocument();
-    });
+        expect(screen.getByText("Jane")).toBeInTheDocument();
+      });
 
-    it("should render with empty username", () => {
-      render(<SidebarUserInformation username="" />);
+      it("should render with empty username", () => {
+        render(<SidebarUserInformation username="" />);
 
-      expect(
-        screen.getByText((_, element) => {
-          return (
-            element?.tagName === "H2" && element?.textContent === "👉 Hello, "
-          );
-        }),
-      ).toBeInTheDocument();
+        expect(
+          screen.getByText((_, element) => {
+            return (
+              element?.tagName === "H2" && element?.textContent === "👉 Hello, "
+            );
+          }),
+        ).toBeInTheDocument();
+      });
     });
   });
 });

@@ -90,56 +90,90 @@ describe("ChatsList", () => {
     });
   });
 
-  describe("empty state", () => {
-    it("should show 'no chatting history' when chats array is empty and not searching", async () => {
-      await renderWithProviders(
-        <ChatsList {...defaultProps} chats={[]} isSearchingChats={false} />,
-        { preloadedState: { chatState: defaultChatState } },
-      );
+  describe("props", () => {
+    describe("chats", () => {
+      it("should show 'no chatting history' when chats array is empty and not searching", async () => {
+        await renderWithProviders(
+          <ChatsList {...defaultProps} chats={[]} isSearchingChats={false} />,
+          { preloadedState: { chatState: defaultChatState } },
+        );
 
-      expect(
-        screen.getByText("You do not have any chatting history"),
-      ).toBeInTheDocument();
-    });
-
-    it("should show 'No chats found' when chats array is empty and searching", async () => {
-      await renderWithProviders(
-        <ChatsList {...defaultProps} chats={[]} isSearchingChats={true} />,
-        { preloadedState: { chatState: defaultChatState } },
-      );
-
-      expect(screen.getByText("No chats found")).toBeInTheDocument();
-    });
-
-    it("should not show list when there are no chats", async () => {
-      await renderWithProviders(<ChatsList {...defaultProps} chats={[]} />, {
-        preloadedState: { chatState: defaultChatState },
+        expect(
+          screen.getByText("You do not have any chatting history"),
+        ).toBeInTheDocument();
       });
 
-      expect(screen.queryByRole("list")).not.toBeInTheDocument();
+      it("should not show list when there are no chats", async () => {
+        await renderWithProviders(<ChatsList {...defaultProps} chats={[]} />, {
+          preloadedState: { chatState: defaultChatState },
+        });
+
+        expect(screen.queryByRole("list")).not.toBeInTheDocument();
+      });
+    });
+
+    describe("isSearchingChats", () => {
+      it("should show 'No chats found' when chats array is empty and searching", async () => {
+        await renderWithProviders(
+          <ChatsList {...defaultProps} chats={[]} isSearchingChats={true} />,
+          { preloadedState: { chatState: defaultChatState } },
+        );
+
+        expect(screen.getByText("No chats found")).toBeInTheDocument();
+      });
+    });
+
+    describe("selectedChatId", () => {
+      it("should mark the selected chat", async () => {
+        const { container } = await renderWithProviders(
+          <ChatsList {...defaultProps} selectedChatId="chat-1" />,
+          { preloadedState: { chatState: defaultChatState } },
+        );
+
+        const selectedItem = container.querySelector(
+          ".chat-list-item.selected",
+        );
+        expect(selectedItem).toBeInTheDocument();
+      });
+    });
+
+    describe("className", () => {
+      it("should apply custom className", async () => {
+        const { container } = await renderWithProviders(
+          <ChatsList {...defaultProps} className="custom-class" />,
+          { preloadedState: { chatState: defaultChatState } },
+        );
+
+        const chatList = container.querySelector(".chat-list.custom-class");
+        expect(chatList).toBeInTheDocument();
+      });
+    });
+
+    describe("style", () => {
+      it("should apply custom style", async () => {
+        const { container } = await renderWithProviders(
+          <ChatsList {...defaultProps} style={{ maxHeight: "300px" }} />,
+          { preloadedState: { chatState: defaultChatState } },
+        );
+
+        const chatList = container.querySelector(".chat-list");
+        expect(chatList).toHaveStyle({ maxHeight: "300px" });
+      });
     });
   });
 
-  describe("chat selection", () => {
-    it("should call onSelectChat with chat id when a chat is clicked", async () => {
-      const onSelectChat = vi.fn();
-      await renderWithProviders(
-        <ChatsList {...defaultProps} onSelectChat={onSelectChat} />,
-        { preloadedState: { chatState: defaultChatState } },
-      );
+  describe("handlers", () => {
+    describe("onSelectChat", () => {
+      it("should call onSelectChat with chat id when a chat is clicked", async () => {
+        const onSelectChat = vi.fn();
+        await renderWithProviders(
+          <ChatsList {...defaultProps} onSelectChat={onSelectChat} />,
+          { preloadedState: { chatState: defaultChatState } },
+        );
 
-      fireEvent.click(screen.getByText("Alpha Chat"));
-      expect(onSelectChat).toHaveBeenCalledWith("chat-1");
-    });
-
-    it("should mark the selected chat", async () => {
-      const { container } = await renderWithProviders(
-        <ChatsList {...defaultProps} selectedChatId="chat-1" />,
-        { preloadedState: { chatState: defaultChatState } },
-      );
-
-      const selectedItem = container.querySelector(".chat-list-item.selected");
-      expect(selectedItem).toBeInTheDocument();
+        fireEvent.click(screen.getByText("Alpha Chat"));
+        expect(onSelectChat).toHaveBeenCalledWith("chat-1");
+      });
     });
   });
 
@@ -178,28 +212,6 @@ describe("ChatsList", () => {
       });
 
       expect(screen.queryByText(/is typing/)).not.toBeInTheDocument();
-    });
-  });
-
-  describe("html props", () => {
-    it("should apply custom className", async () => {
-      const { container } = await renderWithProviders(
-        <ChatsList {...defaultProps} className="custom-class" />,
-        { preloadedState: { chatState: defaultChatState } },
-      );
-
-      const chatList = container.querySelector(".chat-list.custom-class");
-      expect(chatList).toBeInTheDocument();
-    });
-
-    it("should apply custom style", async () => {
-      const { container } = await renderWithProviders(
-        <ChatsList {...defaultProps} style={{ maxHeight: "300px" }} />,
-        { preloadedState: { chatState: defaultChatState } },
-      );
-
-      const chatList = container.querySelector(".chat-list");
-      expect(chatList).toHaveStyle({ maxHeight: "300px" });
     });
   });
 });
