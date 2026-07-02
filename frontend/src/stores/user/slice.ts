@@ -2,16 +2,16 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IUser } from "../../types/IUser.ts";
 import * as actions from "./actions.ts";
 
-export type UserSliceState = IUser | null
-
-const initialState: UserSliceState = null
+export type UserSliceState = IUser | null;
 
 export const slice = createSlice({
   name: "userState",
-  initialState,
+  initialState: (): UserSliceState => null,
   reducers: {
-    setUser: (_, action: PayloadAction<IUser>) => {
-      return action.payload;
+    setUser: (_, action) => {
+      return {
+        ...action.payload,
+      };
     },
     signOut: () => {
       return null;
@@ -20,16 +20,18 @@ export const slice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(
       actions.signInAction.fulfilled,
-      (_, action: PayloadAction<{ username: string }>) => {
-        // Create a user object with the required properties
-        const user: IUser = {
+      (state, action: PayloadAction<IUser>) => {
+        return {
+          ...(state ?? {}),
+          id: action.payload.id,
           username: action.payload.username,
-          chatId: "", // You might want to generate this
-          createdTimestamp: new Date().toISOString(),
+          createdAt: action.payload.createdAt,
+          userId: action.payload.userId,
         };
-        return user;
       },
     );
+
+    //TODO: Add pending and rejected handling for signInAction
   },
 });
 

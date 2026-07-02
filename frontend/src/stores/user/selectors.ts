@@ -17,14 +17,14 @@ export const selectExistingChats = createSelector(
 
 export const selectSelectedChatMessages = createSelector(
   [(state: RootState) => state.chatState.selectedChat],
-  (chat: IChat) => {
+  (chat: IChat | null) => {
     return chat ? chat.messages : [];
   }
 );
 
 export const selectSelectedChatId = createSelector(
   [(state: RootState) => state.chatState.selectedChat],
-  (selectedChat: IChat) => {
+  (selectedChat: IChat | null) => {
     return selectedChat ? selectedChat.chatId : null;
   }
 );

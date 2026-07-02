@@ -1,7 +1,8 @@
+import { IUser } from "../types/IUser";
 import { postRequest } from "./index";
 
 export const requestSignIn = (username: string) => {
-  return postRequest<{ username: string }>("/api/users", {
+  return postRequest<IUser>("/api/users", {
     username,
   });
 };
