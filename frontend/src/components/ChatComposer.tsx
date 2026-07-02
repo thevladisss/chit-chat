@@ -17,25 +17,23 @@ type Props = {
 function ChatComposer({
   message,
   isRecordingVoiceMessage,
-  isPendingMessageSend,
   voiceMessageRecordingTimeElapsed,
   handleInputMessage,
   handleSubmitMessage,
-  handleVoiceMessageRecordingStart,
-  handleVoiceMessageRecordingCompleted,
 }: Props): JSX.Element {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     handleSubmitMessage();
   };
 
-  const handleClickVoiceRecordingButton = () => {
-    if (!isRecordingVoiceMessage) {
-      handleVoiceMessageRecordingStart();
-    } else {
-      handleVoiceMessageRecordingCompleted();
-    }
-  };
+  // TODO: Uncomment when voice messages are supported
+  // const handleClickVoiceRecordingButton = () => {
+  //   if (!isRecordingVoiceMessage) {
+  //     handleVoiceMessageRecordingStart();
+  //   } else {
+  //     handleVoiceMessageRecordingCompleted();
+  //   }
+  // };
 
   return (
     <div className="chat-composer">
