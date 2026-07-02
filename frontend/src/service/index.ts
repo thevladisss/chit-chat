@@ -1,15 +1,15 @@
-import axios, { AxiosResponse } from 'axios';
-import { formatQueryParams } from '../utils/http.util';
+import axios, { AxiosResponse } from "axios";
+import { formatQueryParams } from "../utils/http.util";
 
-const BASE_PATH = (import.meta.env.VITE_API_URL as string) ?? '';
-
-
+const BASE_PATH = (import.meta.env.VITE_API_URL as string) ?? "";
 
 const client = axios.create({
   withCredentials: true,
   baseURL: BASE_PATH,
   transformResponse: [
-    ...axios.defaults.transformResponse,
+    ...(Array.isArray(axios.defaults.transformResponse)
+      ? axios.defaults.transformResponse
+      : []),
     (response) => {
       return response.data;
     },
@@ -21,9 +21,6 @@ export const getRequest = <R>(
   params: Record<string, string> = {},
   options = {},
 ): Promise<AxiosResponse<R>> => {
-
-  
-  
   return client.get(url, {
     params: formatQueryParams(params),
     ...options,

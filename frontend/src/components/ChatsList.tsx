@@ -4,6 +4,7 @@ import ChatListItem from "./ChatListItem.tsx";
 import { IChat } from "../types/IChat.ts";
 import classNames from "classnames";
 import { useSelector } from "react-redux";
+import { RootState } from "../stores/index.ts";
 
 type Props = HTMLProps<HTMLDivElement> & {
   chats: IChat[];
@@ -23,11 +24,27 @@ function ChatsList({
 }: Props): JSX.Element {
   const classes = classNames("chat-list", className);
 
-  const typingInChat = useSelector((state: any) => state.chatState.typingChats);
+  const typingInChat = useSelector(
+    (state: RootState) => state.chatState.typingChats,
+  );
 
   const sortedCurrentChats = useMemo(() => {
+    //TODO: Revisit sorting logic.
+    // Add sortin by name for chats without messages
+    
     return chats.toSorted((a, b) => {
-      if (a.lastMessageTimestamp < b.lastMessageTimestamp) return -1;
+      const areChatsWithMessages = Boolean(
+        a.messages.length && b.messages.length,
+      );
+
+      if (areChatsWithMessages) {
+        if (
+          (a.lastMessageTimestamp as number) <
+          (b.lastMessageTimestamp as number)
+        )
+          return -1;
+      }
+
       return 1;
     });
   }, [chats]);

@@ -1,19 +1,20 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction, SerializedError } from "@reduxjs/toolkit";
 import * as actions from "./actions.ts";
 import { IChat } from "../../types/IChat.ts";
+import { IUser } from "../../types/IUser.ts";
 
 export type ChatSliceState = {
   selectedChat: IChat | null;
   selectedChatId: string | null;
   chats: IChat[];
   pendingLoadChats: boolean;
-  loadChatsError: Error | null;
+  loadChatsError: SerializedError | null;
   pendingSelectChat: boolean;
   selectChatError: Error | null;
-  typingChats: Record<string, string[]>;
+  typingChats: Record<string, IUser[]>;
 };
 
-const initialState = {
+const initialState: ChatSliceState = {
   selectedChat: null,
   selectedChatId: null,
   pendingSelectChat: false,
@@ -22,7 +23,7 @@ const initialState = {
   loadChatsError: null,
   chats: [],
   typingChats: {},
-} satisfies ChatSliceState;
+};
 
 export const slice = createSlice({
   name: "chatState",
@@ -39,7 +40,7 @@ export const slice = createSlice({
     },
     deleteTypingInChat(state, action) {
       if (action.payload.chatId in state.typingChats) {
-        const map = state.typingChats as Record<string, string[]>;
+        const map = state.typingChats as Record<string, IUser[]>;
 
         delete map[action.payload.chatId];
       }
@@ -77,7 +78,7 @@ export const slice = createSlice({
     builder.addCase(actions.getChatsAction.rejected, (state, action) => {
       return {
         ...state,
-        loadChatsError: action.payload,
+        loadChatsError: action.error,
         pendingLoadChats: false,
       };
     });
@@ -106,7 +107,7 @@ export const slice = createSlice({
       (state, action) => {
         return {
           ...state,
-          loadChatsError: action.payload,
+          loadChatsError: action.error,
           pendingLoadChats: false,
         };
       },

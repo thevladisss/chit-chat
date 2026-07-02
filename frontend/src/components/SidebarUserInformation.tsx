@@ -2,6 +2,7 @@ import "./SidebarUserInformation.css";
 import Icon from "@mdi/react";
 import { mdiLogout } from "@mdi/js";
 import BaseButton from "./base/BaseButton.tsx";
+import { type JSX } from "react";
 
 type Props = {
   username: string;
