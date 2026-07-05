@@ -18,7 +18,7 @@ export const connectRedis = async (): Promise<void> => {
   }
 };
 
-const CONNECTION_TTL = 86_400; // 24h safety net — auto-cleans stale records on crash
+const CONNECTION_TTL = 90; // refreshed on every heartbeat pong; crash safety net otherwise
 
 export interface RedisConnection {
   connectionId: string;
@@ -52,6 +52,12 @@ export const redisGetConnection = async (
     sessionId: data.sessionId,
     createdTimestamp: Number(data.createdTimestamp),
   };
+};
+
+export const redisRefreshConnectionTTL = async (
+  connectionId: string,
+): Promise<void> => {
+  await redisClient.expire(`conn:${connectionId}`, CONNECTION_TTL);
 };
 
 export const redisDeleteConnection = async (

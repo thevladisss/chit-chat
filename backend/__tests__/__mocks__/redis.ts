@@ -68,6 +68,8 @@ export const redisClient = {
 
 export const connectRedis = jest.fn(async () => {});
 
+export const redisRefreshConnectionTTL = jest.fn(async () => {});
+
 /**
  * Helper to reset the in-memory store between tests.
  */

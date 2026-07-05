@@ -8,6 +8,12 @@ import ChatService from '../service/chat.service';
 import type { ConnectionWithSocket } from '../types/connection';
 import UserRepository from '../repositories/user.repository';
 
+const HEARTBEAT_INTERVAL_MS = 30_000;
+
+interface AppWebSocket extends WebSocket {
+  isAlive?: boolean;
+}
+
 /**
  *
  * @param ws - Current WS (new connection WS)
@@ -179,12 +185,41 @@ export const handleWsConnection = async (
 
   notifyOnNewConnection(ws, allConnections);
 
+  const heartbeatWs = ws as AppWebSocket;
+  heartbeatWs.isAlive = true;
+  ws.on('pong', () => {
+    heartbeatWs.isAlive = true;
+    ConnectionService.refreshConnectionTTL(connection.connectionId).catch(
+      (error) => {
+        console.error('Error refreshing connection TTL:', error);
+      },
+    );
+  });
+
   ws.on('message', (data: Buffer | ArrayBuffer | Buffer[]) => {
     handleWsMessage(req, ws, data);
   });
   ws.on('close', () => {
     handleWsCloseConnection(connection);
   });
+};
+
+export const startHeartbeat = (
+  wss: WebSocketServer,
+): NodeJS.Timeout => {
+  return setInterval(() => {
+    wss.clients.forEach((client) => {
+      const ws = client as AppWebSocket;
+
+      if (ws.isAlive === false) {
+        ws.terminate();
+        return;
+      }
+
+      ws.isAlive = false;
+      ws.ping();
+    });
+  }, HEARTBEAT_INTERVAL_MS);
 };
 
 const handleWsCloseConnection = async (
@@ -208,4 +243,5 @@ const handleWsCloseConnection = async (
 export default {
   handleWsConnection,
   handleWsCloseConnection,
+  startHeartbeat,
 };

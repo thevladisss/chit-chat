@@ -123,6 +123,8 @@ const bootApplication = async (): Promise<void> => {
 
     wsHandlers.handleWsConnection(wss, ws, req);
   });
+
+  wsHandlers.startHeartbeat(wss);
 };
 
 bootApplication();

@@ -3,6 +3,7 @@ import { WebSocket } from 'ws';
 import {
   redisStoreConnection,
   redisDeleteConnection,
+  redisRefreshConnectionTTL,
   redisGetAllConnections,
   redisGetConnectionsByUserId,
   redisGetConnectionsByUserIds,
@@ -44,6 +45,12 @@ export const storeConnection = async (
     userId: payload.userId,
     ws: payload.ws,
   };
+};
+
+export const refreshConnectionTTL = async (
+  connectionId: string,
+): Promise<void> => {
+  await redisRefreshConnectionTTL(connectionId);
 };
 
 export const removeConnectionByConnectionId = async (
@@ -88,6 +95,7 @@ export const getAllConnectionsOnline = async (): Promise<ConnectionWithSocket[]>
 
 export default {
   storeConnection,
+  refreshConnectionTTL,
   removeConnectionByConnectionId,
   getAllConnections,
   getAllConnectionsNoCurrent,
