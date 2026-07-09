@@ -24,7 +24,7 @@ export const getAllChats = async (
  * Returns one single chat by its ID
  */
 export const getChat = async (
-  req: Request,
+  req: Request<{ chatId: string }>,
   res: Response,
 ): Promise<Response> => {
   const { chatId } = req.params;
@@ -65,7 +65,7 @@ export const getFilteredChats = async (
  * Send text or voice message to the chat
  */
 export const sendMessage = async (
-  req: Request,
+  req: Request<{ chatId: string }>,
   res: Response,
 ): Promise<Response> => {
   const { chatId } = req.params;
