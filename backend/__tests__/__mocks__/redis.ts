@@ -29,7 +29,7 @@ export const redisClient = {
     const arr = Array.isArray(keys) ? keys : [keys];
     for (const k of arr) store.delete(k);
   }),
-  expire: jest.fn(async () => true),
+  expire: jest.fn(async (_key: string, _seconds: number) => true),
   mGet: jest.fn(async (keys: string[]) => keys.map((k) => store.get(k) ?? null)),
   scanIterator: jest.fn(scanIterator),
 
@@ -69,6 +69,82 @@ export const redisClient = {
 export const connectRedis = jest.fn(async () => {});
 
 export const redisRefreshConnectionTTL = jest.fn(async () => {});
+
+/**
+ * Connection helpers (used by connection.service), mirroring src/redis.ts
+ * logic on top of the in-memory hash/set primitives above.
+ */
+export interface RedisConnection {
+  connectionId: string;
+  userId: string;
+  sessionId: string;
+  createdTimestamp: number;
+}
+
+export const redisStoreConnection = jest.fn(
+  async (
+    connectionId: string,
+    data: Omit<RedisConnection, 'connectionId'>,
+  ): Promise<void> => {
+    await redisClient.hSet(`conn:${connectionId}`, {
+      userId: data.userId,
+      sessionId: data.sessionId,
+      createdTimestamp: String(data.createdTimestamp),
+    });
+    await redisClient.expire(`conn:${connectionId}`, 90);
+    await redisClient.sAdd('conns', connectionId);
+    await redisClient.sAdd(`user:conns:${data.userId}`, connectionId);
+  },
+);
+
+export const redisGetConnection = jest.fn(
+  async (connectionId: string): Promise<RedisConnection | null> => {
+    const data = await redisClient.hGetAll(`conn:${connectionId}`);
+    if (!data.userId) return null;
+    return {
+      connectionId,
+      userId: data.userId,
+      sessionId: data.sessionId,
+      createdTimestamp: Number(data.createdTimestamp),
+    };
+  },
+);
+
+export const redisDeleteConnection = jest.fn(async (connectionId: string): Promise<void> => {
+  const data = await redisClient.hGetAll(`conn:${connectionId}`);
+  if (data.userId) {
+    await redisClient.sRem(`user:conns:${data.userId}`, connectionId);
+  }
+  await redisClient.sRem('conns', connectionId);
+  await redisClient.del(`conn:${connectionId}`);
+});
+
+export const redisGetAllConnections = jest.fn(async (): Promise<RedisConnection[]> => {
+  const ids = await redisClient.sMembers('conns');
+  const results = await Promise.all(ids.map(redisGetConnection));
+  return results.filter(Boolean) as RedisConnection[];
+});
+
+export const redisGetConnectionsByUserId = jest.fn(
+  async (userId: string): Promise<RedisConnection[]> => {
+    const ids = await redisClient.sMembers(`user:conns:${userId}`);
+    const results = await Promise.all(ids.map(redisGetConnection));
+    return results.filter(Boolean) as RedisConnection[];
+  },
+);
+
+export const redisGetConnectionsByUserIds = jest.fn(
+  async (userIds: string[]): Promise<RedisConnection[]> => {
+    const perUser = await Promise.all(userIds.map(redisGetConnectionsByUserId));
+    const flat = perUser.flat();
+    const seen = new Set<string>();
+    return flat.filter((c) => {
+      if (seen.has(c.connectionId)) return false;
+      seen.add(c.connectionId);
+      return true;
+    });
+  },
+);
 
 /**
  * Helper to reset the in-memory store between tests.

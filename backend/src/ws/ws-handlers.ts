@@ -166,7 +166,7 @@ export const handleWsConnection = async (
     req.session.wsConnectionId = connection.id;
   }
 
-  const allConnections = await ConnectionService.getAllConnectionsNoCurrent(
+  const allConnections = await ConnectionService.getAllConnectionsOnlineNoCurrent(
     connection.connectionId,
   );
 
@@ -222,7 +222,7 @@ const handleWsCloseConnection = async (
     if (error) {
       console.error('Error destroying session:', error);
     } else {
-      const allConnections = await ConnectionService.getAllConnections();
+      const allConnections = await ConnectionService.getAllConnectionsOnline();
 
       notifyOnLeaveConnection(allConnections);
     }

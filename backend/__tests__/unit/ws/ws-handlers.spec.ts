@@ -72,7 +72,7 @@ describe('ws-handlers', () => {
 
     beforeEach(() => {
       jest.spyOn(ConnectionService, 'storeConnection').mockResolvedValue(mockConnection as any);
-      jest.spyOn(ConnectionService, 'getAllConnectionsNoCurrent').mockResolvedValue([]);
+      jest.spyOn(ConnectionService, 'getAllConnectionsOnlineNoCurrent').mockResolvedValue([]);
       jest.spyOn(ConnectionService, 'refreshConnectionTTL').mockResolvedValue(undefined);
     });
 
@@ -139,7 +139,7 @@ describe('ws-handlers', () => {
 
       jest.spyOn(ConnectionService, 'storeConnection').mockResolvedValue(mockConnection as any);
       jest
-        .spyOn(ConnectionService, 'getAllConnectionsNoCurrent')
+        .spyOn(ConnectionService, 'getAllConnectionsOnlineNoCurrent')
         .mockResolvedValue([otherConnection] as any);
       jest.spyOn(ConnectionService, 'refreshConnectionTTL').mockResolvedValue(undefined);
       const getUserChatsSpy = jest
@@ -183,7 +183,7 @@ describe('ws-handlers', () => {
       };
 
       jest.spyOn(ConnectionService, 'removeConnectionByConnectionId').mockResolvedValue(undefined);
-      jest.spyOn(ConnectionService, 'getAllConnections').mockResolvedValue([otherConnection] as any);
+      jest.spyOn(ConnectionService, 'getAllConnectionsOnline').mockResolvedValue([otherConnection] as any);
       jest.spyOn(sessionStore, 'destroy').mockImplementation((_sid, cb: any) => cb());
       const getUserChatsSpy = jest
         .spyOn(ChatService, 'getUserChats')

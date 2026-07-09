@@ -84,7 +84,7 @@ export const createNewChatForAllUsers = async (
 export const getUserChats = async (userId: string): Promise<any[]> => {
   const chats = await ChatRepository.findAllChatsByUsersIds([userId]);
 
-  const connections = await ConnectionService.getAllConnections();
+  const connections = await ConnectionService.getAllConnectionsOnline();
 
   const results = [];
 
@@ -156,7 +156,7 @@ export const getFilteredChats = async (
 ): Promise<any[]> => {
   const chats = await ChatRepository.findByUserNameOrChatNameOrMessage(search);
 
-  const connections = await ConnectionService.getAllConnections();
+  const connections = await ConnectionService.getAllConnectionsOnline();
 
   const results = [];
 

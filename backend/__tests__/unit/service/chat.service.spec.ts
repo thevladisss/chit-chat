@@ -59,7 +59,7 @@ describe('chat.service', () => {
       ] as any[];
 
       const getAllConnectionsSpy = jest
-        .spyOn(ConnectionService, 'getAllConnections')
+        .spyOn(ConnectionService, 'getAllConnectionsOnline')
         .mockResolvedValue(connectionsMock);
 
       const findByUserNameOrChatNameOrMessageSpy = jest
@@ -88,7 +88,7 @@ describe('chat.service', () => {
 
     it('should return empty collection if repository yields nothing', async () => {
       const getAllConnectionsSpy = jest
-        .spyOn(ConnectionService, 'getAllConnections')
+        .spyOn(ConnectionService, 'getAllConnectionsOnline')
         .mockResolvedValue([]);
 
       const findByUserNameOrChatNameOrMessageSpy = jest
@@ -298,7 +298,7 @@ describe('chat.service', () => {
         .mockResolvedValue([mockChat]);
 
       const getAllConnectionsSpy = jest
-        .spyOn(ConnectionService, 'getAllConnections')
+        .spyOn(ConnectionService, 'getAllConnectionsOnline')
         .mockResolvedValue(connectionsMock);
 
       const result = await ChatService.getUserChats(userId);
@@ -320,7 +320,7 @@ describe('chat.service', () => {
         .mockResolvedValue([]);
 
       jest
-        .spyOn(ConnectionService, 'getAllConnections')
+        .spyOn(ConnectionService, 'getAllConnectionsOnline')
         .mockResolvedValue([]);
 
       const result = await ChatService.getUserChats(userId);
@@ -394,7 +394,7 @@ describe('chat.service', () => {
         .spyOn(ChatRepository, 'findAllChatsByUsersIds')
         .mockResolvedValue([mockGetUserChats1]);
       jest
-        .spyOn(ConnectionService, 'getAllConnections')
+        .spyOn(ConnectionService, 'getAllConnectionsOnline')
         .mockResolvedValue([]);
       jest.spyOn(UserRepository, 'findByIdOrFail').mockResolvedValue(sender);
 
@@ -467,7 +467,7 @@ describe('chat.service', () => {
         });
 
       jest
-        .spyOn(ConnectionService, 'getAllConnections')
+        .spyOn(ConnectionService, 'getAllConnectionsOnline')
         .mockResolvedValue([]);
 
       const result = await ChatService.createNewChatForAllUsers(userId);

@@ -93,6 +93,13 @@ export const getAllConnectionsOnline = async (): Promise<ConnectionWithSocket[]>
   return all.filter((c) => c.ws?.readyState === WebSocket.OPEN);
 };
 
+export const getAllConnectionsOnlineNoCurrent = async (
+  connectionId: string,
+): Promise<ConnectionWithSocket[]> => {
+  const all = await getAllConnectionsNoCurrent(connectionId);
+  return all.filter((c) => c.ws?.readyState === WebSocket.OPEN);
+};
+
 export default {
   storeConnection,
   refreshConnectionTTL,
@@ -102,4 +109,5 @@ export default {
   getAllConnectionsByUserIds,
   getConnectionsByUserId,
   getAllConnectionsOnline,
+  getAllConnectionsOnlineNoCurrent,
 };
