@@ -70,6 +70,23 @@ describe('/api/chats', () => {
       expect(res.body.data).toHaveProperty('name', 'alice');
       expect(res.body.data).toHaveProperty('messages');
     });
+
+    it('should not return a chat the authenticated user is not a participant of', async () => {
+      await createAuthenticatedAgent('alice');
+      const { agent: bobAgent } = await createAuthenticatedAgent('bob');
+
+      // The alice-bob chat, from bob's perspective.
+      const bobChats = await bobAgent.get('/api/chats');
+      const aliceBobChatId = bobChats.body.data[0].chatId;
+
+      // Dave has his own chats with alice and bob, but not the alice-bob chat.
+      const { agent: daveAgent } = await createAuthenticatedAgent('dave');
+
+      const res = await daveAgent.get(`/api/chats/${aliceBobChatId}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body.data).toBeNull();
+    });
   });
 
   describe('GET /api/chats/search', () => {
@@ -188,6 +205,37 @@ describe('/api/chats', () => {
         .send({ type: 'audio' });
 
       expect(res.status).toBe(200);
+    });
+
+    it('should reject sending a message to a chat the sender is not a participant of', async () => {
+      await createAuthenticatedAgent('alice');
+      const { agent: bobAgent } = await createAuthenticatedAgent('bob');
+
+      const bobChats = await bobAgent.get('/api/chats');
+      const aliceBobChatId = bobChats.body.data[0].chatId;
+
+      const { agent: daveAgent } = await createAuthenticatedAgent('dave');
+
+      const res = await daveAgent
+        .post(`/api/chats/${aliceBobChatId}/messages`)
+        .send({ type: 'text', message: 'intercepted' });
+
+      expect(res.status).toBe(404);
+
+      // Confirm nothing was persisted: alice/bob's chat is still empty.
+      const chatRes = await bobAgent.get(`/api/chats/${aliceBobChatId}`);
+      expect(chatRes.body.data.messages).toHaveLength(0);
+    });
+
+    it('should return 500 instead of hanging when the chat id is malformed', async () => {
+      const { agent } = await createAuthenticatedAgent('alice');
+
+      const res = await agent
+        .post('/api/chats/not-a-valid-object-id/messages')
+        .send({ type: 'text', message: 'hello' });
+
+      expect(res.status).toBe(500);
+      expect(res.body).toEqual({ error: 'Internal server error' });
     });
   });
 });

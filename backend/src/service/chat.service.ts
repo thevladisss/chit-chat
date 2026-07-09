@@ -8,11 +8,19 @@ import { IChat } from '../models/chat.model';
 import { WebSocket } from 'ws';
 import type { IUser } from '../models/user.model';
 import { Types } from 'mongoose';
+import { NotFoundError } from '../errors/NotFoundError';
 
 interface SendChatMessageData {
   chatId: string;
   message: string;
 }
+
+const isChatParticipant = (userId: string, chat: IChat): boolean => {
+  const users = chat.users as (Types.ObjectId | IUser)[];
+  return users.some((user) =>
+    user instanceof Types.ObjectId ? user.toString() === userId : user.id === userId,
+  );
+};
 
 const notifyUsersOnNewChatMessage = async (
   chat: IChat,
@@ -112,7 +120,12 @@ export const getChat = async (
 ): Promise<any | null> => {
   const chat = await ChatRepository.findById(chatId);
 
-  if (!chat) {
+  // Returns null (not a thrown NotFoundError) for both "doesn't exist" and "not
+  // a participant" so the two are indistinguishable to the caller. Intentionally
+  // NOT migrated to throw NotFoundError like sendChatMessage below: the frontend's
+  // selectChatAction thunk has no .rejected handling yet, so switching this to a
+  // real 404 would leave a stale selectedChat in the UI with no error surfaced.
+  if (!chat || !isChatParticipant(userId, chat)) {
     return null;
   }
 
@@ -123,29 +136,31 @@ export const sendChatMessage = async (
   userId: string,
   data: SendChatMessageData,
 ): Promise<any> => {
+  const chat = await ChatRepository.findById(data.chatId);
+
+  if (!chat || !isChatParticipant(userId, chat)) {
+    throw new NotFoundError('Chat not found');
+  }
+
   await TextMessageRepository.createTextMessage({
     chatId: data.chatId,
     text: data.message,
     userId,
   });
 
-  const chat = await ChatRepository.findByIdOrFail(data.chatId);
-
-  if (!chat) {
-    throw new Error('Chat not found');
-  }
+  const updatedChat = await ChatRepository.findByIdOrFail(data.chatId);
 
   const chats = await getUserChats(userId);
 
   const result = {
-    chatId: chat.chatId,
-    chat: ChatMapper.mapChatToResponse(userId, chat),
+    chatId: updatedChat.chatId,
+    chat: ChatMapper.mapChatToResponse(userId, updatedChat),
     chats,
   };
 
   const senderUser = await UserRepository.findByIdOrFail(userId);
 
-  await notifyUsersOnNewChatMessage(chat, senderUser);
+  await notifyUsersOnNewChatMessage(updatedChat, senderUser);
 
   return result;
 };

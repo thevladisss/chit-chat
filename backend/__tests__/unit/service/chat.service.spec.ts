@@ -4,6 +4,7 @@ import TextMessageRepository from '../../../src/repositories/textMessage.reposit
 import ConnectionService from '../../../src/service/connection.service';
 import * as ChatService from '../../../src/service/chat.service';
 import ChatMapper from '../../../src/mappers/chat.mapper';
+import { NotFoundError } from '../../../src/errors/NotFoundError';
 
 describe('chat.service', () => {
   afterEach(() => {
@@ -242,7 +243,10 @@ describe('chat.service', () => {
       };
       const mockChat = {
         toJSON: jest.fn(() => chatJson),
-        users: [{ id: 'user-2', username: 'User 1' }],
+        users: [
+          { id: userId, username: 'User 1' },
+          { id: 'user-2', username: 'User 2' },
+        ],
         messages: [],
         lastMessage: null,
       } as any;
@@ -256,6 +260,29 @@ describe('chat.service', () => {
       expect(result).toMatchObject(
         ChatMapper.mapChatToResponse(userId, mockChat),
       );
+    });
+
+    it('should return null when the authenticated user is not a participant of the chat', async () => {
+      const userId = 'user-1';
+      const chatId = 'chat-123';
+      const mockChat = {
+        toJSON: jest.fn(() => ({ chatId: 'chat-123', users: [], messages: [] })),
+        users: [
+          { id: 'user-2', username: 'User 2' },
+          { id: 'user-3', username: 'User 3' },
+        ],
+        messages: [],
+        lastMessage: null,
+      } as any;
+
+      const findByIdSpy = jest
+        .spyOn(ChatRepository, 'findById')
+        .mockResolvedValue(mockChat);
+
+      const result = await ChatService.getChat(userId, chatId);
+
+      expect(findByIdSpy).toHaveBeenCalledWith(chatId);
+      expect(result).toBeNull();
     });
   });
 
@@ -387,6 +414,9 @@ describe('chat.service', () => {
         .mockResolvedValue({} as any);
 
       jest
+        .spyOn(ChatRepository, 'findById')
+        .mockResolvedValue(mockChat);
+      jest
         .spyOn(ChatRepository, 'findByIdOrFail')
         .mockResolvedValue(mockChat);
 
@@ -412,6 +442,39 @@ describe('chat.service', () => {
       expect(result.chatId).toBe('chat-123');
       expect(result.chat).toBeDefined();
       expect(result.chats).toBeDefined();
+    });
+
+    it('should throw NotFoundError and not persist a message when the sender is not a participant', async () => {
+      const data = {
+        chatId: 'chat-123',
+        message: 'Hello world',
+      };
+      const mockChat = {
+        chatId: 'chat-123',
+        toJSON: jest.fn(() => ({ chatId: 'chat-123' })),
+        users: [
+          { id: 'user-2', username: 'User 2' },
+          { id: 'user-3', username: 'User 3' },
+        ],
+        messages: [],
+        lastMessage: null,
+      } as any;
+
+      const findByIdSpy = jest
+        .spyOn(ChatRepository, 'findById')
+        .mockResolvedValue(mockChat);
+      const createTextMessageSpy = jest
+        .spyOn(TextMessageRepository, 'createTextMessage')
+        .mockResolvedValue({} as any);
+      const findByIdOrFailSpy = jest.spyOn(UserRepository, 'findByIdOrFail');
+
+      await expect(ChatService.sendChatMessage('user-1', data)).rejects.toThrow(
+        NotFoundError,
+      );
+
+      expect(findByIdSpy).toHaveBeenCalledWith(data.chatId);
+      expect(createTextMessageSpy).not.toHaveBeenCalled();
+      expect(findByIdOrFailSpy).not.toHaveBeenCalled();
     });
   });
 

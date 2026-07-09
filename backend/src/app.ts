@@ -8,6 +8,7 @@ import session from 'express-session';
 import { sessionStore } from './session';
 import chatRouter from './routes/chat.route';
 import userRouter from './routes/user.route';
+import { errorHandler } from './middleware/error.middleware';
 
 const app: Express = express();
 
@@ -40,5 +41,7 @@ app.use('/api/users', userRouter);
 app.use((_req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
+
+app.use(errorHandler);
 
 export default app;

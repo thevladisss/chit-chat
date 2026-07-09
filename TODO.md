@@ -9,7 +9,7 @@
 - [x] Filter getAllConnections/getAllConnectionsNoCurrent by readyState OPEN before broadcasting connection events
 - [x] Refresh Redis connection TTL on activity instead of only at creation
 - [ ] Require credential verification on sign-up instead of trusting username alone (createOrFindFirstUser) — anyone can log in as any existing user
-- [ ] Verify session.userId is a participant of chatId in getChat and sendMessage before allowing read/write (chat.controller.ts)
+- [x] Verify session.userId is a participant of chatId in getChat and sendMessage before allowing read/write (chat.controller.ts)
 - [ ] Wrap handleWsMessage's JSON.parse in try/catch and await/catch its call from ws.on('message') to avoid unhandled rejections on malformed frames — wire in the unused parseMessageToJson helper
 - [ ] Escape user-supplied search input before building RegExp in findByUserNameOrChatNameOrMessage/findUsersWhereUsernameContains to prevent ReDoS
 - [ ] Wire validateMessageRequest/handleValidationErrors into chat.route.ts — POST /:chatId/messages currently accepts unvalidated bodies
