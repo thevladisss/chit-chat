@@ -29,20 +29,16 @@ const notifyOnNewConnection = (
       connection.ws.readyState === WebSocket.OPEN &&
       connection.ws !== ws
     ) {
-      sessionStore.get(connection.sessionId, async (error, session) => {
-        if (!error && session?.userId) {
-          const chats = await ChatService.getUserChats(session.userId);
-
-          connection.ws?.send(
-            JSON.stringify({
-              event: ServerChatEventEnum.NEW_CONNECTION,
-              data: {
-                chats,
-                connections: allConnections,
-              },
-            }),
-          );
-        }
+      ChatService.getUserChats(connection.userId).then((chats) => {
+        connection.ws?.send(
+          JSON.stringify({
+            event: ServerChatEventEnum.NEW_CONNECTION,
+            data: {
+              chats,
+              connections: allConnections,
+            },
+          }),
+        );
       });
     }
   });
@@ -56,16 +52,9 @@ const notifyOnLeaveConnection = (
   allConnections: ConnectionWithSocket[],
 ): void => {
   allConnections.forEach((connection) => {
-    sessionStore.get(connection.sessionId, async (error, session) => {
-      if (
-        !error &&
-        connection.ws &&
-        connection.ws.readyState === WebSocket.OPEN &&
-        session?.userId
-      ) {
-        const chats = await ChatService.getUserChats(session.userId);
-
-        connection.ws.send(
+    if (connection.ws && connection.ws.readyState === WebSocket.OPEN) {
+      ChatService.getUserChats(connection.userId).then((chats) => {
+        connection.ws?.send(
           JSON.stringify({
             event: ServerChatEventEnum.LEAVE_CONNECTION,
             data: {
@@ -74,8 +63,8 @@ const notifyOnLeaveConnection = (
             },
           }),
         );
-      }
-    });
+      });
+    }
   });
 };
 

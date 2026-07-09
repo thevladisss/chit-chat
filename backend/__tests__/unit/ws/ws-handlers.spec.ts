@@ -1,8 +1,13 @@
+
 import { EventEmitter } from 'events';
+import { WebSocket } from 'ws';
 import type { WebSocketServer } from 'ws';
 import type { IncomingMessage } from 'http';
 import ConnectionService from '../../../src/service/connection.service';
-import { handleWsConnection, startHeartbeat } from '../../../src/ws/ws-handlers';
+import ChatService from '../../../src/service/chat.service';
+import { sessionStore } from '../../../src/session';
+import ServerChatEventEnum from '../../../src/enums/ServerChatEventEnum';
+import wsHandlers, { handleWsConnection, startHeartbeat } from '../../../src/ws/ws-handlers';
 
 class FakeWebSocket extends EventEmitter {
   send = jest.fn();
@@ -104,6 +109,95 @@ describe('ws-handlers', () => {
       expect(consoleErrorSpy).toHaveBeenCalledWith(
         'Error refreshing connection TTL:',
         error,
+      );
+    });
+  });
+
+  describe('notifyOnNewConnection (via handleWsConnection)', () => {
+    const mockConnection = {
+      id: 'conn-1',
+      connectionId: 'conn-1',
+      sessionId: 'session-1',
+      userId: 'user-1',
+      createdTimestamp: Date.now(),
+    };
+
+    const buildReq = (): IncomingMessage =>
+      ({ session: { id: 'session-1', userId: 'user-1' } }) as unknown as IncomingMessage;
+
+    it('derives chats from connection.userId directly, without querying the session store', async () => {
+      const otherWs = new FakeWebSocket();
+      otherWs.readyState = WebSocket.OPEN;
+      const otherConnection = {
+        id: 'conn-2',
+        connectionId: 'conn-2',
+        sessionId: 'session-other',
+        userId: 'user-other',
+        createdTimestamp: Date.now(),
+        ws: otherWs as any,
+      };
+
+      jest.spyOn(ConnectionService, 'storeConnection').mockResolvedValue(mockConnection as any);
+      jest
+        .spyOn(ConnectionService, 'getAllConnectionsNoCurrent')
+        .mockResolvedValue([otherConnection] as any);
+      jest.spyOn(ConnectionService, 'refreshConnectionTTL').mockResolvedValue(undefined);
+      const getUserChatsSpy = jest
+        .spyOn(ChatService, 'getUserChats')
+        .mockResolvedValue([{ id: 'chat-1' }] as any);
+      const sessionGetSpy = jest.spyOn(sessionStore, 'get');
+
+      const ws = new FakeWebSocket();
+      await handleWsConnection({} as WebSocketServer, ws as any, buildReq());
+      await new Promise(process.nextTick);
+
+      expect(getUserChatsSpy).toHaveBeenCalledWith('user-other');
+      expect(sessionGetSpy).not.toHaveBeenCalled();
+      expect(otherWs.send).toHaveBeenCalledWith(
+        JSON.stringify({
+          event: ServerChatEventEnum.NEW_CONNECTION,
+          data: { chats: [{ id: 'chat-1' }], connections: [otherConnection] },
+        }),
+      );
+    });
+  });
+
+  describe('notifyOnLeaveConnection (via handleWsCloseConnection)', () => {
+    it('derives chats from connection.userId directly, without querying the session store', async () => {
+      const otherWs = new FakeWebSocket();
+      otherWs.readyState = WebSocket.OPEN;
+      const otherConnection = {
+        id: 'conn-2',
+        connectionId: 'conn-2',
+        sessionId: 'session-other',
+        userId: 'user-other',
+        createdTimestamp: Date.now(),
+        ws: otherWs as any,
+      };
+      const closingConnection = {
+        id: 'conn-1',
+        connectionId: 'conn-1',
+        sessionId: 'session-closing',
+        userId: 'user-closing',
+        createdTimestamp: Date.now(),
+      };
+
+      jest.spyOn(ConnectionService, 'removeConnectionByConnectionId').mockResolvedValue(undefined);
+      jest.spyOn(ConnectionService, 'getAllConnections').mockResolvedValue([otherConnection] as any);
+      jest.spyOn(sessionStore, 'destroy').mockImplementation((_sid, cb: any) => cb());
+      const getUserChatsSpy = jest
+        .spyOn(ChatService, 'getUserChats')
+        .mockResolvedValue([{ id: 'chat-2' }] as any);
+
+      await wsHandlers.handleWsCloseConnection(closingConnection as any);
+      await new Promise(process.nextTick);
+
+      expect(getUserChatsSpy).toHaveBeenCalledWith('user-other');
+      expect(otherWs.send).toHaveBeenCalledWith(
+        JSON.stringify({
+          event: ServerChatEventEnum.LEAVE_CONNECTION,
+          data: { chats: [{ id: 'chat-2' }], connections: [otherConnection] },
+        }),
       );
     });
   });
