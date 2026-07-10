@@ -2,6 +2,10 @@ import { Request, Response } from 'express';
 import ChatService from '../service/chat.service';
 import ChatMessageTypeEnum from '../enums/ChatMessageType';
 
+type GetChatRequestParams = {
+  chatId: string;
+};
+
 /**
  * Returns all chats where signed in user is a participant
  */
@@ -24,7 +28,7 @@ export const getAllChats = async (
  * Returns one single chat by its ID
  */
 export const getChat = async (
-  req: Request<{ chatId: string }>,
+  req: Request<GetChatRequestParams>,
   res: Response,
 ): Promise<Response> => {
   const { chatId } = req.params;
