@@ -164,6 +164,13 @@ export const handleWsConnection = async (
 
   if (!req.session.wsConnectionId) {
     req.session.wsConnectionId = connection.id;
+    // Upgrade handling calls sessionParser with a fake `res`, so express-session's
+    // res.end patch that normally auto-saves never fires. Save explicitly.
+    req.session.save((error) => {
+      if (error) {
+        console.error('Error saving session with wsConnectionId:', error);
+      }
+    });
   }
 
   const allConnections = await ConnectionService.getAllConnectionsOnlineNoCurrent(

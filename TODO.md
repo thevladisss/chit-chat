@@ -16,7 +16,7 @@
 - [ ] Harden session cookie config in app.ts — secure:false is hardcoded, no sameSite, and SESSION_SECRET falls back to a hardcoded dev value
 - [ ] Stop destroying the whole session on a single WS close in handleWsCloseConnection — logs out every tab/device sharing that session
 - [ ] Strip the raw ws socket field from ConnectionWithSocket before broadcasting connections in notifyOnNewConnection/notifyOnLeaveConnection/notifyOnConnectionEstablished — currently leaks internal Node socket internals to every client
-- [ ] Verify session writes made during the WS upgrade handler (server.ts) actually persist — sessionParser is called with a fake res object, so wsConnectionId may never save to Redis
+- [x] Verify session writes made during the WS upgrade handler (server.ts) actually persist — sessionParser is called with a fake res object, so wsConnectionId may never save to Redis
 - [ ] Add .catch/error handling to fire-and-forget notify promises in ws-handlers.ts and chat.service.ts to avoid unhandled rejections
 - [ ] Fix check-then-act race between checkUserExists and createNewChatForAllUsers in createUser that can duplicate chats for concurrent sign-ups
 
