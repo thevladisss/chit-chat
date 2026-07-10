@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=$(jq -r '.tool_input.file_path // empty' 2>/dev/null)\ncase \"$f\" in\n  */backend/*) dir=backend ;;\n  */frontend/*) dir=frontend ;;\n  *) exit 0 ;;\nesac\nroot=$(git rev-parse --show-toplevel 2>/dev/null) || exit 0\ncd \"$root/$dir\" || exit 0\nout=$(npm run type-check 2>&1)\ncode=$?\nif [ \"$code\" -ne 0 ]; then\n  jq -n --arg dir \"$dir\" --arg out \"$out\" '{hookSpecificOutput:{hookEventName:\"PostToolUse\",additionalContext:(\"type-check failed in \\($dir):\\n\\($out)\")}}'\nfi\nexit 0\n",
+            "timeout": 60,
+            "statusMessage": "Type-checking affected workspace..."
+          }
+        ]
+      }
+    ]
+  }
+}
