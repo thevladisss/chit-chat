@@ -5,9 +5,12 @@ import type { WebSocketServer } from 'ws';
 import type { IncomingMessage } from 'http';
 import ConnectionService from '../../../src/service/connection.service';
 import ChatService from '../../../src/service/chat.service';
+import UserRepository from '../../../src/repositories/user.repository';
 import { sessionStore } from '../../../src/session';
 import ServerChatEventEnum from '../../../src/enums/ServerChatEventEnum';
 import wsHandlers, { handleWsConnection, startHeartbeat } from '../../../src/ws/ws-handlers';
+
+const flushMicrotasks = () => new Promise((resolve) => setImmediate(resolve));
 
 class FakeWebSocket extends EventEmitter {
   send = jest.fn();
@@ -157,6 +160,100 @@ describe('ws-handlers', () => {
         JSON.stringify({
           event: ServerChatEventEnum.NEW_CONNECTION,
           data: { chats: [{ id: 'chat-1' }], connections: [otherConnection] },
+        }),
+      );
+    });
+  });
+
+  describe('handleWsMessage (via ws.on("message"))', () => {
+    const mockConnection = {
+      id: 'conn-1',
+      connectionId: 'conn-1',
+      sessionId: 'session-1',
+      userId: 'user-1',
+      createdTimestamp: Date.now(),
+    };
+
+    // wsConnectionId is pre-set so handleWsConnection skips its session.save() branch,
+    // which the fake session object below doesn't implement.
+    const buildReq = (): IncomingMessage =>
+      ({
+        session: { id: 'session-1', userId: 'user-1', wsConnectionId: 'conn-1' },
+      }) as unknown as IncomingMessage;
+
+    beforeEach(() => {
+      jest.spyOn(ConnectionService, 'storeConnection').mockResolvedValue(mockConnection as any);
+      jest.spyOn(ConnectionService, 'getAllConnectionsOnlineNoCurrent').mockResolvedValue([]);
+      jest.spyOn(ConnectionService, 'refreshConnectionTTL').mockResolvedValue(undefined);
+    });
+
+    it('should drop an invalid frame, log a warning, and send an ERROR event back to the sender', async () => {
+      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      const getUsersByChatIdSpy = jest.spyOn(ChatService, 'getUsersByChatId');
+      const ws = new FakeWebSocket();
+
+      await handleWsConnection({} as WebSocketServer, ws as any, buildReq());
+      ws.emit(
+        'message',
+        Buffer.from(JSON.stringify({ event: 'typing_in_chat', payload: {} })),
+      );
+      await flushMicrotasks();
+
+      expect(consoleWarnSpy).toHaveBeenCalledWith('Invalid WS payload:', expect.anything());
+      expect(ws.send).toHaveBeenCalledWith(
+        JSON.stringify({
+          event: ServerChatEventEnum.ERROR,
+          data: { message: 'Invalid message payload' },
+        }),
+      );
+      expect(getUsersByChatIdSpy).not.toHaveBeenCalled();
+    });
+
+    it('should reject an unrecognized event the same way as a malformed one', async () => {
+      const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      const ws = new FakeWebSocket();
+
+      await handleWsConnection({} as WebSocketServer, ws as any, buildReq());
+      ws.emit(
+        'message',
+        Buffer.from(JSON.stringify({ event: 'send_message', payload: { message: 'hi' } })),
+      );
+      await flushMicrotasks();
+
+      expect(consoleWarnSpy).toHaveBeenCalledWith('Invalid WS payload:', expect.anything());
+      expect(ws.send).toHaveBeenCalledWith(
+        JSON.stringify({
+          event: ServerChatEventEnum.ERROR,
+          data: { message: 'Invalid message payload' },
+        }),
+      );
+    });
+
+    it('should dispatch a valid typing_in_chat frame to the other participants', async () => {
+      jest.spyOn(UserRepository, 'findByIdOrFail').mockResolvedValue({ id: 'user-1' } as any);
+      jest
+        .spyOn(ChatService, 'getUsersByChatId')
+        .mockResolvedValue([{ id: 'user-1' }, { id: 'user-2' }] as any);
+      const otherWs = new FakeWebSocket();
+      otherWs.readyState = WebSocket.OPEN;
+      jest.spyOn(ConnectionService, 'getAllConnectionsByUserIds').mockResolvedValue([
+        { userId: 'user-2', ws: otherWs as any },
+      ] as any);
+
+      const ws = new FakeWebSocket();
+      await handleWsConnection({} as WebSocketServer, ws as any, buildReq());
+      ws.emit(
+        'message',
+        Buffer.from(
+          JSON.stringify({ event: 'typing_in_chat', payload: { chatId: 'chat-1' } }),
+        ),
+      );
+      await flushMicrotasks();
+
+      expect(otherWs.send).toHaveBeenCalledWith(
+        JSON.stringify({
+          event: ServerChatEventEnum.TYPING_IN_CHAT,
+          data: { userId: 'user-1', user: { id: 'user-1' }, chatId: 'chat-1' },
         }),
       );
     });
