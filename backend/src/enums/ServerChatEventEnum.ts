@@ -7,6 +7,7 @@ export enum ServerChatEventEnum {
   MESSAGE = 'new_message',
   CHAT_CREATED = 'new_chat_created',
   TYPING_IN_CHAT = 'typing_in_chat',
+  ERROR = 'error',
 }
 
 export default ServerChatEventEnum;

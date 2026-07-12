@@ -7,6 +7,7 @@ import ConnectionService from '../service/connection.service';
 import ChatService from '../service/chat.service';
 import type { ConnectionWithSocket } from '../types/connection';
 import UserRepository from '../repositories/user.repository';
+import WsMessageSchema from '../validation/schemas/ws-message.schema';
 
 const HEARTBEAT_INTERVAL_MS = 30_000;
 
@@ -88,7 +89,7 @@ const notifyOnConnectionEstablished = (
 const notifyOnUserTyping = async (
   req: IncomingMessage,
   _ws: WebSocket,
-  data: any,
+  data: { chatId: string },
 ): Promise<void> => {
   const chatId = data.chatId;
 
@@ -138,11 +139,21 @@ const handleWsMessage = async (
       : Buffer.from(data);
   const parsedData = JSON.parse(raw.toString());
 
-  switch (parsedData.event) {
-    case ClientChatEventEnum.SEND_MESSAGE:
-      break;
+  const result = WsMessageSchema.safeParse(parsedData);
+  if (!result.success) {
+    console.warn('Invalid WS payload:', result.error.flatten());
+    ws.send(
+      JSON.stringify({
+        event: ServerChatEventEnum.ERROR,
+        data: { message: 'Invalid message payload' },
+      }),
+    );
+    return;
+  }
+
+  switch (result.data.event) {
     case ClientChatEventEnum.TYPING_IN_CHAT:
-      await notifyOnUserTyping(req, ws, parsedData.payload || parsedData.data);
+      await notifyOnUserTyping(req, ws, result.data.payload);
       break;
   }
 };
