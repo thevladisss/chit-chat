@@ -20,6 +20,19 @@ class FakeWebSocket extends EventEmitter {
   isAlive?: boolean;
 }
 
+// express-session's save() writes the session to the store and then invokes its
+// callback; the stub reports immediate success so handleWsConnection's
+// wsConnectionId persistence branch can run.
+const buildReq = (sessionOverrides: Record<string, unknown> = {}): IncomingMessage =>
+  ({
+    session: {
+      id: 'session-1',
+      userId: 'user-1',
+      save: jest.fn((cb?: (error?: Error) => void) => cb?.()),
+      ...sessionOverrides,
+    },
+  }) as unknown as IncomingMessage;
+
 describe('ws-handlers', () => {
   afterEach(() => {
     jest.restoreAllMocks();
@@ -69,9 +82,6 @@ describe('ws-handlers', () => {
       userId: 'user-1',
       createdTimestamp: Date.now(),
     };
-
-    const buildReq = (): IncomingMessage =>
-      ({ session: { id: 'session-1', userId: 'user-1' } }) as unknown as IncomingMessage;
 
     beforeEach(() => {
       jest.spyOn(ConnectionService, 'storeConnection').mockResolvedValue(mockConnection as any);
@@ -125,9 +135,6 @@ describe('ws-handlers', () => {
       createdTimestamp: Date.now(),
     };
 
-    const buildReq = (): IncomingMessage =>
-      ({ session: { id: 'session-1', userId: 'user-1' } }) as unknown as IncomingMessage;
-
     it('derives chats from connection.userId directly, without querying the session store', async () => {
       const otherWs = new FakeWebSocket();
       otherWs.readyState = WebSocket.OPEN;
@@ -173,13 +180,6 @@ describe('ws-handlers', () => {
       userId: 'user-1',
       createdTimestamp: Date.now(),
     };
-
-    // wsConnectionId is pre-set so handleWsConnection skips its session.save() branch,
-    // which the fake session object below doesn't implement.
-    const buildReq = (): IncomingMessage =>
-      ({
-        session: { id: 'session-1', userId: 'user-1', wsConnectionId: 'conn-1' },
-      }) as unknown as IncomingMessage;
 
     beforeEach(() => {
       jest.spyOn(ConnectionService, 'storeConnection').mockResolvedValue(mockConnection as any);
